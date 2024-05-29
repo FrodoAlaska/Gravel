@@ -1,5 +1,4 @@
 # TODO:
-- Github is being annoying for some reason
 - A way to setup the engine 
 - Effcient text rendering
 - Resource manager
