@@ -3,6 +3,7 @@ project(Gravel)
 
 add_subdirectory(libs/GLFW)
 add_subdirectory(libs/glm)
+add_subdirectory(libs/freetype)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_BUILD_TYPE Debug)
@@ -29,6 +30,7 @@ set(GRAVEL_SOURCES
   ${GRAVEL_SRC_DIR}/graphics/renderer2d.cpp
   ${GRAVEL_SRC_DIR}/graphics/shader.cpp
   ${GRAVEL_SRC_DIR}/graphics/texture.cpp
+  ${GRAVEL_SRC_DIR}/graphics/font.cpp
 
   # Math
   ${GRAVEL_SRC_DIR}/math/rand.cpp
@@ -44,6 +46,7 @@ set(GRAVEL_SOURCES
 set(GRAVEL_LIBS 
   ${GRAVEL_LIBS_DIR}/miniaudio/miniaudio.cpp
   ${GRAVEL_LIBS_DIR}/stb_image/stb_image.cpp
+  ${GRAVEL_LIBS_DIR}/stb_truetype/stb_truetype.cpp
   ${GRAVEL_LIBS_DIR}/glad/gl.c
 
   ${GRAVEL_LIBS_DIR}/glad/gl.c
@@ -66,4 +69,4 @@ target_compile_options(${PROJECT_NAME} PRIVATE -lm)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 target_include_directories(${PROJECT_NAME} PUBLIC BEFORE ${GRAVEL_LIBS_DIR} ${GRAVEL_SRC_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw glm)
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw glm freetype)

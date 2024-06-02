@@ -12,6 +12,30 @@
 static i32 texture_slots = 0;
 /////////////////////////////////////////////////////////////////////////////////
 
+// Private functions
+/////////////////////////////////////////////////////////////////////////////////
+i32 get_channels_by_format(u32 format) {
+  i32 channels = 0; 
+
+  switch(format) {
+    case GL_RED: 
+      channels = 1; 
+    break;
+    case GL_RG:
+      channels = 2; 
+      break;
+    case GL_RGB:
+      channels = 3; 
+      break;
+    case GL_RGBA:
+      channels = 4; 
+      break;
+  }
+
+  return channels;
+}
+/////////////////////////////////////////////////////////////////////////////////
+
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 Texture* texture_load(const std::string& path) {
@@ -70,28 +94,38 @@ Texture* texture_load(i32 width, i32 height, u32 format, void* pixels) {
   texture->height   = height;
   texture->depth    = 0;
   texture->slot     = texture_slots++;
-  texture->channels = 4;
+  texture->channels = get_channels_by_format(format);
   texture->format   = format;
 
   glGenTextures(1, &texture->id);
   glBindTexture(GL_TEXTURE_2D, texture->id);
 
   if(pixels) {
+    i32 internal_format = GL_R8; 
+    switch(texture->channels) {
+      case 2:
+        internal_format = GL_R16;
+        break;
+      case 4:
+        internal_format = GL_R32UI;
+        break;
+    }
+
     // Send the pixel data to the GPU and generate a mipmap
-    glTexImage2D(GL_TEXTURE_2D, texture->depth, texture->format, texture->width, texture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    glTexImage2D(GL_TEXTURE_2D, texture->depth, internal_format, texture->width, texture->height, 0, texture->format, GL_UNSIGNED_BYTE, pixels);
     glGenerateMipmap(GL_TEXTURE_2D);
   }
   // Couldn't load the texture
   else {
-    fprintf(stderr, "[ERROR]: Given pixels not valid\n");
+    fprintf(stderr, "[ERROR]: Given pixels not valid for texture\n");
   }
  
   // Setting texture options
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+  
   return texture;
 }
 

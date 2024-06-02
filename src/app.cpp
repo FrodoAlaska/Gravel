@@ -3,12 +3,17 @@
 #include "core/window.h"
 #include "core/event.h"
 #include "core/input.h"
+
 #include "graphics/camera.h"
 #include "graphics/renderer.h"
 #include "graphics/renderer2d.h"
+#include "graphics/font.h"
+
 #include "audio/audio_system.h"
+
 #include "components/mesh.h"
 #include "components/transform.h"
+
 #include "editor/editor.h"
 
 #include <glm/glm.hpp>
@@ -19,6 +24,7 @@
 static Mesh* mesh[10][10];
 static Camera camera;
 static Transform transforms[10][10];
+static Font* font;
 
 // Private functions
 /////////////////////////////////////////////////////////////////////////////////
@@ -34,28 +40,29 @@ static void update() {
 
 static void render() {
   renderer_clear(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-  editor_begin();
+  // editor_begin();
 
-  renderer_begin(&camera);
-  for(u32 i = 0; i < 10; i++) {
-    for(u32 j = 0; j < 10; j++) {
-      render_cube(glm::vec3(j * 2.0f, 0.0f, i * 2.0f), glm::vec3(1.0f), glm::vec4(0, 1, 0, 1));
-    }
-  }
-  
+  // renderer_begin(&camera);
+  // for(u32 i = 0; i < 10; i++) {
+  //   for(u32 j = 0; j < 10; j++) {
+  //     render_cube(glm::vec3(j * 2.0f, 0.0f, i * 2.0f), glm::vec3(1.0f), glm::vec4(0, 1, 0, 1));
+  //   }
+  // }
+  // 
   // for(u32 i = 0; i < 10; i++) {
   //   for(u32 j = 0; j < 10; j++) {
   //     render_mesh(transforms[i][j], mesh[i][j]);
   //   }
   // }
+  //  
+  // renderer_end();
 
-  renderer_end();
-
-  // renderer2d_begin();
-  // render_quad(pos, glm::vec2(256.0f, 256.0f), glm::vec4(0, 0, 0, 1));
-  // renderer2d_end();
+  renderer2d_begin();
+  // render_quad(glm::vec2(10.0f, 10.0f), glm::vec2(256.0f, 256.0f), glm::vec4(1, 0, 0, 1));
+  render_text(font, 0.2f, "102 121 aBC", glm::vec2(100.0f, 100.0f), glm::vec4(1.0f)); 
+  renderer2d_end();
  
-  editor_end();
+  // editor_end();
   renderer_present();
 }
 /////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +78,7 @@ bool app_init() {
   }
 
   input_init();
-  input_cursor_show(false);
+  // input_cursor_show(false);
   
   if(!renderer_create()) {
     printf("[ERROR]: Renderer failed to be created\n");
@@ -103,6 +110,7 @@ bool app_init() {
     }
   }
 
+  font = font_load("assets/font/bit5x3.ttf", 256.0f);
   camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
 
   return true;
