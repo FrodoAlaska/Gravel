@@ -73,10 +73,6 @@ bool audio_system_init() {
   event_listen(EVENT_SOUND_PLAY, audio_event_callback);
   event_listen(EVENT_MUSIC_PLAY, audio_event_callback);
   event_listen(EVENT_MUSIC_STOP, audio_event_callback);
-  
-  // Loading sounds
-
-  // Loading music 
 
   return true;
 }
@@ -85,5 +81,13 @@ void audio_system_shutdown() {
   ma_engine_uninit(audio_sys.engine);
 
   delete audio_sys.engine;
+}
+
+void audio_system_add_sound(const SoundType sound, const std::string& path) {
+  load_sound(path, sound);
+}
+
+void audio_system_add_music(const MusicType music, const std::string& path) {
+  load_music(path, music);
 }
 /////////////////////////////////////////////////////////////////////////////////

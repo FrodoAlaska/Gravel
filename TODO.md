@@ -1,5 +1,4 @@
 # TODO:
-- Add sounds to the resource manager 
 - A way to setup the engine 
 - Make a generic render batch structure to make creating different batches easier and more effcient
 - Effcient text rendering
