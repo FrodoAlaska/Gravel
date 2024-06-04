@@ -1,6 +1,7 @@
 #include "app.h"
 #include "graphics/camera.h"
 #include "resources/font.h"
+#include "resources/texture.h"
 #include "resources/resource_manager.h"
 #include "graphics/renderer.h"
 #include "graphics/renderer2d.h"
@@ -12,6 +13,7 @@
 struct App {
   Camera camera;
   Font* font;
+  Texture* texture;
 };
 
 static App s_app;
@@ -21,13 +23,13 @@ static App s_app;
 /////////////////////////////////////////////////////////////////////////////////
 bool app_init(void* user_data) {
   s_app.font = resources_add_font("font/bit5x3.ttf", "regular_font");
+  s_app.texture = resources_add_texture("logo_texture", "textures/mg_logo.png");
   s_app.camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
 
   return true;
 }
 
 void app_shutdown(void* user_data) {
-  
 }
 
 void app_update(void* user_data) {
@@ -47,7 +49,8 @@ void app_render(void* user_data) {
   renderer_end();
 
   renderer2d_begin();
-  render_text(s_app.font, 0.2f, "0123 ,", glm::vec2(200.0f, 200.0f), glm::vec4(1.0f));
+  render_quad(glm::vec2(10.0f, 10.0f), glm::vec2(32.0f, 32.0f), s_app.texture);
+  render_text(s_app.font, 0.2f, "0123 ABC", glm::vec2(200.0f, 200.0f), glm::vec4(1.0f));
   renderer2d_end();
  
   // editor_end();

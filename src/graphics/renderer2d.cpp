@@ -357,7 +357,7 @@ void render_text(const Font* font, const f32 size, const std::string& text, cons
     }
     
     push_render_text(position + glm::vec2(off_x * size, off_y * size), 
-                     glm::vec2(glyph.size.x * size, glyph.size.y * size), 
+                     glm::vec2(glyph.width * size, glyph.height * size), 
                      glyph.texture, 
                      color);
 

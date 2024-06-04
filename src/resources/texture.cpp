@@ -130,8 +130,14 @@ Texture* texture_load(i32 width, i32 height, u32 format, void* pixels) {
 }
 
 void texture_unload(Texture* texture) {
+  if(!texture) {
+    return;
+  }
+
   glDeleteTextures(1, &texture->id);
   delete texture;
+
+  texture = nullptr;
 }
 
 void texture_render(Texture* texture) {

@@ -3,8 +3,6 @@
 #include "defines.h"
 #include "resources/texture.h"
 
-#include <glm/glm.hpp>
-
 #include <string>
 
 // Glyph
@@ -13,8 +11,8 @@ struct Glyph {
   i8 unicode;
   Texture* texture;
 
-  glm::ivec2 size;
-  glm::ivec2 offset;
+  i32 width, height;
+  i32 x_offset, y_offset;
   
   i32 advance_x, kern, left_side_bearing;
 
@@ -30,8 +28,10 @@ struct Glyph {
 struct Font {
   u32 vao, vbo;
   f32 ascent, descent, line_gap;
+  
   Glyph* glyphs;
   u32 glyphs_count;
+  u32 loaded_glyphs = 0;
 };
 /////////////////////////////////////////////////////////////////////////////////
 

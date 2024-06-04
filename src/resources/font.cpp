@@ -72,21 +72,29 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
                                       scale_factor,
                                       scale_factor, 
                                       glyph_index, 
-                                      &glyph->size.x, 
-                                      &glyph->size.y, 
-                                      &glyph->offset.x, 
-                                      &glyph->offset.y);
+                                      &glyph->width, 
+                                      &glyph->height, 
+                                      &glyph->x_offset, 
+                                      &glyph->y_offset);
    
     // Only give OpenGL the pixels when it is valid 
     if(bitmap) {
-      glyph->texture = texture_load(glyph->size.x, glyph->size.y, GL_RED, bitmap);
+      glyph->texture = texture_load(glyph->width, glyph->height, GL_RED, bitmap);
+      printf("%i (%c) - TEXTURE = %p\n", i, glyph->unicode, bitmap);
     }  
+    else { // Probably the space character (' ') so just allocate an empty buffer for it
+      u32 pixels = 0x00; 
+      glyph->texture = texture_load(1, 1, GL_RED, &pixels);
+    }
 
-    glyph->offset.y += font->ascent;
+    glyph->y_offset += font->ascent;
 
     // Make sure the deallocate the bitmap data that was allocated by STB 
     // NOTE: Potentially really slow to have an allocation and a deallocation in a loop 
     stbtt_FreeBitmap(bitmap, nullptr);
+  
+    // A valid glyph that was loaded 
+    font->loaded_glyphs++;
   }
 }
 /////////////////////////////////////////////////////////////////////////////////
@@ -120,12 +128,14 @@ void font_unload(Font* font) {
     return;
   }
 
-  for(u32 i = 0; i < font->glyphs_count; i++) {
+  for(u32 i = 0; i < font->loaded_glyphs; i++) {
     texture_unload(font->glyphs[i].texture);
   }
   
   delete[] font->glyphs;
   delete font;
+  
+  font = nullptr;
 }
 
 i32 font_get_glyph_index(const Font* font, i8 codepoint) {

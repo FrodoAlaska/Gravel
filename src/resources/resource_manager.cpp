@@ -58,37 +58,18 @@ void resources_shutdown() {
 
 Texture* resources_add_texture(const std::string& id, const std::string& path) {
   std::string full_path = s_res_man.res_path + path; 
-  Texture* texture = find_texture(id);
-
-  if(texture) {
-    fprintf(stderr, "[WARNING]: Resource \'%s\' at path \'%s\' already exists\n", id.c_str(), full_path.c_str());
-    return texture;
-  }
   
   s_res_man.textures[id] = texture_load(full_path);
   return s_res_man.textures[id];
 }
 
 Texture* resources_add_texture(const std::string& id, i32 width, i32 height, u32 format, void* pixels) {
-  Texture* texture = find_texture(id);
-
-  if(texture) {
-    fprintf(stderr, "[WARNING]: Resource \'%s\' already exists\n", id.c_str());
-    return texture;
-  }
-  
   s_res_man.textures[id] = texture_load(width, height, format, pixels);
   return s_res_man.textures[id];
 }
 
 Font* resources_add_font(const std::string& path, const std::string& id) {
   std::string full_path = s_res_man.res_path + path; 
-  Font* font = find_font(id);
-
-  if(font) {
-    fprintf(stderr, "[WARNING]: Resource \'%s\' at path \'%s\' already exists\n", id.c_str(), full_path.c_str());
-    return font;
-  }
   
   s_res_man.fonts[id] = font_load(full_path, 256.0f);
   return s_res_man.fonts[id];
