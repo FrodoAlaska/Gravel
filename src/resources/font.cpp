@@ -1,6 +1,6 @@
 #include "font.h"
 #include "defines.h"
-#include "graphics/texture.h"
+#include "resources/texture.h"
 
 #include <glad/gl.h>
 #include <stb_truetype/stb_truetype.h>
@@ -104,7 +104,7 @@ Font* font_load(const std::string& path, const f32 size) {
     return font;
   }
 
-  font->glyphs_count = 96;//info.numGlyphs;
+  font->glyphs_count = info.numGlyphs;
   font->glyphs = new Glyph[font->glyphs_count];
 
   // Load the textures and required values for every glyph in the font 

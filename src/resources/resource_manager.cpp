@@ -45,46 +45,53 @@ void resources_init(const std::string res_path) {
 }
 
 void resources_shutdown() {
-  for(auto& [key, value] : s_res_man.textures) {
-    texture_unload(value);
-  }
-  s_res_man.textures.clear();
-
   for(auto& [key, value] : s_res_man.fonts) {
     font_unload(value);
   }
   s_res_man.fonts.clear();
+  
+  for(auto& [key, value] : s_res_man.textures) {
+    texture_unload(value);
+  }
+  s_res_man.textures.clear();
 }
 
-void resources_add_texture(const std::string& id, const std::string& path) {
+Texture* resources_add_texture(const std::string& id, const std::string& path) {
   std::string full_path = s_res_man.res_path + path; 
+  Texture* texture = find_texture(id);
 
-  if(find_texture(id)) {
+  if(texture) {
     fprintf(stderr, "[WARNING]: Resource \'%s\' at path \'%s\' already exists\n", id.c_str(), full_path.c_str());
-    return;
+    return texture;
   }
   
   s_res_man.textures[id] = texture_load(full_path);
+  return s_res_man.textures[id];
 }
 
-void resources_add_texture(const std::string& id, i32 width, i32 height, u32 format, void* pixels) {
-  if(find_texture(id)) {
+Texture* resources_add_texture(const std::string& id, i32 width, i32 height, u32 format, void* pixels) {
+  Texture* texture = find_texture(id);
+
+  if(texture) {
     fprintf(stderr, "[WARNING]: Resource \'%s\' already exists\n", id.c_str());
-    return;
+    return texture;
   }
   
   s_res_man.textures[id] = texture_load(width, height, format, pixels);
+  return s_res_man.textures[id];
 }
 
-void resources_add_font(const std::string& path, const std::string& id) {
+Font* resources_add_font(const std::string& path, const std::string& id) {
   std::string full_path = s_res_man.res_path + path; 
+  Font* font = find_font(id);
 
-  if(find_font(id)) {
+  if(font) {
     fprintf(stderr, "[WARNING]: Resource \'%s\' at path \'%s\' already exists\n", id.c_str(), full_path.c_str());
-    return;
+    return font;
   }
   
   s_res_man.fonts[id] = font_load(full_path, 256.0f);
+  return s_res_man.fonts[id];
 }
 
 Texture* resources_get_texture(const std::string& id) {
@@ -108,7 +115,7 @@ bool resources_remove_texture(const std::string& id) {
   return false;
 }
 
-bool resource_remove_font(const std::string& id) {
+bool resources_remove_font(const std::string& id) {
   Font* font = find_font(id);
   if(font) {
     // Make sure to unload the font before removing it

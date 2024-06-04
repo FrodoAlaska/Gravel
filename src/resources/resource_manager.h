@@ -18,13 +18,15 @@ void resources_shutdown();
 
 // Adding resources 
 // The following functions will take an 'id' string and the respectful parametars for each resource. 
-// It then will add the newly created resource in the map with the equivalent ID.
+// It then will add the newly created resource in the map with the equivalent ID. It will then 
+// return the specified resource.
+//
 // NOTE: The path that is passed to the functions should omit the initial resource path, as 
 // that is given initially when the resource manager is initialized. For example, if a texture is 
 // at "res/textures/texture.png" then the "res/" should be removed. Therefore, it should be "textures/texture.png".
-void resources_add_texture(const std::string& id, const std::string& path);
-void resources_add_texture(const std::string& id, i32 width, i32 height, u32 format, void* pixels);
-void resources_add_font(const std::string& path, const std::string& id);
+Texture* resources_add_texture(const std::string& id, const std::string& path);
+Texture* resources_add_texture(const std::string& id, i32 width, i32 height, u32 format, void* pixels);
+Font* resources_add_font(const std::string& path, const std::string& id);
 
 // Returning resources 
 // These functions will return the resource that is specified by the 'id'. 
@@ -39,5 +41,5 @@ Font* resources_get_font(const std::string& id);
 // NOTE: These functions also unload the resources before removing the resource from the manager. 
 // Therefore, please do be careful when using these functions.
 bool resources_remove_texture(const std::string& id);
-bool resource_remove_font(const std::string& id);
+bool resources_remove_font(const std::string& id);
 /////////////////////////////////////////////////////////////////////////////////

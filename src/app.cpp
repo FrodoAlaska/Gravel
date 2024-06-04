@@ -10,19 +10,15 @@
 
 #include "audio/audio_system.h"
 
-#include "components/mesh.h"
-#include "components/transform.h"
-
 #include "editor/editor.h"
+#include "resources/resource_manager.h"
 
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 
 #include <cstdio>
 
-static Mesh* mesh[10][10];
 static Camera camera;
-static Transform transforms[10][10];
 static Font* font;
 
 // Private functions
@@ -41,22 +37,11 @@ static void render() {
   renderer_clear(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   // editor_begin();
 
-  // renderer_begin(&camera);
-  // for(u32 i = 0; i < 10; i++) {
-  //   for(u32 j = 0; j < 10; j++) {
-  //     render_cube(glm::vec3(j * 2.0f, 0.0f, i * 2.0f), glm::vec3(1.0f), glm::vec4(0, 1, 0, 1));
-  //   }
-  // }
-  // 
-  // for(u32 i = 0; i < 10; i++) {
-  //   for(u32 j = 0; j < 10; j++) {
-  //     render_mesh(transforms[i][j], mesh[i][j]);
-  //   }
-  // }
-  //  
-  // renderer_end();
+  renderer_begin(&camera);
+  renderer_end();
 
   renderer2d_begin();
+  render_text(font, 0.2f, "0123 ,", glm::vec2(200.0f, 200.0f), glm::vec4(1.0f));
   renderer2d_end();
  
   // editor_end();
@@ -69,45 +54,41 @@ static void render() {
 bool app_init() {
   // Systems/managers init  
   ///////////////////////////////////////////////// 
+  // Window init 
   if(!window_create(1280, 720, "Gravel")) {
     printf("[ERROR]: Window failed to be created\n");
     return false;
   }
 
+  // Input init
   input_init();
-  // input_cursor_show(false);
-  
+
+  // Resource manager init 
+  resources_init("assets/");
+
+  // Renderer 3D init
   if(!renderer_create()) {
     printf("[ERROR]: Renderer failed to be created\n");
     return false;
   }
-  
+
+  // Renderer 2D init
   if(!renderer2d_create()) {
     printf("[ERROR]: Renderer2D failed to be created\n");
     return false;
   }
 
+  // Audio init
   if(!audio_system_init()) {
     printf("[ERROR]: Audio system failed to be initialized\n");
     return false;
   }
 
+  // Editor init
   editor_init();
   ///////////////////////////////////////////////// 
 
-  for(u32 i = 0; i < 10; i++) {
-    for(u32 j = 0; j < 10; j++) {
-      mesh[i][j] = mesh_create();
-    }
-  }
-  
-  for(u32 i = 0; i < 10; i++) {
-    for(u32 j = 0; j < 10; j++) {
-      transform_create(&transforms[i][j], glm::vec3(j * 2.0f, 0.0f, i * 2.0f));
-    }
-  }
-
-  font = font_load("assets/font/bit5x3.ttf", 256.0f);
+  font = resources_add_font("font/bit5x3.ttf", "regular_font");
   camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
 
   return true;
@@ -119,6 +100,8 @@ void app_shutdown() {
 
   renderer2d_destroy();
   renderer_destroy();
+  
+  resources_shutdown();
   window_destroy();
 }
 

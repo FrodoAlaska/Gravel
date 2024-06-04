@@ -1,16 +1,17 @@
 #include "renderer2d.h"
 #include "core/window.h"
 #include "defines.h"
-#include "graphics/texture.h"
 #include "graphics/shader.h"
-#include "graphics/font.h"
+
+#include "resources/texture.h"
+#include "resources/font.h"
+#include "resources/resource_manager.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glad/gl.h>
 
-#include <cstdio>
 #include <cstddef>
 #include <vector>
 #include <string>
@@ -119,7 +120,7 @@ const bool renderer2d_create() {
 
   // Textures init
   u32 pixels = 0xffffffff;
-  renderer.textures[0] = texture_load(1, 1, GL_RGBA, &pixels);
+  renderer.textures[0] = resources_add_texture("white_texture", 1, 1, GL_RGBA, &pixels);
 
   shader_bind(renderer.batch_shader);
   i32 tex_slots[MAX_TEXTURES];
@@ -333,6 +334,10 @@ static void push_render_text(const glm::vec2& position, const glm::vec2& size, T
 }
 
 void render_text(const Font* font, const f32 size, const std::string& text, const glm::vec2& position, const glm::vec4& color) {
+  if(!font) {
+    return; 
+  }  
+
   f32 off_x = 0.0f;
   f32 off_y = 0.0f;
 

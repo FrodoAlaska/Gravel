@@ -41,6 +41,7 @@ set(GRAVEL_SOURCES
   ${GRAVEL_SRC_DIR}/editor/editor.cpp
   
   # Resources
+  ${GRAVEL_SRC_DIR}/resources/resource_manager.cpp
   ${GRAVEL_SRC_DIR}/resources/texture.cpp
   ${GRAVEL_SRC_DIR}/resources/font.cpp
 )
