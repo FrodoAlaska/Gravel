@@ -1,9 +1,10 @@
 #pragma once
 
+#include "app_desc.h"
+
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
-bool app_init(void* user_data);
-void app_shutdown(void* user_data);
-void app_update(void* user_data);
-void app_render(void* user_data);
+void engine_init(const AppDesc& desc);
+void engine_shutdown(AppDesc& desc);
+void engine_run(AppDesc& desc);
 /////////////////////////////////////////////////////////////////////////////////

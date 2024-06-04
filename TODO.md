@@ -1,5 +1,4 @@
 # TODO:
-- A way to setup the engine 
 - Make a generic render batch structure to make creating different batches easier and more effcient
 - Effcient text rendering
 - Materials? 

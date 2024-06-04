@@ -14,12 +14,13 @@ set(GRAVEL_BUILD_FLAGS GLFW_INCLUDE_NONE GRAVEL_DEBUG EDITOR_ACTIVE)
 
 set(GRAVEL_SOURCES 
   # Core
-  ${GRAVEL_SRC_DIR}/main.cpp
-  ${GRAVEL_SRC_DIR}/app.cpp
   ${GRAVEL_SRC_DIR}/core/window.cpp
   ${GRAVEL_SRC_DIR}/core/input.cpp
   ${GRAVEL_SRC_DIR}/core/event.cpp
   ${GRAVEL_SRC_DIR}/core/clock.cpp
+  ${GRAVEL_SRC_DIR}/core/engine.cpp
+  ${GRAVEL_SRC_DIR}/main.cpp
+  ${GRAVEL_SRC_DIR}/app.cpp
   
   # Audio
   ${GRAVEL_SRC_DIR}/audio/audio_system.cpp

@@ -1,12 +1,23 @@
+#include "core/app_desc.h"
+#include "core/engine.h"
 #include "app.h"
 
 int main() {
-  if(!app_init()) {
-    return -1;
-  }
-  
-  app_run();
-  app_shutdown();
-  
-  return 0;
+  AppDesc desc = {
+    .window_width = 1280, 
+    .window_height = 720, 
+    .window_title = "Gravel", 
+    
+    .init_func = app_init,
+    .shutdown_func = app_shutdown,
+    .update_func = app_update, 
+    .render_func = app_render, 
+
+    .user_data = nullptr, 
+    .has_editor = false,
+  };
+
+  engine_init(desc);
+  engine_run(desc);
+  engine_shutdown(desc);
 }
