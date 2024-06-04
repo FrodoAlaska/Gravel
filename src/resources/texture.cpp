@@ -67,7 +67,7 @@ Texture* texture_load(const std::string& path) {
     } 
 
     // Send the pixel data to the GPU and generate a mipmap
-    glTexImage2D(GL_TEXTURE_2D, texture->depth, texture->format, texture->width, texture->height, 0, texture->format, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, texture->depth, GL_RGBA, texture->width, texture->height, 0, texture->format, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
   }
   // Couldn't load the texture

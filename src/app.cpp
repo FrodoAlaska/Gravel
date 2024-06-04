@@ -23,7 +23,7 @@ static App s_app;
 /////////////////////////////////////////////////////////////////////////////////
 bool app_init(void* user_data) {
   s_app.font = resources_add_font("font/bit5x3.ttf", "regular_font");
-  s_app.texture = resources_add_texture("logo_texture", "textures/mg_logo.png");
+  s_app.texture = resources_add_texture("logo_texture", "textures/Damage.png");
   s_app.camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
 
   return true;
@@ -45,12 +45,12 @@ void app_render(void* user_data) {
   renderer_clear(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   // editor_begin();
 
-  renderer_begin(&s_app.camera);
-  renderer_end();
+  // renderer_begin(&s_app.camera);
+  // renderer_end();
 
   renderer2d_begin();
-  render_quad(glm::vec2(10.0f, 10.0f), glm::vec2(32.0f, 32.0f), s_app.texture);
-  render_text(s_app.font, 0.2f, "0123 ABC", glm::vec2(200.0f, 200.0f), glm::vec4(1.0f));
+  render_text(s_app.font, 0.2f, "0123 ABC", glm::vec2(200.0f, 200.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  render_quad(glm::vec2(10.0f, 10.0f), glm::vec2(128.0f, 128.0f), s_app.texture);
   renderer2d_end();
  
   // editor_end();

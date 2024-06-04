@@ -80,7 +80,7 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
     // Only give OpenGL the pixels when it is valid 
     if(bitmap) {
       glyph->texture = texture_load(glyph->width, glyph->height, GL_RED, bitmap);
-      printf("%i (%c) - TEXTURE = %p\n", i, glyph->unicode, bitmap);
+      // printf("%i (%c) - TEXTURE = %p\n", i, glyph->unicode, bitmap);
     }  
     else { // Probably the space character (' ') so just allocate an empty buffer for it
       u32 pixels = 0x00; 

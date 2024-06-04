@@ -10,6 +10,7 @@
 - Some kind of arena allocater
 
 # FIX 
+- Textures no work
 - Make the bitmap returned from STB have a 4 bytes per pixel instead of 1. Just make the STB bitmap value as the alpha and leave the rest as 1s
 - Problem with fonts still presists
 - The kern and advance are fucked so need to fix that 
