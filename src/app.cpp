@@ -7,7 +7,6 @@
 #include "graphics/camera.h"
 #include "graphics/renderer.h"
 #include "graphics/renderer2d.h"
-#include "graphics/font.h"
 
 #include "audio/audio_system.h"
 
@@ -58,8 +57,6 @@ static void render() {
   // renderer_end();
 
   renderer2d_begin();
-  // render_quad(glm::vec2(10.0f, 10.0f), glm::vec2(256.0f, 256.0f), glm::vec4(1, 0, 0, 1));
-  render_text(font, 0.2f, "102 121 aBC", glm::vec2(100.0f, 100.0f), glm::vec4(1.0f)); 
   renderer2d_end();
  
   // editor_end();

@@ -1,7 +1,7 @@
 #pragma once 
 
 #include "defines.h"
-#include "graphics/texture.h"
+#include "resources/texture.h"
 
 #include <glm/glm.hpp>
 

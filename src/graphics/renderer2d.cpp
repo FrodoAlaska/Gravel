@@ -5,12 +5,12 @@
 #include "graphics/shader.h"
 #include "graphics/font.h"
 
-#include <cstdio>
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glad/gl.h>
 
+#include <cstdio>
 #include <cstddef>
 #include <vector>
 #include <string>
@@ -343,42 +343,20 @@ void render_text(const Font* font, const f32 size, const std::string& text, cons
 
     if(ch == '\n') {
       off_x = 0.0f;
-      off_y += font->ascent - font->descent + font->line_gap;
+      off_y = font->ascent - font->descent + font->line_gap;
       continue;
     }
     else if(ch == ' ' || ch == '\t') {
-      off_x += (glyph.advance_x + glyph.kern) * size;
+      off_x += glyph.advance_x + glyph.kern;
       continue;
     }
     
-    push_render_text(position + glm::vec2(off_x, off_y), glm::vec2(glyph.size.x * size, glyph.size.y * size), glyph.texture, color);
+    push_render_text(position + glm::vec2(off_x * size, off_y * size), 
+                     glm::vec2(glyph.size.x * size, glyph.size.y * size), 
+                     glyph.texture, 
+                     color);
 
-    off_x += (glyph.advance_x + glyph.kern) * size;
+    off_x += glyph.advance_x + glyph.kern;
   }
-  
-  // glm::vec2 pos = position;
-  //
-  // for(u32 i = 0; i < text.size(); i++) {
-  //   i8 ch = text[i]; 
-  //   i32 index = font_get_glyph_index(font, ch);
-  //   Glyph& glyph = font->glyphs[index];
-  //   
-  //   if(ch == ' ' || ch == '\t') {
-  //     pos.x += (glyph.advance_x >> 6) * size;
-  //     continue;
-  //   }
-  //   else if(ch == '\n') {
-  //     pos.y += font->ascent - font->descent + font->line_gap;
-  //     pos.x = position.x;
-  //     continue;
-  //   }
-  // 
-  //   f32 x_pos = pos.x + glyph.bearing.x * size; 
-  //   f32 y_pos = pos.y - (glyph.size.y - glyph.bearing.y) * size;
-  //
-  //   render_quad(glm::vec2(x_pos, y_pos), glm::vec2(glyph.size.x * size, glyph.size.y * size), glyph.texture, color);
-  //
-  //   pos.x += (glyph.advance_x >> 6) * size;
-  // }
 }
 /////////////////////////////////////////////////////////////////////////////////

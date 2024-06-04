@@ -29,8 +29,6 @@ set(GRAVEL_SOURCES
   ${GRAVEL_SRC_DIR}/graphics/renderer.cpp
   ${GRAVEL_SRC_DIR}/graphics/renderer2d.cpp
   ${GRAVEL_SRC_DIR}/graphics/shader.cpp
-  ${GRAVEL_SRC_DIR}/graphics/texture.cpp
-  ${GRAVEL_SRC_DIR}/graphics/font.cpp
 
   # Math
   ${GRAVEL_SRC_DIR}/math/rand.cpp
@@ -41,6 +39,10 @@ set(GRAVEL_SOURCES
   
   # Editor
   ${GRAVEL_SRC_DIR}/editor/editor.cpp
+  
+  # Resources
+  ${GRAVEL_SRC_DIR}/resources/texture.cpp
+  ${GRAVEL_SRC_DIR}/resources/font.cpp
 )
 
 set(GRAVEL_LIBS 

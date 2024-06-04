@@ -51,24 +51,31 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
     Glyph* glyph = &font->glyphs[i];
     glyph->unicode = i + 32;
 
+    // This functions will return 0 if the given unicode is not in 
+    // the font. Thus, to speed up the loop, we just skip these unicodes.
+    i32 glyph_index = stbtt_FindGlyphIndex(info, glyph->unicode);
+    if(glyph_index == 0) {
+      continue;
+    }
+
     // Getting the advance and the left side bearing of the specific codepoint/glyph.
     // The advance is the value required to "advance" to the next glyph
-    stbtt_GetCodepointHMetrics(info, glyph->unicode, &glyph->advance_x, &glyph->left_side_bearing);
+    stbtt_GetGlyphHMetrics(info, glyph_index, &glyph->advance_x, &glyph->left_side_bearing);
     glyph->advance_x *= scale_factor;
 
     // Getting the kern of the glyph. The kern is used to make some specific glyphs look better 
     // when next to each other.
-    glyph->kern = stbtt_GetCodepointKernAdvance(info, glyph->unicode, font->glyphs[i + 1].unicode); 
+    glyph->kern = stbtt_GetGlyphKernAdvance(info, glyph_index, font->glyphs[i + 1].unicode); 
     
     // Pixels of the specific codepoint, offset, and size 
-    u8* bitmap = stbtt_GetCodepointBitmap(info, 
-                                          scale_factor,
-                                          scale_factor, 
-                                          glyph->unicode, 
-                                          &glyph->size.x, 
-                                          &glyph->size.y, 
-                                          &glyph->offset.x, 
-                                          &glyph->offset.y);
+    u8* bitmap = stbtt_GetGlyphBitmap(info, 
+                                      scale_factor,
+                                      scale_factor, 
+                                      glyph_index, 
+                                      &glyph->size.x, 
+                                      &glyph->size.y, 
+                                      &glyph->offset.x, 
+                                      &glyph->offset.y);
    
     // Only give OpenGL the pixels when it is valid 
     if(bitmap) {
@@ -76,6 +83,10 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
     }  
 
     glyph->offset.y += font->ascent;
+
+    // Make sure the deallocate the bitmap data that was allocated by STB 
+    // NOTE: Potentially really slow to have an allocation and a deallocation in a loop 
+    stbtt_FreeBitmap(bitmap, nullptr);
   }
 }
 /////////////////////////////////////////////////////////////////////////////////
@@ -93,11 +104,12 @@ Font* font_load(const std::string& path, const f32 size) {
     return font;
   }
 
-  font->glyphs_count = info.numGlyphs;
+  font->glyphs_count = 96;//info.numGlyphs;
   font->glyphs = new Glyph[font->glyphs_count];
 
   // Load the textures and required values for every glyph in the font 
   init_font_chars(font, &info, size);
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
   delete[] data;
   return font;
