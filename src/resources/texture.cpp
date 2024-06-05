@@ -47,7 +47,7 @@ Texture* texture_load(const std::string& path) {
   glGenTextures(1, &texture->id);
   glBindTexture(GL_TEXTURE_2D, texture->id);
 
-  stbi_set_flip_vertically_on_load(true);
+  // stbi_set_flip_vertically_on_load(true);
   u8* data = stbi_load(path.c_str(), &texture->width, &texture->height, &texture->channels, 0);
   if(data) {
     // Deduce the correct format based on the channels
@@ -101,18 +101,8 @@ Texture* texture_load(i32 width, i32 height, u32 format, void* pixels) {
   glBindTexture(GL_TEXTURE_2D, texture->id);
 
   if(pixels) {
-    i32 internal_format = GL_R8; 
-    switch(texture->channels) {
-      case 2:
-        internal_format = GL_R16;
-        break;
-      case 4:
-        internal_format = GL_R32UI;
-        break;
-    }
-
     // Send the pixel data to the GPU and generate a mipmap
-    glTexImage2D(GL_TEXTURE_2D, texture->depth, internal_format, texture->width, texture->height, 0, texture->format, GL_UNSIGNED_BYTE, pixels);
+    glTexImage2D(GL_TEXTURE_2D, texture->depth, texture->format, texture->width, texture->height, 0, texture->format, GL_UNSIGNED_BYTE, pixels);
     glGenerateMipmap(GL_TEXTURE_2D);
   }
   // Couldn't load the texture

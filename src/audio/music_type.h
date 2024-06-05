@@ -1,5 +1,6 @@
 #pragma once
 
 enum MusicType {
-  MUSIC_MAX = 0,
+  MUSIC_BACKGROUND,
+  MUSIC_MAX = 1,
 };

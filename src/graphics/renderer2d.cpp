@@ -232,7 +232,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, Texture* text
   Vertex v1; 
   v1.position       = renderer.ortho * model * renderer.quad_vertices[0]; 
   v1.color          = tint;
-  v1.texture_coords = glm::vec2(0.0f, 1.0f); 
+  v1.texture_coords = glm::vec2(0.0f, 0.0f); 
   v1.texture_index  = texture->slot;
   renderer.vertices.push_back(v1);
  
@@ -240,7 +240,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, Texture* text
   Vertex v2; 
   v2.position       = renderer.ortho * model * renderer.quad_vertices[1]; 
   v2.color          = tint;
-  v2.texture_coords = glm::vec2(1.0f, 1.0f); 
+  v2.texture_coords = glm::vec2(1.0f, 0.0f); 
   v2.texture_index  = texture->slot;
   renderer.vertices.push_back(v2);
  
@@ -248,7 +248,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, Texture* text
   Vertex v3; 
   v3.position       = renderer.ortho * model * renderer.quad_vertices[2]; 
   v3.color          = tint;
-  v3.texture_coords = glm::vec2(1.0f, 0.0f); 
+  v3.texture_coords = glm::vec2(1.0f, 1.0f); 
   v3.texture_index  = texture->slot;
   renderer.vertices.push_back(v3);
  
@@ -256,7 +256,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, Texture* text
   Vertex v4; 
   v4.position       = renderer.ortho * model * renderer.quad_vertices[3]; 
   v4.color          = tint;
-  v4.texture_coords = glm::vec2(0.0f, 0.0f); 
+  v4.texture_coords = glm::vec2(0.0f, 1.0f); 
   v4.texture_index  = texture->slot;
   renderer.vertices.push_back(v4);
 
@@ -356,10 +356,10 @@ void render_text(const Font* font, const f32 size, const std::string& text, cons
       continue;
     }
     
-    push_render_text(position + glm::vec2(off_x * size, off_y * size), 
-                     glm::vec2(glyph.width * size, glyph.height * size), 
-                     glyph.texture, 
-                     color);
+    render_quad(position + glm::vec2(off_x * size, off_y * size), 
+                glm::vec2(glyph.width * size, glyph.height * size), 
+                glyph.texture, 
+                color);
 
     off_x += glyph.advance_x + glyph.kern;
   }
