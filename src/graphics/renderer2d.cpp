@@ -282,57 +282,6 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, Texture* text
   renderer.texture_index++;
 }
 
-static void push_render_text(const glm::vec2& position, const glm::vec2& size, Texture* texture, const glm::vec4& tint) {
-  // Restart the renderer once the max quads is reached 
-  if(renderer.indices_count >= MAX_INDICES || renderer.texture_index > MAX_TEXTURES) {
-    renderer2d_end();
-    renderer2d_begin();
-  }
-
-  glm::mat4 model(1.0f);
-  model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));
-  model = glm::scale(model, glm::vec3(size.x, size.y, 0.0f));
-  
-  // Top-left 
-  Vertex v1; 
-  v1.position       = renderer.ortho * model * renderer.quad_vertices[0]; 
-  v1.color          = tint;
-  v1.texture_coords = glm::vec2(0.0f, 0.0f); 
-  v1.texture_index  = texture->slot;
-  renderer.vertices.push_back(v1);
- 
-  // Top-right
-  Vertex v2; 
-  v2.position       = renderer.ortho * model * renderer.quad_vertices[1]; 
-  v2.color          = tint;
-  v2.texture_coords = glm::vec2(1.0f, 0.0f); 
-  v2.texture_index  = texture->slot;
-  renderer.vertices.push_back(v2);
- 
-  // Bottom-right
-  Vertex v3; 
-  v3.position       = renderer.ortho * model * renderer.quad_vertices[2]; 
-  v3.color          = tint;
-  v3.texture_coords = glm::vec2(1.0f, 1.0f); 
-  v3.texture_index  = texture->slot;
-  renderer.vertices.push_back(v3);
- 
-  // Bottom-left
-  Vertex v4; 
-  v4.position       = renderer.ortho * model * renderer.quad_vertices[3]; 
-  v4.color          = tint;
-  v4.texture_coords = glm::vec2(0.0f, 1.0f); 
-  v4.texture_index  = texture->slot;
-  renderer.vertices.push_back(v4);
-
-  renderer.indices_count += 6;
-  
-  // If the texture is unique, add it to the array and 
-  // increament the amount of textures to render next flush
-  renderer.textures[renderer.texture_index] = texture;
-  renderer.texture_index++;
-}
-
 void render_text(const Font* font, const f32 size, const std::string& text, const glm::vec2& position, const glm::vec4& color) {
   if(!font) {
     return; 
@@ -344,7 +293,7 @@ void render_text(const Font* font, const f32 size, const std::string& text, cons
   for(u32 i = 0; i < text.size(); i++) {
     i8 ch = text[i]; 
     i32 index = font_get_glyph_index(font, ch);
-    Glyph& glyph = font->glyphs[index];
+    const Glyph& glyph = font->glyphs[index];
 
     if(ch == '\n') {
       off_x = 0.0f;

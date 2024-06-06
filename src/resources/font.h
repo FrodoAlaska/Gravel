@@ -4,6 +4,7 @@
 #include "resources/texture.h"
 
 #include <string>
+#include <vector>
 
 // Glyph
 /////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +30,7 @@ struct Font {
   u32 vao, vbo;
   f32 ascent, descent, line_gap;
   
-  Glyph* glyphs;
+  std::vector<Glyph> glyphs;
   u32 glyphs_count;
   u32 loaded_glyphs = 0;
 };

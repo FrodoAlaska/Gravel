@@ -8,6 +8,7 @@
 
 #include <cstdio>
 #include <string>
+#include <vector>
 #include <fstream>
 
 // Public functions
@@ -47,47 +48,49 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
   font->ascent = ascent * scale_factor;
   font->descent = descent * scale_factor;
 
+  std::string word = "0123 () ABC abc";
+  // font->glyphs_count = word.size();
   for(u32 i = 0; i < font->glyphs_count; i++) { 
-    Glyph* glyph = &font->glyphs[i];
-    glyph->unicode = i + 32;
+    Glyph glyph;
+    glyph.unicode = i + 32;
 
     // This functions will return 0 if the given unicode is not in 
     // the font. Thus, to speed up the loop, we just skip these unicodes.
-    i32 glyph_index = stbtt_FindGlyphIndex(info, glyph->unicode);
+    i32 glyph_index = stbtt_FindGlyphIndex(info, glyph.unicode);
     if(glyph_index == 0) {
       continue;
     }
 
-    // Getting the advance and the left side bearing of the specific codepoint/glyph.
-    // The advance is the value required to "advance" to the next glyph
-    stbtt_GetGlyphHMetrics(info, glyph_index, &glyph->advance_x, &glyph->left_side_bearing);
-    glyph->advance_x *= scale_factor;
-
-    // Getting the kern of the glyph. The kern is used to make some specific glyphs look better 
-    // when next to each other.
-    glyph->kern = stbtt_GetGlyphKernAdvance(info, glyph_index, font->glyphs[i + 1].unicode); 
-    
     // Pixels of the specific codepoint, offset, and size 
     u8* bitmap = stbtt_GetGlyphBitmap(info, 
                                       scale_factor,
                                       scale_factor, 
                                       glyph_index, 
-                                      &glyph->width, 
-                                      &glyph->height, 
-                                      &glyph->x_offset, 
-                                      &glyph->y_offset);
-   
+                                      &glyph.width, 
+                                      &glyph.height, 
+                                      &glyph.x_offset, 
+                                      &glyph.y_offset);
+
     // Only give OpenGL the pixels when it is valid 
     if(bitmap) {
-      glyph->texture = texture_load(glyph->width, glyph->height, GL_RED, bitmap);
-      // printf("%i (%c) - TEXTURE = %p\n", i, glyph->unicode, bitmap);
+      glyph.texture = texture_load(glyph.width, glyph.height, GL_RED, bitmap);
     }  
     else { // Probably the space character (' ') so just allocate an empty buffer for it
       u32 pixels = 0x00; 
-      glyph->texture = texture_load(1, 1, GL_RED, &pixels);
+      glyph.texture = texture_load(1, 1, GL_RED, &pixels);
     }
+    
+    // Getting the advance and the left side bearing of the specific codepoint/glyph.
+    // The advance is the value required to "advance" to the next glyph
+    stbtt_GetGlyphHMetrics(info, glyph_index, &glyph.advance_x, &glyph.left_side_bearing);
+    glyph.advance_x *= scale_factor;
 
-    glyph->y_offset += font->ascent;
+    // Getting the kern of the glyph. The kern is used to make some specific glyphs look better 
+    // when next to each other.
+    glyph.kern = stbtt_GetGlyphKernAdvance(info, glyph_index, font->glyphs[i + 1].unicode); 
+    glyph.kern *= scale_factor;
+
+    glyph.y_offset += font->ascent;
 
     // Make sure the deallocate the bitmap data that was allocated by STB 
     // NOTE: Potentially really slow to have an allocation and a deallocation in a loop 
@@ -95,7 +98,11 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
   
     // A valid glyph that was loaded 
     font->loaded_glyphs++;
+    font->glyphs.push_back(glyph);
   }
+
+  // Resizing the vector down only for the loaded glyphs 
+  font->glyphs.resize(font->loaded_glyphs);
 }
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -113,7 +120,8 @@ Font* font_load(const std::string& path, const f32 size) {
   }
 
   font->glyphs_count = info.numGlyphs;
-  font->glyphs = new Glyph[font->glyphs_count];
+  font->glyphs.reserve(font->glyphs_count);
+  printf("SIZE = %zu\n", font->glyphs.capacity());
 
   // Load the textures and required values for every glyph in the font 
   init_font_chars(font, &info, size);
@@ -128,18 +136,18 @@ void font_unload(Font* font) {
     return;
   }
 
-  for(u32 i = 0; i < font->loaded_glyphs; i++) {
+  for(u32 i = 0; i < font->glyphs.size(); i++) {
     texture_unload(font->glyphs[i].texture);
   }
   
-  delete[] font->glyphs;
+  font->glyphs.clear();
   delete font;
   
   font = nullptr;
 }
 
 i32 font_get_glyph_index(const Font* font, i8 codepoint) {
-  for(u32 i = 0; i < font->glyphs_count; i++) {
+  for(u32 i = 0; i < font->glyphs.size(); i++) {
     if(font->glyphs[i].unicode == codepoint) {
       return i;
     }

@@ -49,7 +49,7 @@ void app_render(void* user_data) {
   // renderer_end();
 
   renderer2d_begin();
-  render_text(s_app.font, 0.2f, "0123 ABC", glm::vec2(200.0f, 200.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  render_text(s_app.font, 0.2f, "0123 () ABC abc", glm::vec2(200.0f, 200.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
   // render_quad(glm::vec2(200.0f, 200.0f), glm::vec2(128.0f, 128.0f), s_app.texture);
   // render_quad(glm::vec2(10.0f, 10.0f), glm::vec2(128.0f, 128.0f), glm::vec4(1.0f));
   renderer2d_end();
