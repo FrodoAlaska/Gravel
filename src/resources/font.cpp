@@ -61,7 +61,7 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info) {
     }
 
     // Pixels of the specific codepoint, offset, and size 
-    u8* bitmap = stbtt_GetGlyphBitmap(info, 
+    u8* mono_bitmap = stbtt_GetGlyphBitmap(info, 
                                       0,
                                       scale_factor, 
                                       glyph_index, 
@@ -80,8 +80,25 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info) {
                             &glyph.bottom);
 
     // Only give OpenGL the pixels when it is valid 
-    if(bitmap) {
-      glyph.texture = texture_load(glyph.width, glyph.height, GL_RED, bitmap);
+    if(mono_bitmap) {
+      // Converting the mono bitmap into an RGBA bitmap format to be used more 
+      // efficiently with the batch renderer.
+      usizei btmp_size = glyph.width * glyph.height * 4;
+      u8* bitmap = new u8[btmp_size];
+      for(u32 i = 0; i < glyph.height; i++) {
+        for(u32 j = 0; j < glyph.width; j++) {
+          u32 mono_index = (i * glyph.width) + j; 
+          u32 rgba_index = ((i * glyph.width) + j) * 4;
+
+          bitmap[rgba_index] = 255; // Red 
+          bitmap[rgba_index + 1] = 255; // Green 
+          bitmap[rgba_index + 2] = 255; // Blue 
+          bitmap[rgba_index + 3] = mono_bitmap[mono_index]; // Alpha 
+        }
+      }
+
+      glyph.texture = texture_load(glyph.width, glyph.height, GL_RGBA, bitmap);
+      delete[] bitmap;
     }  
     else { // Probably the space character (' ') so just allocate an empty buffer for it
       u32 pixels = 0x00; 
@@ -104,13 +121,11 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info) {
 
     // Make sure the deallocate the bitmap data that was allocated by STB 
     // NOTE: Potentially really slow to have an allocation and a deallocation in a loop 
-    stbtt_FreeBitmap(bitmap, nullptr);
+    stbtt_FreeBitmap(mono_bitmap, nullptr);
   
     // A valid glyph that was loaded 
     font->glyphs_count++;
     font->glyphs.push_back(glyph);
-
-    printf("CHAR = %c\n", glyph.unicode);
   }
 
   // Resizing the vector down only for the loaded glyphs 

@@ -50,7 +50,7 @@ void app_render(void* user_data) {
   // renderer_end();
 
   renderer2d_begin();
-  render_text(s_app.font, 50.0f, "Hello, world. Wtf is going on?", glm::vec2(100.0f, 100.0f), glm::vec4(1.0f));
+  render_text(s_app.font, 50.0f, "Hello, world. Wtf is going on?", glm::vec2(100.0f, 100.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
   // render_quad(glm::vec2(200.0f, 200.0f), glm::vec2(128.0f, 128.0f), s_app.texture);
   // render_quad(glm::vec2(10.0f, 10.0f), glm::vec2(128.0f, 128.0f), glm::vec4(1.0f));
   renderer2d_end();
