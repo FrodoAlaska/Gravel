@@ -4,20 +4,32 @@
 
 #include <string>
 
-// Public functions
+// TextureFormat
+/////////////////////////////////////////////////////////////////////////////////
+// Values of this enum are directly lifted from OpenGL or the 'gl.h' file
+enum TextureFormat {
+  TEXTURE_FORMAT_RED  = 0x1903,  
+  TEXTURE_FORMAT_RG   = 0x8227, 
+  TEXTURE_FORMAT_RGB  = 0x1907, 
+  TEXTURE_FORMAT_RGBA = 0x1908, 
+
+};
+/////////////////////////////////////////////////////////////////////////////////
+
+// Texture
 /////////////////////////////////////////////////////////////////////////////////
 struct Texture {
   u32 id;
   i32 width, height;
   i32 depth, slot, channels;
-  u32 format;
+  TextureFormat format;
 };
 /////////////////////////////////////////////////////////////////////////////////
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 Texture* texture_load(const std::string& path);
-Texture* texture_load(i32 width, i32 height, u32 format, void* pixels);
+Texture* texture_load(i32 width, i32 height, TextureFormat format, void* pixels);
 void texture_unload(Texture* texture);
 void texture_render(Texture* texture);
 /////////////////////////////////////////////////////////////////////////////////

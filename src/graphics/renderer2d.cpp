@@ -120,7 +120,7 @@ const bool renderer2d_create() {
 
   // Textures init
   u32 pixels = 0xffffffff;
-  renderer.textures[0] = resources_add_texture("white_texture", 1, 1, GL_RGBA, &pixels);
+  renderer.textures[0] = resources_add_texture("white_texture", 1, 1, TEXTURE_FORMAT_RGBA, &pixels);
 
   shader_bind(renderer.batch_shader);
   i32 tex_slots[MAX_TEXTURES];

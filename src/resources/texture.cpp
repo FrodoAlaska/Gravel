@@ -14,20 +14,20 @@ static i32 texture_slots = 0;
 
 // Private functions
 /////////////////////////////////////////////////////////////////////////////////
-i32 get_channels_by_format(u32 format) {
+i32 get_channels_by_format(TextureFormat format) {
   i32 channels = 0; 
 
   switch(format) {
-    case GL_RED: 
+    case TEXTURE_FORMAT_RED: 
       channels = 1; 
     break;
-    case GL_RG:
+    case TEXTURE_FORMAT_RG:
       channels = 2; 
       break;
-    case GL_RGB:
+    case TEXTURE_FORMAT_RGB:
       channels = 3; 
       break;
-    case GL_RGBA:
+    case TEXTURE_FORMAT_RGBA:
       channels = 4; 
       break;
   }
@@ -53,16 +53,16 @@ Texture* texture_load(const std::string& path) {
     // Deduce the correct format based on the channels
     switch(texture->channels) {
       case 1:
-        texture->format = GL_RED;
+        texture->format = TEXTURE_FORMAT_RED;
         break;
       case 2:
-        texture->format = GL_RG;
+        texture->format = TEXTURE_FORMAT_RG;
         break;
       case 3:
-        texture->format = GL_RGB;
+        texture->format = TEXTURE_FORMAT_RGB;
         break;
       case 4:
-        texture->format = GL_RGBA;
+        texture->format = TEXTURE_FORMAT_RGBA;
         break;
     } 
 
@@ -87,7 +87,7 @@ Texture* texture_load(const std::string& path) {
   return texture;
 }
 
-Texture* texture_load(i32 width, i32 height, u32 format, void* pixels) {
+Texture* texture_load(i32 width, i32 height, TextureFormat format, void* pixels) {
   Texture* texture  = new Texture{};
   texture->id       = 0; 
   texture->width    = width;

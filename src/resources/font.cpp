@@ -2,7 +2,6 @@
 #include "defines.h"
 #include "resources/texture.h"
 
-#include <glad/gl.h>
 #include <stb_truetype/stb_truetype.h>
 #include <glm/glm.hpp>
 
@@ -97,12 +96,12 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info) {
         }
       }
 
-      glyph.texture = texture_load(glyph.width, glyph.height, GL_RGBA, bitmap);
+      glyph.texture = texture_load(glyph.width, glyph.height, TEXTURE_FORMAT_RGBA, bitmap);
       delete[] bitmap;
     }  
     else { // Probably the space character (' ') so just allocate an empty buffer for it
       u32 pixels = 0x00; 
-      glyph.texture = texture_load(1, 1, GL_RED, &pixels);
+      glyph.texture = texture_load(1, 1, TEXTURE_FORMAT_RED, &pixels);
     }
     
     // Getting the advance and the left side bearing of the specific codepoint/glyph.
@@ -150,7 +149,7 @@ Font* font_load(const std::string& path, const f32 size) {
 
   // Load the textures and required values for every glyph in the font 
   init_font_chars(font, &info);
-  glPixelStorei(GL_PACK_ALIGNMENT, 1);
+  // glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
   delete[] data;
   return font;

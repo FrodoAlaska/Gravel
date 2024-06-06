@@ -63,7 +63,7 @@ Texture* resources_add_texture(const std::string& id, const std::string& path) {
   return s_res_man.textures[id];
 }
 
-Texture* resources_add_texture(const std::string& id, i32 width, i32 height, u32 format, void* pixels) {
+Texture* resources_add_texture(const std::string& id, i32 width, i32 height, TextureFormat format, void* pixels) {
   s_res_man.textures[id] = texture_load(width, height, format, pixels);
   return s_res_man.textures[id];
 }

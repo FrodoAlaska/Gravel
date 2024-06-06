@@ -25,7 +25,7 @@ void resources_shutdown();
 // that is given initially when the resource manager is initialized. For example, if a texture is 
 // at "res/textures/texture.png" then the "res/" should be removed. Therefore, it should be "textures/texture.png".
 Texture* resources_add_texture(const std::string& id, const std::string& path);
-Texture* resources_add_texture(const std::string& id, i32 width, i32 height, u32 format, void* pixels);
+Texture* resources_add_texture(const std::string& id, i32 width, i32 height, TextureFormat format, void* pixels);
 Font* resources_add_font(const std::string& path, const std::string& id);
 
 // Returning resources 
