@@ -16,11 +16,7 @@ struct Glyph {
   i32 x_offset, y_offset;
   
   i32 advance_x, kern, left_side_bearing;
-
-  struct Bounds {
-    i32 left, right, top, bottom;
-  };
-  Bounds bounds;
+  i32 left, right, top, bottom;
 };
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +28,6 @@ struct Font {
   
   std::vector<Glyph> glyphs;
   u32 glyphs_count;
-  u32 loaded_glyphs = 0;
 };
 /////////////////////////////////////////////////////////////////////////////////
 

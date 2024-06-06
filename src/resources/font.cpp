@@ -48,11 +48,10 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
   font->ascent = ascent * scale_factor;
   font->descent = descent * scale_factor;
 
-  std::string word = "0123 () ABC abc";
-  // font->glyphs_count = word.size();
-  for(u32 i = 0; i < font->glyphs_count; i++) { 
+  std::string word = "Hello, world. Wtf is going on?\nLet me";
+  for(u32 i = 0; i < word.size(); i++) { 
     Glyph glyph;
-    glyph.unicode = i + 32;
+    glyph.unicode = word[i];//i + 32;
 
     // This functions will return 0 if the given unicode is not in 
     // the font. Thus, to speed up the loop, we just skip these unicodes.
@@ -71,6 +70,15 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
                                       &glyph.x_offset, 
                                       &glyph.y_offset);
 
+    stbtt_GetGlyphBitmapBox(info, 
+                            glyph_index, 
+                            scale_factor, 
+                            scale_factor, 
+                            &glyph.left, 
+                            &glyph.top, 
+                            &glyph.right, 
+                            &glyph.bottom);
+
     // Only give OpenGL the pixels when it is valid 
     if(bitmap) {
       glyph.texture = texture_load(glyph.width, glyph.height, GL_RED, bitmap);
@@ -87,22 +95,23 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
 
     // Getting the kern of the glyph. The kern is used to make some specific glyphs look better 
     // when next to each other.
-    glyph.kern = stbtt_GetGlyphKernAdvance(info, glyph_index, font->glyphs[i + 1].unicode); 
+    glyph.kern = stbtt_GetCodepointKernAdvance(info, glyph.unicode, word[i + 1]); 
     glyph.kern *= scale_factor;
-
+    
     glyph.y_offset += font->ascent;
+    glyph.y_offset -= glyph.top / 2;
 
     // Make sure the deallocate the bitmap data that was allocated by STB 
     // NOTE: Potentially really slow to have an allocation and a deallocation in a loop 
     stbtt_FreeBitmap(bitmap, nullptr);
   
     // A valid glyph that was loaded 
-    font->loaded_glyphs++;
+    font->glyphs_count++;
     font->glyphs.push_back(glyph);
   }
 
   // Resizing the vector down only for the loaded glyphs 
-  font->glyphs.resize(font->loaded_glyphs);
+  font->glyphs.resize(font->glyphs_count);
 }
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -119,9 +128,7 @@ Font* font_load(const std::string& path, const f32 size) {
     return font;
   }
 
-  font->glyphs_count = info.numGlyphs;
-  font->glyphs.reserve(font->glyphs_count);
-  printf("SIZE = %zu\n", font->glyphs.capacity());
+  font->glyphs.reserve(info.numGlyphs);
 
   // Load the textures and required values for every glyph in the font 
   init_font_chars(font, &info, size);
