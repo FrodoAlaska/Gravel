@@ -1,4 +1,5 @@
 # TODO:
+- Make a function called 'font_load_glyph(font, char)' and try to load a char with a word every frame. It's bad but might work try it.
 - Effcient text rendering
 - Custom enums for the opengl types so that I don't have to include <glad/gl.h> everywhere
 - Make a generic render batch structure to make creating different batches easier and more effcient

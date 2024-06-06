@@ -30,7 +30,7 @@ static u8* get_font_data(const std::string& path) {
   return data; 
 }
 
-static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
+static void init_font_chars(Font* font, stbtt_fontinfo* info) {
   /*
    * NOTE: Bits and pieces of this code is borrowed from Raylib. Particularly, from 
    * the "rtext.c" file. Check them out if you have not already. 
@@ -38,7 +38,7 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
 
   // This will return a value that will get used constantly to put all the values 
   // that come out of the stb in "scaled" coordinates.  
-  f32 scale_factor = stbtt_ScaleForPixelHeight(info, size);
+  f32 scale_factor = stbtt_ScaleForPixelHeight(info, font->base_size);
 
   // Get the ascent, descent, and line gap of the font and put them in 
   // the scaled space 
@@ -48,7 +48,7 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
   font->ascent = ascent * scale_factor;
   font->descent = descent * scale_factor;
 
-  std::string word = "Hello, world. Wtf is going on?\nLet me";
+  std::string word = "Hello, world. Wtf is going on?";
   for(u32 i = 0; i < word.size(); i++) { 
     Glyph glyph;
     glyph.unicode = word[i];//i + 32;
@@ -62,7 +62,7 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
 
     // Pixels of the specific codepoint, offset, and size 
     u8* bitmap = stbtt_GetGlyphBitmap(info, 
-                                      scale_factor,
+                                      0,
                                       scale_factor, 
                                       glyph_index, 
                                       &glyph.width, 
@@ -100,6 +100,7 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
     
     glyph.y_offset += font->ascent;
     glyph.y_offset -= glyph.top / 2;
+    glyph.x_offset = glyph.right / 2;
 
     // Make sure the deallocate the bitmap data that was allocated by STB 
     // NOTE: Potentially really slow to have an allocation and a deallocation in a loop 
@@ -108,6 +109,8 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
     // A valid glyph that was loaded 
     font->glyphs_count++;
     font->glyphs.push_back(glyph);
+
+    printf("CHAR = %c\n", glyph.unicode);
   }
 
   // Resizing the vector down only for the loaded glyphs 
@@ -119,9 +122,9 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info, const f32 size) {
 /////////////////////////////////////////////////////////////////////////////////
 Font* font_load(const std::string& path, const f32 size) {
   Font* font = new Font{};
+  font->base_size = size; 
 
   u8* data = get_font_data(path);
-
   stbtt_fontinfo info;
   if(stbtt_InitFont(&info, data, stbtt_GetFontOffsetForIndex(data, 0)) == 0) {
     fprintf(stderr, "[ERROR]: Failed to initialize stb for font \'%s\'\n", path.c_str());
@@ -131,7 +134,7 @@ Font* font_load(const std::string& path, const f32 size) {
   font->glyphs.reserve(info.numGlyphs);
 
   // Load the textures and required values for every glyph in the font 
-  init_font_chars(font, &info, size);
+  init_font_chars(font, &info);
   glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
   delete[] data;

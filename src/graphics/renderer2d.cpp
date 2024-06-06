@@ -290,6 +290,8 @@ void render_text(const Font* font, const f32 size, const std::string& text, cons
   f32 off_x = 0.0f;
   f32 off_y = 0.0f;
 
+  f32 scale = size / font->base_size;
+
   for(u32 i = 0; i < text.size(); i++) {
     i8 ch = text[i]; 
     i32 index = font_get_glyph_index(font, ch);
@@ -305,9 +307,9 @@ void render_text(const Font* font, const f32 size, const std::string& text, cons
       continue;
     }
    
-    glm::vec2 offset((off_x + glyph.x_offset) * size, (off_y + glyph.y_offset) * size);
+    glm::vec2 offset((off_x + glyph.x_offset) * scale, (off_y + glyph.y_offset) * scale);
     render_quad(position + offset, 
-                glm::vec2(glyph.width * size, glyph.height * size), 
+                glm::vec2(glyph.width * scale, glyph.height * scale), 
                 glyph.texture, 
                 color);
 

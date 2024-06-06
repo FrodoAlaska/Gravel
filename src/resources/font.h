@@ -23,7 +23,7 @@ struct Glyph {
 // Font
 /////////////////////////////////////////////////////////////////////////////////
 struct Font {
-  u32 vao, vbo;
+  f32 base_size;
   f32 ascent, descent, line_gap;
   
   std::vector<Glyph> glyphs;

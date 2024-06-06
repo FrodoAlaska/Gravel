@@ -22,7 +22,7 @@ static App s_app;
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 bool app_init(void* user_data) {
-  s_app.font = resources_add_font("font/bit5x3.ttf", "regular_font");
+  s_app.font = font_load("assets/font/bit5x3.ttf", 256);
   s_app.texture = resources_add_texture("logo_texture", "textures/mg_logo.png");
   s_app.camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
 
@@ -30,6 +30,7 @@ bool app_init(void* user_data) {
 }
 
 void app_shutdown(void* user_data) {
+  font_unload(s_app.font);
 }
 
 void app_update(void* user_data) {
@@ -49,7 +50,7 @@ void app_render(void* user_data) {
   // renderer_end();
 
   renderer2d_begin();
-  render_text(s_app.font, 0.2f, "Hello, world. Wtf is going on?\nLet me", glm::vec2(200.0f, 200.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+  render_text(s_app.font, 50.0f, "Hello, world. Wtf is going on?", glm::vec2(100.0f, 100.0f), glm::vec4(1.0f));
   // render_quad(glm::vec2(200.0f, 200.0f), glm::vec2(128.0f, 128.0f), s_app.texture);
   // render_quad(glm::vec2(10.0f, 10.0f), glm::vec2(128.0f, 128.0f), glm::vec4(1.0f));
   renderer2d_end();
