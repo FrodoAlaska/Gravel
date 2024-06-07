@@ -2,6 +2,7 @@
 #include "defines.h"
 #include "resources/texture.h"
 
+#include <glad/gl.h>
 #include <stb_truetype/stb_truetype.h>
 #include <glm/glm.hpp>
 
@@ -60,13 +61,13 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info) {
 
     // Pixels of the specific codepoint, offset, and size 
     u8* mono_bitmap = stbtt_GetGlyphBitmap(info, 
-                                      0,
-                                      scale_factor, 
-                                      glyph_index, 
-                                      &glyph.width, 
-                                      &glyph.height, 
-                                      &glyph.x_offset, 
-                                      &glyph.y_offset);
+                                           0,
+                                           scale_factor, 
+                                           glyph_index, 
+                                           &glyph.width, 
+                                           &glyph.height, 
+                                           &glyph.x_offset, 
+                                           &glyph.y_offset);
 
     stbtt_GetGlyphBitmapBox(info, 
                             glyph_index, 
@@ -148,7 +149,7 @@ Font* font_load(const std::string& path, const f32 size) {
 
   // Load the textures and required values for every glyph in the font 
   init_font_chars(font, &info);
-  // glPixelStorei(GL_PACK_ALIGNMENT, 1);
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
   delete[] data;
   return font;

@@ -45,6 +45,7 @@ struct Renderer2D {
   glm::vec4 quad_vertices[4];
 
   Shader* batch_shader = nullptr;
+  Font* default_font = nullptr;
 
   usizei texture_index = 1;
   usizei indices_count = 0;
@@ -146,7 +147,7 @@ void renderer2d_destroy() {
 void renderer2d_flush() {
   // Render all of the unique textures
   for(u32 i = 0; i < renderer.texture_index; i++)
-    texture_use(renderer.textures[i]);
+    texture_use(renderer.textures[i], i);
 
   // Initiate draw call!
   glBindVertexArray(renderer.vao); 
@@ -169,6 +170,14 @@ void renderer2d_end() {
   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * renderer.vertices.size(), renderer.vertices.data());
 
   renderer2d_flush();
+}
+
+void renderer2d_set_default_font(Font* font) {
+  renderer.default_font = font;
+}
+
+Font* renderer2d_get_default_font() {
+  return renderer.default_font;
 }
 
 void render_quad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color) {
@@ -233,7 +242,7 @@ void render_texture(Texture* texture, const Rect& src, const Rect& dest, const g
   v1.position       = renderer.ortho * model * renderer.quad_vertices[0]; 
   v1.color          = tint;
   v1.texture_coords = glm::vec2(src.x / src.width, src.y / src.height); 
-  v1.texture_index  = texture->slot;
+  v1.texture_index  = renderer.texture_index;
   renderer.vertices.push_back(v1);
  
   // Top-right
@@ -241,7 +250,7 @@ void render_texture(Texture* texture, const Rect& src, const Rect& dest, const g
   v2.position       = renderer.ortho * model * renderer.quad_vertices[1]; 
   v2.color          = tint;
   v2.texture_coords = glm::vec2((src.x + src.width) / src.width, src.y / src.height); 
-  v2.texture_index  = texture->slot;
+  v2.texture_index  = renderer.texture_index;
   renderer.vertices.push_back(v2);
  
   // Bottom-right
@@ -249,7 +258,7 @@ void render_texture(Texture* texture, const Rect& src, const Rect& dest, const g
   v3.position       = renderer.ortho * model * renderer.quad_vertices[2]; 
   v3.color          = tint;
   v3.texture_coords = glm::vec2((src.x + src.width) / src.width, (src.y + src.height) / src.height); 
-  v3.texture_index  = texture->slot;
+  v3.texture_index  = renderer.texture_index;
   renderer.vertices.push_back(v3);
  
   // Bottom-left
@@ -257,7 +266,7 @@ void render_texture(Texture* texture, const Rect& src, const Rect& dest, const g
   v4.position       = renderer.ortho * model * renderer.quad_vertices[3]; 
   v4.color          = tint;
   v4.texture_coords = glm::vec2(src.x / src.width, (src.y + src.height) / src.height); 
-  v4.texture_index  = texture->slot;
+  v4.texture_index  = renderer.texture_index;
   renderer.vertices.push_back(v4);
 
   renderer.indices_count += 6;
@@ -321,5 +330,9 @@ void render_text(const Font* font, const f32 size, const std::string& text, cons
 
     off_x += glyph.advance_x + glyph.kern;
   }
+}
+
+void render_text(const f32 size, const std::string& text, const glm::vec2& position, const glm::vec4& color) {
+  render_text(renderer.default_font, size, text, position, color);
 }
 /////////////////////////////////////////////////////////////////////////////////

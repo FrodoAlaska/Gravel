@@ -9,7 +9,7 @@
 
 // Globals
 /////////////////////////////////////////////////////////////////////////////////
-static i32 texture_slots = 0;
+static u64 texture_slots = 0;
 /////////////////////////////////////////////////////////////////////////////////
 
 // Private functions
@@ -84,6 +84,7 @@ Texture* texture_load(const std::string& path) {
   // Don't need the pixel data anymore, so free it. 
   stbi_image_free(data);
 
+  glBindTexture(GL_TEXTURE_2D, 0);
   return texture;
 }
 
@@ -115,7 +116,8 @@ Texture* texture_load(i32 width, i32 height, TextureFormat format, void* pixels)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  
+ 
+  glBindTexture(GL_TEXTURE_2D, 0);
   return texture;
 }
 
@@ -130,8 +132,8 @@ void texture_unload(Texture* texture) {
   texture = nullptr;
 }
 
-void texture_use(Texture* texture) {
-  glActiveTexture(GL_TEXTURE0 + texture->slot);
+void texture_use(Texture* texture, i32 slot) {
+  glActiveTexture(GL_TEXTURE0 + slot);
   glBindTexture(GL_TEXTURE_2D, texture->id);
 }
 /////////////////////////////////////////////////////////////////////////////////

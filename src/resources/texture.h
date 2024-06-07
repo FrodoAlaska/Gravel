@@ -30,5 +30,5 @@ struct Texture {
 Texture* texture_load(const std::string& path);
 Texture* texture_load(i32 width, i32 height, TextureFormat format, void* pixels);
 void texture_unload(Texture* texture);
-void texture_use(Texture* texture);
+void texture_use(Texture* texture, i32 slot);
 /////////////////////////////////////////////////////////////////////////////////
