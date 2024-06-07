@@ -47,10 +47,9 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info) {
   font->ascent = ascent * scale_factor;
   font->descent = descent * scale_factor;
 
-  std::string word = "Hello, world. Wtf is going on?";
-  for(u32 i = 0; i < word.size(); i++) { 
+  for(u32 i = 0; i < info->numGlyphs; i++) { 
     Glyph glyph;
-    glyph.unicode = word[i];//i + 32;
+    glyph.unicode = i + 32;
 
     // This functions will return 0 if the given unicode is not in 
     // the font. Thus, to speed up the loop, we just skip these unicodes.
@@ -111,7 +110,7 @@ static void init_font_chars(Font* font, stbtt_fontinfo* info) {
 
     // Getting the kern of the glyph. The kern is used to make some specific glyphs look better 
     // when next to each other.
-    glyph.kern = stbtt_GetCodepointKernAdvance(info, glyph.unicode, word[i + 1]); 
+    glyph.kern = stbtt_GetCodepointKernAdvance(info, glyph.unicode, glyph.unicode + 32); 
     glyph.kern *= scale_factor;
     
     glyph.y_offset += font->ascent;
