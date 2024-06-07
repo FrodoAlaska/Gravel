@@ -130,7 +130,7 @@ void texture_unload(Texture* texture) {
   texture = nullptr;
 }
 
-void texture_render(Texture* texture) {
+void texture_use(Texture* texture) {
   glActiveTexture(GL_TEXTURE0 + texture->slot);
   glBindTexture(GL_TEXTURE_2D, texture->id);
 }

@@ -146,7 +146,7 @@ void renderer2d_destroy() {
 void renderer2d_flush() {
   // Render all of the unique textures
   for(u32 i = 0; i < renderer.texture_index; i++)
-    texture_render(renderer.textures[i]);
+    texture_use(renderer.textures[i]);
 
   // Initiate draw call!
   glBindVertexArray(renderer.vao); 
@@ -217,7 +217,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, const glm::ve
   renderer.indices_count += 6;
 }
 
-void render_quad(const glm::vec2& position, const glm::vec2& size, Texture* texture, const glm::vec4& tint) {
+void render_texture(Texture* texture, const Rect& src, const Rect& dest, const glm::vec4& tint) {
   // Restart the renderer once the max quads is reached 
   if(renderer.indices_count >= MAX_INDICES || renderer.texture_index > MAX_TEXTURES) {
     renderer2d_end();
@@ -225,14 +225,14 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, Texture* text
   }
 
   glm::mat4 model(1.0f);
-  model = glm::translate(model, glm::vec3(position.x, position.y, 0.0f));
-  model = glm::scale(model, glm::vec3(size.x, size.y, 0.0f));
+  model = glm::translate(model, glm::vec3(dest.x, dest.y, 0.0f));
+  model = glm::scale(model, glm::vec3(dest.width, dest.height, 0.0f));
   
   // Top-left 
   Vertex v1; 
   v1.position       = renderer.ortho * model * renderer.quad_vertices[0]; 
   v1.color          = tint;
-  v1.texture_coords = glm::vec2(0.0f, 0.0f); 
+  v1.texture_coords = glm::vec2(src.x / src.width, src.y / src.height); 
   v1.texture_index  = texture->slot;
   renderer.vertices.push_back(v1);
  
@@ -240,7 +240,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, Texture* text
   Vertex v2; 
   v2.position       = renderer.ortho * model * renderer.quad_vertices[1]; 
   v2.color          = tint;
-  v2.texture_coords = glm::vec2(1.0f, 0.0f); 
+  v2.texture_coords = glm::vec2((src.x + src.width) / src.width, src.y / src.height); 
   v2.texture_index  = texture->slot;
   renderer.vertices.push_back(v2);
  
@@ -248,7 +248,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, Texture* text
   Vertex v3; 
   v3.position       = renderer.ortho * model * renderer.quad_vertices[2]; 
   v3.color          = tint;
-  v3.texture_coords = glm::vec2(1.0f, 1.0f); 
+  v3.texture_coords = glm::vec2((src.x + src.width) / src.width, (src.y + src.height) / src.height); 
   v3.texture_index  = texture->slot;
   renderer.vertices.push_back(v3);
  
@@ -256,7 +256,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, Texture* text
   Vertex v4; 
   v4.position       = renderer.ortho * model * renderer.quad_vertices[3]; 
   v4.color          = tint;
-  v4.texture_coords = glm::vec2(0.0f, 1.0f); 
+  v4.texture_coords = glm::vec2(src.x / src.width, (src.y + src.height) / src.height); 
   v4.texture_index  = texture->slot;
   renderer.vertices.push_back(v4);
 
@@ -282,6 +282,13 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, Texture* text
   renderer.texture_index++;
 }
 
+void render_texture(Texture* texture, const glm::vec2& position, const glm::vec2& size, const glm::vec4& tint) {
+  Rect src = {0, 0, size.x, size.y}; 
+  Rect dest = {position.x, position.y, size.x, size.y};
+
+  render_texture(texture, src, dest, tint);
+}
+
 void render_text(const Font* font, const f32 size, const std::string& text, const glm::vec2& position, const glm::vec4& color) {
   if(!font) {
     return; 
@@ -289,7 +296,6 @@ void render_text(const Font* font, const f32 size, const std::string& text, cons
 
   f32 off_x = 0.0f;
   f32 off_y = 0.0f;
-
   f32 scale = size / font->base_size;
 
   for(u32 i = 0; i < text.size(); i++) {
@@ -308,10 +314,10 @@ void render_text(const Font* font, const f32 size, const std::string& text, cons
     }
    
     glm::vec2 offset((off_x + glyph.x_offset) * scale, (off_y + glyph.y_offset) * scale);
-    render_quad(position + offset, 
-                glm::vec2(glyph.width * scale, glyph.height * scale), 
-                glyph.texture, 
-                color);
+    Rect src = {0, 0, glyph.right + 2.0f, glyph.bottom + 2.0f};
+    Rect dest = {position.x + offset.x, position.y + offset.y, glyph.width * scale, glyph.height * scale};
+
+    render_texture(glyph.texture, src, dest, color); 
 
     off_x += glyph.advance_x + glyph.kern;
   }

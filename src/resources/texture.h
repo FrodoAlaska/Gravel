@@ -12,7 +12,6 @@ enum TextureFormat {
   TEXTURE_FORMAT_RG   = 0x8227, 
   TEXTURE_FORMAT_RGB  = 0x1907, 
   TEXTURE_FORMAT_RGBA = 0x1908, 
-
 };
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -31,5 +30,5 @@ struct Texture {
 Texture* texture_load(const std::string& path);
 Texture* texture_load(i32 width, i32 height, TextureFormat format, void* pixels);
 void texture_unload(Texture* texture);
-void texture_render(Texture* texture);
+void texture_use(Texture* texture);
 /////////////////////////////////////////////////////////////////////////////////

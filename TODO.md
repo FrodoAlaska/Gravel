@@ -1,4 +1,5 @@
 # TODO:
+- Texture rework
 - Game UI
 - Fix text bullshit
 - Materials? 
