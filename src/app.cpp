@@ -7,6 +7,7 @@
 #include "graphics/renderer2d.h"
 #include "core/input.h"
 #include "core/event.h"
+#include "ui/ui_text.h"
 
 // App
 /////////////////////////////////////////////////////////////////////////////////
@@ -14,6 +15,8 @@ struct App {
   Camera camera;
   Font* font;
   Texture* texture, *txt;
+
+  UIText hello_text;
 };
 
 static App s_app;
@@ -28,6 +31,8 @@ bool app_init(void* user_data) {
   s_app.camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
 
   renderer2d_set_default_font(s_app.font);
+
+  ui_text_create(&s_app.hello_text, nullptr, "01.0f,", 50.0f, UI_ANCHOR_CENTER, glm::vec4(1.0f));
 
   return true;
 }
@@ -54,8 +59,8 @@ void app_render(void* user_data) {
   renderer2d_begin();
   // render_quad(glm::vec2(150.0f, 120.0f), glm::vec2(256.0f, 50.0f), glm::vec4(1.0f));
   // render_texture(s_app.texture, glm::vec2(100.0f, 100.0f), glm::vec2(128.0f, 128.0f));
-  // render_texture(s_app.txt, glm::vec2(300.0f, 100.0f), glm::vec2(256.0f, 256.0f));
-  render_text(50.0f, "EVA is a fucking whore", glm::vec2(100.0f, 100.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+  // render_texture(s_app.txt, glm::vec2(1280 / 2, 720 / 2.0f), glm::vec2(512.0f, 512.0f));
+  ui_text_render(&s_app.hello_text);
   renderer2d_end();
  
   // editor_end();
