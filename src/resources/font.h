@@ -25,7 +25,8 @@ struct Glyph {
 struct Font {
   f32 base_size;
   f32 ascent, descent, line_gap;
-  
+  f32 glyph_padding;
+
   std::vector<Glyph> glyphs;
   u32 glyphs_count;
 };

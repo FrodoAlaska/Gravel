@@ -5,9 +5,11 @@
 #include "resources/resource_manager.h"
 #include "graphics/renderer.h"
 #include "graphics/renderer2d.h"
+#include "graphics/color.h"
 #include "core/input.h"
 #include "core/event.h"
 #include "ui/ui_text.h"
+#include "ui/ui_button.h"
 
 // App
 /////////////////////////////////////////////////////////////////////////////////
@@ -17,6 +19,7 @@ struct App {
   Texture* texture, *txt;
 
   UIText hello_text;
+  UIButton play_button;
 };
 
 static App s_app;
@@ -32,7 +35,8 @@ bool app_init(void* user_data) {
 
   renderer2d_set_default_font(s_app.font);
 
-  ui_text_create(&s_app.hello_text, nullptr, "01.0f,", 50.0f, UI_ANCHOR_CENTER, glm::vec4(1.0f));
+  ui_text_create(&s_app.hello_text, nullptr, "Gravel", 50.0f, UI_ANCHOR_TOP_CENTER, COLOR_WHITE);
+  ui_button_create(&s_app.play_button, s_app.font, "PLAY", 50.0f, UI_ANCHOR_CENTER, COLOR_WHITE, COLOR_BLACK);
 
   return true;
 }
@@ -61,6 +65,7 @@ void app_render(void* user_data) {
   // render_texture(s_app.texture, glm::vec2(100.0f, 100.0f), glm::vec2(128.0f, 128.0f));
   // render_texture(s_app.txt, glm::vec2(1280 / 2, 720 / 2.0f), glm::vec2(512.0f, 512.0f));
   ui_text_render(&s_app.hello_text);
+  ui_button_render(&s_app.play_button);
   renderer2d_end();
  
   // editor_end();

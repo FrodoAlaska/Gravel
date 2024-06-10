@@ -41,7 +41,7 @@ void mouse_callback(GLFWwindow* win, f64 x_pos, f64 y_pos) {
   window.mouse_pos += offset;
 
   EventDesc desc = {
-    .mouse_pos = window.mouse_pos,
+    .mouse_pos = glm::vec2(x_pos, y_pos), // @TODO: Fix this // window.mouse_pos,
   };
   event_dispatch(EVENT_MOUSE_MOVED, desc);
 }

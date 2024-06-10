@@ -146,6 +146,7 @@ Font* font_load(const std::string& path, const f32 size) {
   }
 
   font->glyphs.reserve(info.numGlyphs);
+  font->glyph_padding = 4.0f;
 
   // Load the textures and required values for every glyph in the font 
   init_font_chars(font, &info);
