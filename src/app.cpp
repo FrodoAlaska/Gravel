@@ -25,6 +25,12 @@ struct App {
 static App s_app;
 /////////////////////////////////////////////////////////////////////////////////
 
+void button_callback(UIButton* button, const UIButtonState state, void* user_data) {
+  if(state == BUTTON_STATE_PRESSED) {
+    event_dispatch(EVENT_GAME_QUIT, EventDesc{});
+  }
+}
+
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 bool app_init(void* user_data) {
@@ -36,7 +42,8 @@ bool app_init(void* user_data) {
   renderer2d_set_default_font(s_app.font);
 
   ui_text_create(&s_app.hello_text, nullptr, "Gravel", 50.0f, UI_ANCHOR_TOP_CENTER, COLOR_WHITE);
-  ui_button_create(&s_app.play_button, s_app.font, "PLAY", 50.0f, UI_ANCHOR_CENTER, COLOR_WHITE, COLOR_BLACK);
+  ui_button_create(&s_app.play_button, s_app.font, "EXIT", 50.0f, UI_ANCHOR_CENTER, COLOR_WHITE, COLOR_BLACK);
+  s_app.play_button.callback = button_callback;   
 
   return true;
 }
