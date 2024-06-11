@@ -48,6 +48,7 @@ set(GRAVEL_SOURCES
   # UI
   ${GRAVEL_SRC_DIR}/ui/ui_text.cpp
   ${GRAVEL_SRC_DIR}/ui/ui_button.cpp
+  ${GRAVEL_SRC_DIR}/ui/ui_canvas.cpp
 )
 
 set(GRAVEL_LIBS 

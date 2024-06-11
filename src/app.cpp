@@ -8,8 +8,7 @@
 #include "graphics/color.h"
 #include "core/input.h"
 #include "core/event.h"
-#include "ui/ui_text.h"
-#include "ui/ui_button.h"
+#include "ui/ui_canvas.h"
 
 // App
 /////////////////////////////////////////////////////////////////////////////////
@@ -18,18 +17,11 @@ struct App {
   Font* font;
   Texture* texture, *txt;
 
-  UIText hello_text;
-  UIButton play_button;
+  UICanvas* canvas;
 };
 
 static App s_app;
 /////////////////////////////////////////////////////////////////////////////////
-
-void button_callback(UIButton* button, const UIButtonState state, void* user_data) {
-  if(state == BUTTON_STATE_PRESSED) {
-    event_dispatch(EVENT_GAME_QUIT, EventDesc{});
-  }
-}
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
@@ -41,14 +33,21 @@ bool app_init(void* user_data) {
 
   renderer2d_set_default_font(s_app.font);
 
-  ui_text_create(&s_app.hello_text, nullptr, "Gravel", 50.0f, UI_ANCHOR_TOP_CENTER, COLOR_WHITE);
-  ui_button_create(&s_app.play_button, s_app.font, "EXIT", 50.0f, UI_ANCHOR_CENTER, COLOR_WHITE, COLOR_BLACK);
-  s_app.play_button.callback = button_callback;   
+  s_app.canvas = ui_canvas_create(s_app.font);
+ 
+  ui_canvas_push_text(s_app.canvas, "Gravel", 50.0f, COLOR_WHITE, UI_ANCHOR_TOP_CENTER);
+
+  ui_canvas_begin(s_app.canvas, glm::vec2(0.0f, 70.0f), UI_ANCHOR_CENTER);
+  ui_canvas_push_button(s_app.canvas, "PLAY", 40.0f, COLOR_WHITE, COLOR_BLACK, nullptr, nullptr);
+  ui_canvas_push_button(s_app.canvas, "SETTINGS", 40.0f, COLOR_WHITE, COLOR_BLACK, nullptr, nullptr);
+  ui_canvas_push_button(s_app.canvas, "QUIT", 40.0f, COLOR_WHITE, COLOR_BLACK, nullptr, nullptr);
+  ui_canvas_end(s_app.canvas);
 
   return true;
 }
 
 void app_shutdown(void* user_data) {
+  ui_canvas_destroy(s_app.canvas);
 }
 
 void app_update(void* user_data) {
@@ -71,8 +70,7 @@ void app_render(void* user_data) {
   // render_quad(glm::vec2(150.0f, 120.0f), glm::vec2(256.0f, 50.0f), glm::vec4(1.0f));
   // render_texture(s_app.texture, glm::vec2(100.0f, 100.0f), glm::vec2(128.0f, 128.0f));
   // render_texture(s_app.txt, glm::vec2(1280 / 2, 720 / 2.0f), glm::vec2(512.0f, 512.0f));
-  ui_text_render(&s_app.hello_text);
-  ui_button_render(&s_app.play_button);
+  ui_canvas_render(s_app.canvas); 
   renderer2d_end();
  
   // editor_end();
