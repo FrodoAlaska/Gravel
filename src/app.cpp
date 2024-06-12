@@ -9,6 +9,7 @@
 #include "core/input.h"
 #include "core/event.h"
 #include "ui/ui_canvas.h"
+#include "core/clock.h"
 
 // App
 /////////////////////////////////////////////////////////////////////////////////
@@ -18,6 +19,7 @@ struct App {
   Texture* texture, *txt;
 
   UICanvas* canvas;
+  UIText title;
 };
 
 static App s_app;
@@ -57,6 +59,8 @@ void app_update(void* user_data) {
 
   camera_update(&s_app.camera);
   camera_move(&s_app.camera);
+  
+  // ui_text_set_string(&s_app.canvas->texts[0], "GRAVEL");
 }
 
 void app_render(void* user_data) {
