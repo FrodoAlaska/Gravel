@@ -1,11 +1,13 @@
 #include "resource_manager.h"
+#include "resources/mesh.h"
 #include "resources/texture.h"
 #include "resources/font.h"
+#include "math/vertex.h"
 #include "defines.h"
 
-#include <cstdio>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 // ResourceManager
 /////////////////////////////////////////////////////////////////////////////////
@@ -14,6 +16,7 @@ struct ResourceManager {
 
   std::unordered_map<std::string, Texture*> textures;
   std::unordered_map<std::string, Font*> fonts;
+  std::unordered_map<std::string, Mesh*> meshes;
 };
 
 static ResourceManager s_res_man;
@@ -36,6 +39,14 @@ Font* find_font(const std::string& id) {
 
   return nullptr;
 }
+
+Mesh* find_mesh(const std::string& id) {
+  if(s_res_man.meshes.find(id) != s_res_man.meshes.end()) {
+    return s_res_man.meshes[id];
+  }
+
+  return nullptr;
+}
 /////////////////////////////////////////////////////////////////////////////////
 
 // Public functions
@@ -54,6 +65,11 @@ void resources_shutdown() {
     texture_unload(value);
   }
   s_res_man.textures.clear();
+  
+  for(auto& [key, value] : s_res_man.meshes) {
+    mesh_destroy(value);
+  }
+  s_res_man.meshes.clear();
 }
 
 Texture* resources_add_texture(const std::string& id, const std::string& path) {
@@ -75,12 +91,26 @@ Font* resources_add_font(const std::string& path, const std::string& id) {
   return s_res_man.fonts[id];
 }
 
+Mesh* resources_add_mesh(const std::string& id) {
+  s_res_man.meshes[id] = mesh_create();
+  return s_res_man.meshes[id];
+}
+
+Mesh* resources_add_mesh(const std::string& id, const std::vector<Vertex3D>& vertices, const std::vector<u32>& indices) {
+  s_res_man.meshes[id] = mesh_create(vertices, indices);
+  return s_res_man.meshes[id];
+}
+
 Texture* resources_get_texture(const std::string& id) {
   return find_texture(id);
 }
 
 Font* resources_get_font(const std::string& id) {
   return find_font(id);
+}
+
+Mesh* resources_get_mesh(const std::string& id) {
+  return find_mesh(id);
 }
 
 bool resources_remove_texture(const std::string& id) {
@@ -101,6 +131,19 @@ bool resources_remove_font(const std::string& id) {
   if(font) {
     // Make sure to unload the font before removing it
     font_unload(font);
+    s_res_man.fonts.erase(id);
+    
+    return true;
+  }
+
+  return false;
+}
+
+bool resources_remove_mesh(const std::string& id) {
+  Mesh* mesh = find_mesh(id);
+  if(mesh) {
+    // Make sure to unload the font before removing it
+    mesh_destroy(mesh);
     s_res_man.fonts.erase(id);
     
     return true;

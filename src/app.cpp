@@ -40,7 +40,7 @@ bool app_init(void* user_data) {
   renderer2d_set_default_font(s_app.font);
 
   s_app.canvas = ui_canvas_create(s_app.font);
-  s_app.mesh   = mesh_create();
+  s_app.mesh   = resources_add_mesh("cube_mesh");
   transform_create(&s_app.trans, glm::vec3(10.0f, 0.0f, 10.0f));
 
   ui_canvas_push_text(s_app.canvas, "Gravel", 50.0f, COLOR_WHITE, UI_ANCHOR_TOP_CENTER);

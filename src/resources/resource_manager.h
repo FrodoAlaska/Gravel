@@ -1,10 +1,13 @@
 #pragma once
 
+#include "resources/mesh.h"
 #include "resources/texture.h"
 #include "resources/font.h"
+#include "math/vertex.h"
 #include "defines.h"
 
 #include <string>
+#include <vector>
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
@@ -27,12 +30,15 @@ void resources_shutdown();
 Texture* resources_add_texture(const std::string& id, const std::string& path);
 Texture* resources_add_texture(const std::string& id, i32 width, i32 height, TextureFormat format, void* pixels);
 Font* resources_add_font(const std::string& path, const std::string& id);
+Mesh* resources_add_mesh(const std::string& id);
+Mesh* resources_add_mesh(const std::string& id, const std::vector<Vertex3D>& vertices, const std::vector<u32>& indices);
 
 // Returning resources 
 // These functions will return the resource that is specified by the 'id'. 
 // These functions will return a 'nullptr' if the resource was not found.
 Texture* resources_get_texture(const std::string& id);
 Font* resources_get_font(const std::string& id);
+Mesh* resources_get_mesh(const std::string& id);
 
 // Removing resources
 // Removes the specified resource from the resource manager's map. 
@@ -42,4 +48,5 @@ Font* resources_get_font(const std::string& id);
 // Therefore, please do be careful when using these functions.
 bool resources_remove_texture(const std::string& id);
 bool resources_remove_font(const std::string& id);
+bool resources_remove_mesh(const std::string& id);
 /////////////////////////////////////////////////////////////////////////////////
