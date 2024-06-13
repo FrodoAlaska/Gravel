@@ -32,10 +32,7 @@ set(GRAVEL_SOURCES
 
   # Math
   ${GRAVEL_SRC_DIR}/math/rand.cpp
-  
-  # Components
-  ${GRAVEL_SRC_DIR}/components/transform.cpp
-  ${GRAVEL_SRC_DIR}/components/mesh.cpp
+  ${GRAVEL_SRC_DIR}/math/transform.cpp
   
   # Editor
   ${GRAVEL_SRC_DIR}/editor/editor.cpp
@@ -44,6 +41,7 @@ set(GRAVEL_SOURCES
   ${GRAVEL_SRC_DIR}/resources/resource_manager.cpp
   ${GRAVEL_SRC_DIR}/resources/texture.cpp
   ${GRAVEL_SRC_DIR}/resources/font.cpp
+  ${GRAVEL_SRC_DIR}/resources/mesh.cpp
   
   # UI
   ${GRAVEL_SRC_DIR}/ui/ui_text.cpp

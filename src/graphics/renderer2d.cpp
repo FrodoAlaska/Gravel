@@ -1,11 +1,11 @@
 #include "renderer2d.h"
 #include "core/window.h"
 #include "defines.h"
+#include "math/vertex.h"
 #include "graphics/shader.h"
 
 #include "resources/texture.h"
 #include "resources/font.h"
-#include "resources/resource_manager.h"
 
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
@@ -24,23 +24,12 @@
 #define MAX_TEXTURES  32 // @TODO: Probably should query the driver for the max textures instead of assuming
 /////////////////////////////////////////////////////////////////////////////////
 
-// Vertex2D
-/////////////////////////////////////////////////////////////////////////////////
-struct Vertex 
-{
-  glm::vec3 position;
-  glm::vec4 color;
-  glm::vec2 texture_coords;
-  f32 texture_index;
-};
-/////////////////////////////////////////////////////////////////////////////////
-
 // Renderer2d
 /////////////////////////////////////////////////////////////////////////////////
 struct Renderer2D {
   u32 vao, vbo, ebo;
 
-  std::vector<Vertex> vertices;
+  std::vector<Vertex2D> vertices;
   Texture* textures[MAX_TEXTURES];
   glm::vec4 quad_vertices[4];
 
@@ -84,7 +73,7 @@ static void setup_buffers() {
 
   // VBO
   glBindBuffer(GL_ARRAY_BUFFER, renderer.vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * MAX_VERTICES, nullptr, GL_DYNAMIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex2D) * MAX_VERTICES, nullptr, GL_DYNAMIC_DRAW);
 
   // EBO 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer.ebo);
@@ -93,19 +82,19 @@ static void setup_buffers() {
   // Layout 
   // Position 
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, position));
+  glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(Vertex2D), (void*)offsetof(Vertex2D, position));
   
   // Color 
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, color));
+  glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(Vertex2D), (void*)offsetof(Vertex2D, color));
   
   // Texture coords 
   glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 2, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, texture_coords));
+  glVertexAttribPointer(2, 2, GL_FLOAT, false, sizeof(Vertex2D), (void*)offsetof(Vertex2D, texture_coords));
   
   // Texture index 
   glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 1, GL_FLOAT, false, sizeof(Vertex), (void*)offsetof(Vertex, texture_index));
+  glVertexAttribPointer(3, 1, GL_FLOAT, false, sizeof(Vertex2D), (void*)offsetof(Vertex2D, texture_index));
 
   glBindVertexArray(0);
 }
@@ -121,7 +110,7 @@ const bool renderer2d_create() {
 
   // Textures init
   u32 pixels = 0xffffffff;
-  renderer.textures[0] = resources_add_texture("white_texture", 1, 1, TEXTURE_FORMAT_RGBA, &pixels);
+  renderer.textures[0] = texture_load(1, 1, TEXTURE_FORMAT_RGBA, &pixels);
 
   shader_bind(renderer.batch_shader);
   i32 tex_slots[MAX_TEXTURES];
@@ -167,7 +156,7 @@ void renderer2d_begin() {
 
 void renderer2d_end() {
   glBindBuffer(GL_ARRAY_BUFFER, renderer.vbo);
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * renderer.vertices.size(), renderer.vertices.data());
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex2D) * renderer.vertices.size(), renderer.vertices.data());
 
   renderer2d_flush();
 }
@@ -192,7 +181,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, const glm::ve
   model = glm::scale(model, glm::vec3(size.x, size.y, 0.0f));
   
   // Top-left 
-  Vertex v1; 
+  Vertex2D v1; 
   v1.position       = renderer.ortho * model * renderer.quad_vertices[0]; 
   v1.color          = color;
   v1.texture_coords = glm::vec2(0.0f, 1.0f); 
@@ -200,7 +189,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, const glm::ve
   renderer.vertices.push_back(v1);
  
   // Top-right
-  Vertex v2; 
+  Vertex2D v2; 
   v2.position       = renderer.ortho * model * renderer.quad_vertices[1]; 
   v2.color          = color;
   v2.texture_coords = glm::vec2(1.0f, 1.0f); 
@@ -208,7 +197,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, const glm::ve
   renderer.vertices.push_back(v2);
  
   // Bottom-right
-  Vertex v3; 
+  Vertex2D v3; 
   v3.position       = renderer.ortho * model * renderer.quad_vertices[2]; 
   v3.color          = color;
   v3.texture_coords = glm::vec2(1.0f, 0.0f); 
@@ -216,7 +205,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, const glm::ve
   renderer.vertices.push_back(v3);
  
   // Bottom-left
-  Vertex v4; 
+  Vertex2D v4; 
   v4.position       = renderer.ortho * model * renderer.quad_vertices[3]; 
   v4.color          = color;
   v4.texture_coords = glm::vec2(0.0f, 0.0f); 
@@ -238,7 +227,7 @@ void render_texture(Texture* texture, const Rect& src, const Rect& dest, const g
   model = glm::scale(model, glm::vec3(dest.width, dest.height, 0.0f));
   
   // Top-left 
-  Vertex v1; 
+  Vertex2D v1; 
   v1.position       = renderer.ortho * model * renderer.quad_vertices[0]; 
   v1.color          = tint;
   v1.texture_coords = glm::vec2(src.x / src.width, src.y / src.height); 
@@ -246,7 +235,7 @@ void render_texture(Texture* texture, const Rect& src, const Rect& dest, const g
   renderer.vertices.push_back(v1);
  
   // Top-right
-  Vertex v2; 
+  Vertex2D v2; 
   v2.position       = renderer.ortho * model * renderer.quad_vertices[1]; 
   v2.color          = tint;
   v2.texture_coords = glm::vec2((src.x + src.width) / src.width, src.y / src.height); 
@@ -254,7 +243,7 @@ void render_texture(Texture* texture, const Rect& src, const Rect& dest, const g
   renderer.vertices.push_back(v2);
  
   // Bottom-right
-  Vertex v3; 
+  Vertex2D v3; 
   v3.position       = renderer.ortho * model * renderer.quad_vertices[2]; 
   v3.color          = tint;
   v3.texture_coords = glm::vec2((src.x + src.width) / src.width, (src.y + src.height) / src.height); 
@@ -262,7 +251,7 @@ void render_texture(Texture* texture, const Rect& src, const Rect& dest, const g
   renderer.vertices.push_back(v3);
  
   // Bottom-left
-  Vertex v4; 
+  Vertex2D v4; 
   v4.position       = renderer.ortho * model * renderer.quad_vertices[3]; 
   v4.color          = tint;
   v4.texture_coords = glm::vec2(src.x / src.width, (src.y + src.height) / src.height); 

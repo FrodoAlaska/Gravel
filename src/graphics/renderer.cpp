@@ -3,8 +3,8 @@
 #include "defines.h"
 #include "graphics/camera.h"
 #include "graphics/shader.h"
-#include "components/mesh.h"
-#include "components/transform.h"
+#include "resources/mesh.h"
+#include "math/transform.h"
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
@@ -86,9 +86,9 @@ const bool renderer_create() {
   glBindBufferBase(GL_UNIFORM_BUFFER, 0, renderer.ubo);
 
   // Shaders loading
-  renderer.shaders[SHADER_CAMERA] = shader_load("assets/shaders/camera.glsl");
+  renderer.shaders[SHADER_CAMERA]   = shader_load("assets/shaders/camera.glsl");
   renderer.shaders[SHADER_INSTANCE] = shader_load("assets/shaders/inst.glsl");
-  renderer.current_shader         = renderer.shaders[SHADER_INSTANCE];
+  renderer.current_shader           = renderer.shaders[SHADER_INSTANCE];
 
   // Creating the instance mesh
   renderer.cube_mesh = mesh_create();
@@ -98,24 +98,24 @@ const bool renderer_create() {
   glBindBuffer(GL_ARRAY_BUFFER, renderer.cube_mesh->ibo);
   
   // 1st colomn
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(glm::mat4), 0);
-  glVertexAttribDivisor(1, 1); // Enabling instancing for the mesh
+  glEnableVertexAttribArray(3);
+  glVertexAttribPointer(3, 4, GL_FLOAT, false, sizeof(glm::mat4), 0);
+  glVertexAttribDivisor(3, 1); // Enabling instancing for the mesh
   
   // 2nd colomn
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 4, GL_FLOAT, false, sizeof(glm::mat4), (void*)(sizeof(f32) * 4));
-  glVertexAttribDivisor(2, 1);
+  glEnableVertexAttribArray(4);
+  glVertexAttribPointer(4, 4, GL_FLOAT, false, sizeof(glm::mat4), (void*)(sizeof(f32) * 4));
+  glVertexAttribDivisor(4, 1);
   
   // 3rd colomn
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 4, GL_FLOAT, false, sizeof(glm::mat4), (void*)(sizeof(f32) * 8));
-  glVertexAttribDivisor(3, 1);
+  glEnableVertexAttribArray(5);
+  glVertexAttribPointer(5, 4, GL_FLOAT, false, sizeof(glm::mat4), (void*)(sizeof(f32) * 8));
+  glVertexAttribDivisor(5, 1);
   
   // 4th colomn
-  glEnableVertexAttribArray(4);
-  glVertexAttribPointer(4, 4, GL_FLOAT, false, sizeof(glm::mat4), (void*)(sizeof(f32) * 12));
-  glVertexAttribDivisor(4, 1);
+  glEnableVertexAttribArray(6);
+  glVertexAttribPointer(6, 4, GL_FLOAT, false, sizeof(glm::mat4), (void*)(sizeof(f32) * 12));
+  glVertexAttribDivisor(6, 1);
 
   return true;
 }
@@ -152,7 +152,7 @@ void renderer_end() {
 
   // Render all of the instances of the mesh
   glBindVertexArray(renderer.cube_mesh->vao);
-  glDrawElementsInstanced(GL_TRIANGLES, renderer.cube_mesh->index_count, GL_UNSIGNED_INT, 0, renderer.instance_count);
+  glDrawElementsInstanced(GL_TRIANGLES, renderer.cube_mesh->indices.size(), GL_UNSIGNED_INT, 0, renderer.instance_count);
 }
 
 void renderer_present() {
@@ -164,7 +164,7 @@ void render_mesh(const Transform& transform, Mesh* mesh) {
   shader_upload_mat4(renderer.shaders[SHADER_CAMERA], "u_model", transform.transform); 
 
   glBindVertexArray(mesh->vao);
-  glDrawElements(GL_TRIANGLES, mesh->index_count, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
 }
 
 void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::vec4& color) {

@@ -1,6 +1,5 @@
 # TODO:
-- Create 3d vertices
-- Mesh rework
+- Add meshes as resources
 - Materials? 
 - Load models 
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "graphics/camera.h"
-#include "components/mesh.h"
-#include "components/transform.h"
+#include "resources/mesh.h"
+#include "math/transform.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>

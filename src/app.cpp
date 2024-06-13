@@ -1,6 +1,7 @@
 #include "app.h"
 #include "graphics/camera.h"
 #include "resources/font.h"
+#include "resources/mesh.h"
 #include "resources/texture.h"
 #include "resources/resource_manager.h"
 #include "graphics/renderer.h"
@@ -9,7 +10,6 @@
 #include "core/input.h"
 #include "core/event.h"
 #include "ui/ui_canvas.h"
-#include "core/clock.h"
 
 // App
 /////////////////////////////////////////////////////////////////////////////////
@@ -20,6 +20,9 @@ struct App {
 
   UICanvas* canvas;
   UIText title;
+
+  Mesh* mesh;
+  Transform trans;
 };
 
 static App s_app;
@@ -32,11 +35,14 @@ bool app_init(void* user_data) {
   s_app.texture = resources_add_texture("logo_texture", "textures/mg_logo.png");
   s_app.txt = resources_add_texture("damage", "textures/dnukem.jpg");
   s_app.camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+  input_cursor_show(false);
 
   renderer2d_set_default_font(s_app.font);
 
   s_app.canvas = ui_canvas_create(s_app.font);
- 
+  s_app.mesh   = mesh_create();
+  transform_create(&s_app.trans, glm::vec3(10.0f, 0.0f, 10.0f));
+
   ui_canvas_push_text(s_app.canvas, "Gravel", 50.0f, COLOR_WHITE, UI_ANCHOR_TOP_CENTER);
 
   ui_canvas_begin(s_app.canvas, glm::vec2(0.0f, 70.0f), UI_ANCHOR_CENTER);
@@ -67,15 +73,18 @@ void app_render(void* user_data) {
   renderer_clear(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
   // editor_begin();
 
-  // renderer_begin(&s_app.camera);
-  // renderer_end();
+  renderer_begin(&s_app.camera);
+  render_cube(glm::vec3(10.0f, 0.0f, 10.0f),  glm::vec3(1.0f, 1.0f, 1.0f), COLOR_WHITE);
+  
+  // render_mesh(s_app.trans, s_app.mesh);
+  renderer_end();
 
-  renderer2d_begin();
+  // renderer2d_begin();
   // render_quad(glm::vec2(150.0f, 120.0f), glm::vec2(256.0f, 50.0f), glm::vec4(1.0f));
   // render_texture(s_app.texture, glm::vec2(100.0f, 100.0f), glm::vec2(128.0f, 128.0f));
   // render_texture(s_app.txt, glm::vec2(1280 / 2, 720 / 2.0f), glm::vec2(512.0f, 512.0f));
-  ui_canvas_render(s_app.canvas); 
-  renderer2d_end();
+  // ui_canvas_render(s_app.canvas); 
+  // renderer2d_end();
  
   // editor_end();
   renderer_present();
