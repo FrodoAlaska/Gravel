@@ -1,6 +1,7 @@
 #pragma once
 
 #include "graphics/camera.h"
+#include "resources/material.h"
 #include "resources/mesh.h"
 #include "math/transform.h"
 
@@ -16,6 +17,6 @@ void renderer_begin(const Camera* cam);
 void renderer_end();
 void renderer_present();
 
-void render_mesh(const Transform& transform, Mesh* mesh);
+void render_mesh(const Transform& transform, Mesh* mesh, Material* mat);
 void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::vec4& color);
 /////////////////////////////////////////////////////////////////////////////////

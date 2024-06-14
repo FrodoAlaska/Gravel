@@ -42,6 +42,7 @@ set(GRAVEL_SOURCES
   ${GRAVEL_SRC_DIR}/resources/texture.cpp
   ${GRAVEL_SRC_DIR}/resources/font.cpp
   ${GRAVEL_SRC_DIR}/resources/mesh.cpp
+  ${GRAVEL_SRC_DIR}/resources/material.cpp
   
   # UI
   ${GRAVEL_SRC_DIR}/ui/ui_text.cpp

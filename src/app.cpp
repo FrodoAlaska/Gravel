@@ -1,6 +1,7 @@
 #include "app.h"
 #include "graphics/camera.h"
 #include "resources/font.h"
+#include "resources/material.h"
 #include "resources/mesh.h"
 #include "resources/texture.h"
 #include "resources/resource_manager.h"
@@ -10,6 +11,8 @@
 #include "core/input.h"
 #include "core/event.h"
 #include "ui/ui_canvas.h"
+
+const int MAX_DUDES = 100;
 
 // App
 /////////////////////////////////////////////////////////////////////////////////
@@ -21,8 +24,9 @@ struct App {
   UICanvas* canvas;
   UIText title;
 
-  Mesh* mesh;
-  Transform trans;
+  Mesh* meshes[MAX_DUDES][MAX_DUDES];
+  Transform transforms[MAX_DUDES][MAX_DUDES];
+  Material* mat;
 };
 
 static App s_app;
@@ -40,8 +44,15 @@ bool app_init(void* user_data) {
   renderer2d_set_default_font(s_app.font);
 
   s_app.canvas = ui_canvas_create(s_app.font);
-  s_app.mesh   = resources_add_mesh("cube_mesh");
-  transform_create(&s_app.trans, glm::vec3(10.0f, 0.0f, 10.0f));
+  s_app.mat = material_load_default();
+  s_app.mat->diffuse_map[0] = s_app.txt;
+
+  for(u32 i = 0; i < MAX_DUDES; i++) {
+    for(u32 j = 0; j < MAX_DUDES; j++) {
+      s_app.meshes[i][j] = mesh_create();
+      transform_create(&s_app.transforms[i][j], glm::vec3(2.0f * i, 0.0f, 2.0f * j));
+    }
+  }
 
   ui_canvas_push_text(s_app.canvas, "Gravel", 50.0f, COLOR_WHITE, UI_ANCHOR_TOP_CENTER);
 
@@ -74,9 +85,14 @@ void app_render(void* user_data) {
   // editor_begin();
 
   renderer_begin(&s_app.camera);
-  render_cube(glm::vec3(10.0f, 0.0f, 10.0f),  glm::vec3(1.0f, 1.0f, 1.0f), COLOR_WHITE);
+  // render_cube(glm::vec3(10.0f, 0.0f, 10.0f),  glm::vec3(1.0f, 1.0f, 1.0f), COLOR_WHITE);
   
-  // render_mesh(s_app.trans, s_app.mesh);
+  for(u32 i = 0; i < MAX_DUDES; i++) {
+    for(u32 j = 0; j < MAX_DUDES; j++) {
+      render_mesh(s_app.transforms[i][j], s_app.meshes[i][j], s_app.mat);
+      // render_cube(s_app.transforms[i][j].position, s_app.transforms[i][j].scale, COLOR_WHITE);
+    }
+  }
   renderer_end();
 
   // renderer2d_begin();

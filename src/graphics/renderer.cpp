@@ -3,6 +3,7 @@
 #include "defines.h"
 #include "graphics/camera.h"
 #include "graphics/shader.h"
+#include "resources/material.h"
 #include "resources/mesh.h"
 #include "math/transform.h"
 
@@ -159,9 +160,10 @@ void renderer_present() {
   window_swap_buffers();
 }
 
-void render_mesh(const Transform& transform, Mesh* mesh) {
-  shader_bind(renderer.shaders[SHADER_CAMERA]);
-  shader_upload_mat4(renderer.shaders[SHADER_CAMERA], "u_model", transform.transform); 
+void render_mesh(const Transform& transform, Mesh* mesh, Material* mat) {
+  material_use(mat); 
+  material_set_color(mat, mat->color);
+  material_set_model(mat, transform.transform);
 
   glBindVertexArray(mesh->vao);
   glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
