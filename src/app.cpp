@@ -1,4 +1,5 @@
 #include "app.h"
+#include "core/clock.h"
 #include "graphics/camera.h"
 #include "resources/font.h"
 #include "resources/material.h"
@@ -11,6 +12,7 @@
 #include "core/input.h"
 #include "core/event.h"
 #include "ui/ui_canvas.h"
+#include <cstdio>
 
 const int MAX_DUDES = 100;
 
@@ -78,6 +80,8 @@ void app_update(void* user_data) {
   camera_move(&s_app.camera);
   
   // ui_text_set_string(&s_app.canvas->texts[0], "GRAVEL");
+
+  printf("[INFO]: FPS = %f\n", gclock_fps());
 }
 
 void app_render(void* user_data) {
@@ -89,8 +93,8 @@ void app_render(void* user_data) {
   
   for(u32 i = 0; i < MAX_DUDES; i++) {
     for(u32 j = 0; j < MAX_DUDES; j++) {
-      render_mesh(s_app.transforms[i][j], s_app.meshes[i][j], s_app.mat);
-      // render_cube(s_app.transforms[i][j].position, s_app.transforms[i][j].scale, COLOR_WHITE);
+      // render_mesh(s_app.transforms[i][j], s_app.meshes[i][j], s_app.mat);
+      render_cube(s_app.transforms[i][j].position, glm::vec3(1.0f), COLOR_WHITE);
     }
   }
   renderer_end();

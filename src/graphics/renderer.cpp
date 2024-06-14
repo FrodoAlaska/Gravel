@@ -35,9 +35,9 @@ struct Renderer {
 
   u32 ubo; // Uniform buffer
   u32 instance_count = 0;
+  glm::mat4* transforms;
 
   Mesh* cube_mesh = nullptr;
-  std::vector<glm::mat4> transforms;
 };
 
 static Renderer renderer;
@@ -93,7 +93,10 @@ const bool renderer_create() {
 
   // Creating the instance mesh
   renderer.cube_mesh = mesh_create();
-  
+
+  // Allocate the transforms array
+  renderer.transforms = new glm::mat4[MAX_MESH_INSTANCES];
+
   // Cube Mesh model matrix layout 
   glBindVertexArray(renderer.cube_mesh->vao); 
   glBindBuffer(GL_ARRAY_BUFFER, renderer.cube_mesh->ibo);
@@ -122,7 +125,7 @@ const bool renderer_create() {
 }
 
 void renderer_destroy() {
-  renderer.transforms.clear();
+  delete[] renderer.transforms;
   mesh_destroy(renderer.cube_mesh);
 
   for(u32 i = 0; i < SHADERS_MAX; i++) {
@@ -139,9 +142,6 @@ void renderer_begin(const Camera* cam) {
   // Upload the view projection matrices through the uniform buffer 
   glBindBuffer(GL_UNIFORM_BUFFER, renderer.ubo);
   glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(cam->view_projection));
-  
-  renderer.instance_count = 0; 
-  renderer.transforms.clear();
 }
 
 void renderer_end() {
@@ -149,11 +149,14 @@ void renderer_end() {
 
   // Upload the transform matrices to the instance buffer to be renderer 
   glBindBuffer(GL_ARRAY_BUFFER, renderer.cube_mesh->ibo); 
-  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::mat4) * renderer.transforms.size(), renderer.transforms.data());
+  glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::mat4) * renderer.instance_count, renderer.transforms);
 
   // Render all of the instances of the mesh
   glBindVertexArray(renderer.cube_mesh->vao);
   glDrawElementsInstanced(GL_TRIANGLES, renderer.cube_mesh->indices.size(), GL_UNSIGNED_INT, 0, renderer.instance_count);
+
+  // Clear the instances 
+  renderer.instance_count = 0; 
 }
 
 void renderer_present() {
@@ -170,14 +173,17 @@ void render_mesh(const Transform& transform, Mesh* mesh, Material* mat) {
 }
 
 void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::vec4& color) {
-  shader_upload_vec4(renderer.shaders[SHADER_INSTANCE], "u_color", color); // @TODO: This is potantially slow 
+  // Empty the instance buffer and refill it again since we reached the max
+  if(renderer.instance_count >= MAX_MESH_INSTANCES) {
+    renderer_end();
+  }
 
   glm::mat4 model(1.0f);
   model = glm::translate(model, position) * 
           glm::rotate(model, 0.0f, glm::vec3(1.0f)) *
           glm::scale(model, scale);
   
+  renderer.transforms[renderer.instance_count] = model;
   renderer.instance_count++;
-  renderer.transforms.push_back(model);
 }
 /////////////////////////////////////////////////////////////////////////////////
