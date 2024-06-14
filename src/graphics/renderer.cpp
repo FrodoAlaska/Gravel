@@ -5,6 +5,7 @@
 #include "graphics/shader.h"
 #include "resources/material.h"
 #include "resources/mesh.h"
+#include "resources/model.h"
 #include "math/transform.h"
 
 #include <glad/gl.h>
@@ -185,5 +186,11 @@ void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::v
   
   renderer.transforms[renderer.instance_count] = model;
   renderer.instance_count++;
+}
+
+void render_model(Model* model) {
+  for(u32 i = 0; i < model->meshes.size(); i++) {
+    render_mesh(model->transform, model->meshes[i], model->materials[i]); 
+  }
 }
 /////////////////////////////////////////////////////////////////////////////////

@@ -4,6 +4,7 @@
 #include "resources/font.h"
 #include "resources/material.h"
 #include "resources/mesh.h"
+#include "resources/model.h"
 #include "resources/texture.h"
 #include "resources/resource_manager.h"
 #include "graphics/renderer.h"
@@ -29,6 +30,8 @@ struct App {
   Mesh* meshes[MAX_DUDES][MAX_DUDES];
   Transform transforms[MAX_DUDES][MAX_DUDES];
   Material* mat;
+
+  Model* model;
 };
 
 static App s_app;
@@ -49,12 +52,12 @@ bool app_init(void* user_data) {
   s_app.mat = material_load_default();
   s_app.mat->diffuse_map[0] = s_app.txt;
 
-  for(u32 i = 0; i < MAX_DUDES; i++) {
-    for(u32 j = 0; j < MAX_DUDES; j++) {
-      s_app.meshes[i][j] = mesh_create();
-      transform_create(&s_app.transforms[i][j], glm::vec3(2.0f * i, 0.0f, 2.0f * j));
-    }
-  }
+  // for(u32 i = 0; i < MAX_DUDES; i++) {
+  //   for(u32 j = 0; j < MAX_DUDES; j++) {
+  //     s_app.meshes[i][j] = mesh_create();
+  //     transform_create(&s_app.transforms[i][j], glm::vec3(2.0f * i, 0.0f, 2.0f * j));
+  //   }
+  // }
 
   ui_canvas_push_text(s_app.canvas, "Gravel", 50.0f, COLOR_WHITE, UI_ANCHOR_TOP_CENTER);
 
@@ -63,6 +66,8 @@ bool app_init(void* user_data) {
   ui_canvas_push_button(s_app.canvas, "SETTINGS", 40.0f, COLOR_WHITE, COLOR_BLACK, nullptr, nullptr);
   ui_canvas_push_button(s_app.canvas, "QUIT", 40.0f, COLOR_WHITE, COLOR_BLACK, nullptr, nullptr);
   ui_canvas_end(s_app.canvas);
+
+  s_app.model = model_load("assets/models/cottage_home", glm::vec3(10.0f, 0.0f, 10.0f));
 
   return true;
 }
@@ -89,14 +94,16 @@ void app_render(void* user_data) {
   // editor_begin();
 
   renderer_begin(&s_app.camera);
+  render_model(s_app.model);
+
   // render_cube(glm::vec3(10.0f, 0.0f, 10.0f),  glm::vec3(1.0f, 1.0f, 1.0f), COLOR_WHITE);
   
-  for(u32 i = 0; i < MAX_DUDES; i++) {
-    for(u32 j = 0; j < MAX_DUDES; j++) {
-      render_mesh(s_app.transforms[i][j], s_app.meshes[i][j], s_app.mat);
-      // render_cube(s_app.transforms[i][j].position, glm::vec3(1.0f), COLOR_WHITE);
-    }
-  }
+  // for(u32 i = 0; i < MAX_DUDES; i++) {
+  //   for(u32 j = 0; j < MAX_DUDES; j++) {
+  //     render_mesh(s_app.transforms[i][j], s_app.meshes[i][j], s_app.mat);
+  //     // render_cube(s_app.transforms[i][j].position, glm::vec3(1.0f), COLOR_WHITE);
+  //   }
+  // }
   renderer_end();
 
   // renderer2d_begin();

@@ -4,6 +4,7 @@
 #include "resources/material.h"
 #include "resources/mesh.h"
 #include "math/transform.h"
+#include "resources/model.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -19,4 +20,5 @@ void renderer_present();
 
 void render_mesh(const Transform& transform, Mesh* mesh, Material* mat);
 void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::vec4& color);
+void render_model(Model* model);
 /////////////////////////////////////////////////////////////////////////////////

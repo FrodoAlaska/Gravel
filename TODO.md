@@ -1,10 +1,11 @@
 # TODO:
-- Add materials to the resource manager
 - Load models 
+- Add models to resources
 
 # LATER TODO:
 - Model animations
 - Minimal logger
+- Physics
 - Some kind of arena allocater
 
 # FIX: 
