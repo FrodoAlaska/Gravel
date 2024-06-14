@@ -1,5 +1,6 @@
 #pragma once
 
+#include "resources/material.h"
 #include "resources/mesh.h"
 #include "resources/texture.h"
 #include "resources/font.h"
@@ -32,6 +33,10 @@ Texture* resources_add_texture(const std::string& id, i32 width, i32 height, Tex
 Font* resources_add_font(const std::string& path, const std::string& id);
 Mesh* resources_add_mesh(const std::string& id);
 Mesh* resources_add_mesh(const std::string& id, const std::vector<Vertex3D>& vertices, const std::vector<u32>& indices);
+Material* resources_add_material(const std::string& id, 
+                                 const std::vector<Texture*>& diffuse, 
+                                 const std::vector<Texture*>& specular, 
+                                 const std::string& shader_path);
 
 // Returning resources 
 // These functions will return the resource that is specified by the 'id'. 
@@ -39,6 +44,7 @@ Mesh* resources_add_mesh(const std::string& id, const std::vector<Vertex3D>& ver
 Texture* resources_get_texture(const std::string& id);
 Font* resources_get_font(const std::string& id);
 Mesh* resources_get_mesh(const std::string& id);
+Material* resources_get_material(const std::string& id);
 
 // Removing resources
 // Removes the specified resource from the resource manager's map. 
@@ -49,4 +55,5 @@ Mesh* resources_get_mesh(const std::string& id);
 bool resources_remove_texture(const std::string& id);
 bool resources_remove_font(const std::string& id);
 bool resources_remove_mesh(const std::string& id);
+bool resources_remove_material(const std::string& id);
 /////////////////////////////////////////////////////////////////////////////////

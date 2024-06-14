@@ -1,5 +1,4 @@
 # TODO:
-- Make instancing better
 - Add materials to the resource manager
 - Load models 
 
