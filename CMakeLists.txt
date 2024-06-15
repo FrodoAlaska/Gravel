@@ -3,13 +3,12 @@ project(Gravel)
 
 add_subdirectory(libs/GLFW)
 add_subdirectory(libs/glm)
-add_subdirectory(libs/assimp)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # set(CMAKE_BUILD_TYPE Debug)
 
-set(GRAVEL_SRC_DIR src/)
-set(GRAVEL_LIBS_DIR libs/)
+set(GRAVEL_SRC_DIR ${CMAKE_SOURCE_DIR}/src/)
+set(GRAVEL_LIBS_DIR ${CMAKE_SOURCE_DIR}/libs/)
 set(GRAVEL_BUILD_FLAGS GLFW_INCLUDE_NONE GRAVEL_DEBUG EDITOR_ACTIVE)
 
 set(GRAVEL_SOURCES 
@@ -78,4 +77,4 @@ target_compile_options(${PROJECT_NAME} PRIVATE -lm)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 target_include_directories(${PROJECT_NAME} PUBLIC BEFORE ${GRAVEL_LIBS_DIR} ${GRAVEL_SRC_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC assimp glfw)
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw)

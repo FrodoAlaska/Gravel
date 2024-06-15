@@ -13,9 +13,10 @@
 #include "core/input.h"
 #include "core/event.h"
 #include "ui/ui_canvas.h"
+
 #include <cstdio>
 
-const int MAX_DUDES = 32;
+const int MAX_DUDES = 1;
 
 // App
 /////////////////////////////////////////////////////////////////////////////////
@@ -27,6 +28,7 @@ struct App {
   UICanvas* canvas;
   UIText title;
 
+  f32 mesh_rotation;
   Mesh* meshes[MAX_DUDES][MAX_DUDES];
   Transform transforms[MAX_DUDES][MAX_DUDES];
   Material* mat;
@@ -42,7 +44,7 @@ static App s_app;
 bool app_init(void* user_data) {
   s_app.font = resources_add_font("font/bit5x3.ttf", "regular_font");
   s_app.texture = resources_add_texture("logo_texture", "textures/mg_logo.png");
-  s_app.txt = resources_add_texture("damage", "textures/dnukem.jpg");
+  s_app.txt = resources_add_texture("damage", "textures/mid_finger.jpeg");
   s_app.camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
   input_cursor_show(false);
 
@@ -52,12 +54,13 @@ bool app_init(void* user_data) {
   s_app.mat = material_load_default();
   s_app.mat->diffuse_map[0] = s_app.txt;
 
-  // for(u32 i = 0; i < MAX_DUDES; i++) {
-  //   for(u32 j = 0; j < MAX_DUDES; j++) {
-  //     s_app.meshes[i][j] = mesh_create();
-  //     transform_create(&s_app.transforms[i][j], glm::vec3(2.0f * i, 0.0f, 2.0f * j));
-  //   }
-  // }
+  s_app.mesh_rotation = 0.0f;
+  for(u32 i = 0; i < MAX_DUDES; i++) {
+    for(u32 j = 0; j < MAX_DUDES; j++) {
+      s_app.meshes[i][j] = mesh_create();
+      transform_create(&s_app.transforms[i][j], glm::vec3(10.0f, 0.0f, 10.0f));
+    }
+  }
 
   ui_canvas_push_text(s_app.canvas, "Gravel", 50.0f, COLOR_WHITE, UI_ANCHOR_TOP_CENTER);
 
@@ -86,6 +89,8 @@ void app_update(void* user_data) {
   
   // @TODO: ui_text_set_string(&s_app.canvas->texts[0], "GRAVEL");
 
+  s_app.mesh_rotation += 2.0f * gclock_delta_time();
+
   printf("[INFO]: FPS = %f\n", gclock_fps());
 }
 
@@ -94,14 +99,15 @@ void app_render(void* user_data) {
   // editor_begin();
 
   renderer_begin(&s_app.camera);
-  render_model(s_app.model);
+  // render_model(s_app.model);
 
-  // render_cube(glm::vec3(10.0f, 0.0f, 10.0f),  glm::vec3(1.0f, 1.0f, 1.0f), COLOR_WHITE);
+  transform_rotate(&s_app.transforms[0][0], s_app.mesh_rotation, glm::vec3(1.0f));
+  render_mesh(s_app.transforms[0][0], s_app.meshes[0][0], s_app.mat);
+  // render_cube(glm::vec3(10.0f, 0.0f, 10.0f),  glm::vec3(1.0f, 1.0f, 1.0f), 45.0f, COLOR_WHITE);
   
   // for(u32 i = 0; i < MAX_DUDES; i++) {
   //   for(u32 j = 0; j < MAX_DUDES; j++) {
-  //     render_mesh(s_app.transforms[i][j], s_app.meshes[i][j], s_app.mat);
-  //     // render_cube(s_app.transforms[i][j].position, glm::vec3(1.0f), COLOR_WHITE);
+  //     render_cube(s_app.transforms[i][j].position, glm::vec3(1.0f), COLOR_WHITE);
   //   }
   // }
   renderer_end();

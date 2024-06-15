@@ -173,7 +173,7 @@ void render_mesh(const Transform& transform, Mesh* mesh, Material* mat) {
   glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
 }
 
-void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::vec4& color) {
+void render_cube(const glm::vec3& position, const glm::vec3& scale, const f32& rotation, const glm::vec4& color) {
   // Empty the instance buffer and refill it again since we reached the max
   if(renderer.instance_count >= MAX_MESH_INSTANCES) {
     renderer_end();
@@ -181,11 +181,15 @@ void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::v
 
   glm::mat4 model(1.0f);
   model = glm::translate(model, position) * 
-          glm::rotate(model, 0.0f, glm::vec3(1.0f)) *
+          glm::rotate(model, rotation, glm::vec3(1.0f)) *
           glm::scale(model, scale);
   
   renderer.transforms[renderer.instance_count] = model;
   renderer.instance_count++;
+}
+
+void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::vec4& color) {
+  render_cube(position, scale, 0.0f, color);
 }
 
 void render_model(Model* model) {
