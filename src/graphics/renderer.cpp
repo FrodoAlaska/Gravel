@@ -209,16 +209,6 @@ void render_model(const Transform& transform, Model* model) {
     // @TODO: Warn logger or assert here???? 
   }
 
-  // for(auto& mat : model->materials) {
-  //   material_use(mat);
-  //   material_set_color(mat, mat->color);
-  //   material_set_model(mat, transform.transform);
-  // }
-  
-  // material_use(model->materials[0]);
-  // material_set_color(model->materials[0], model->materials[0]->color);
-  // material_set_model(model->materials[0], transform.transform);
-
   for(u32 i = 0; i < model->meshes.size(); i++) {
     render_mesh(transform, model->meshes[i], model->materials[model->material_ids[i]]); 
   }

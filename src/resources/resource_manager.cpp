@@ -1,6 +1,7 @@
 #include "resource_manager.h"
 #include "resources/material.h"
 #include "resources/mesh.h"
+#include "resources/model.h"
 #include "resources/texture.h"
 #include "resources/font.h"
 #include "math/vertex.h"
@@ -19,6 +20,7 @@ struct ResourceManager {
   std::unordered_map<std::string, Font*> fonts;
   std::unordered_map<std::string, Mesh*> meshes;
   std::unordered_map<std::string, Material*> materials;
+  std::unordered_map<std::string, Model*> models;
 };
 
 static ResourceManager s_res_man;
@@ -53,6 +55,14 @@ Mesh* find_mesh(const std::string& id) {
 Material* find_material(const std::string& id) {
   if(s_res_man.materials.find(id) != s_res_man.materials.end()) {
     return s_res_man.materials[id];
+  }
+
+  return nullptr;
+}
+
+Model* find_model(const std::string& id) {
+  if(s_res_man.models.find(id) != s_res_man.models.end()) {
+    return s_res_man.models[id];
   }
 
   return nullptr;
@@ -124,6 +134,13 @@ Material* resources_add_material(const std::string& id,
   return s_res_man.materials[id];
 }
 
+Model* resources_add_model(const std::string& id, const std::string& path) {
+  std::string full_path = s_res_man.res_path + path; 
+
+  s_res_man.models[id] = model_load(path);
+  return s_res_man.models[id];
+}
+
 Texture* resources_get_texture(const std::string& id) {
   return find_texture(id);
 }
@@ -138,6 +155,10 @@ Mesh* resources_get_mesh(const std::string& id) {
 
 Material* resources_get_material(const std::string& id) {
   return find_material(id);
+}
+
+Model* resources_get_model(const std::string& id) {
+  return find_model(id);
 }
 
 bool resources_remove_texture(const std::string& id) {
@@ -156,7 +177,6 @@ bool resources_remove_texture(const std::string& id) {
 bool resources_remove_font(const std::string& id) {
   Font* font = find_font(id);
   if(font) {
-    // Make sure to unload the font before removing it
     font_unload(font);
     s_res_man.fonts.erase(id);
     
@@ -169,7 +189,6 @@ bool resources_remove_font(const std::string& id) {
 bool resources_remove_mesh(const std::string& id) {
   Mesh* mesh = find_mesh(id);
   if(mesh) {
-    // Make sure to unload the font before removing it
     mesh_destroy(mesh);
     s_res_man.fonts.erase(id);
     
@@ -182,9 +201,20 @@ bool resources_remove_mesh(const std::string& id) {
 bool resources_remove_material(const std::string& id) {
   Material* material = find_material(id);
   if(material) {
-    // Make sure to unload the font before removing it
     material_unload(material);
     s_res_man.materials.erase(id);
+    
+    return true;
+  }
+
+  return false;
+}
+
+bool resources_remove_model(const std::string& id) {
+  Model* model = find_model(id);
+  if(model) {
+    model_unload(model);
+    s_res_man.models.erase(id);
     
     return true;
   }

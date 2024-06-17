@@ -55,9 +55,9 @@ bool app_init(void* user_data) {
   s_app.mat = material_load_default();
   s_app.mat->diffuse_map = s_app.txt;
 
-  // s_app.model = model_load("assets/models/cottage_home/cottage_obj.obj");
+  s_app.model = resources_add_model("cottage", "assets/models/cottage_home/cottage_obj.obj");
   // s_app.model = model_load("assets/models/little_pumpkin.obj");
-  s_app.model = model_load("assets/models/SittingBaby/baby.obj");
+  // s_app.model = model_load("assets/models/SittingBaby/baby.obj");
   // s_app.model = model_load("assets/models/backpack/backpack.obj");
 
   transform_create(&s_app.model_transform, glm::vec3(10.0f, 0.0f, 10.0f));
