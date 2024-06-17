@@ -47,7 +47,7 @@ Texture* texture_load(const std::string& path) {
   glGenTextures(1, &texture->id);
   glBindTexture(GL_TEXTURE_2D, texture->id);
 
-  // stbi_set_flip_vertically_on_load(true);
+  stbi_set_flip_vertically_on_load(true);
   u8* data = stbi_load(path.c_str(), &texture->width, &texture->height, &texture->channels, 0);
   if(data) {
     // Deduce the correct format based on the channels
@@ -133,6 +133,10 @@ void texture_unload(Texture* texture) {
 }
 
 void texture_use(Texture* texture, i32 slot) {
+  if(!texture) {
+    return;
+  }
+
   glActiveTexture(GL_TEXTURE0 + slot);
   glBindTexture(GL_TEXTURE_2D, texture->id);
 }

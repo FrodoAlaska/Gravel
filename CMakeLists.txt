@@ -5,7 +5,7 @@ add_subdirectory(libs/GLFW)
 add_subdirectory(libs/glm)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-# set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Debug)
 
 set(GRAVEL_SRC_DIR ${CMAKE_SOURCE_DIR}/src/)
 set(GRAVEL_LIBS_DIR ${CMAKE_SOURCE_DIR}/libs/)
@@ -66,6 +66,8 @@ set(GRAVEL_LIBS
   ${GRAVEL_LIBS_DIR}/imgui/imgui_widgets.cpp 
   ${GRAVEL_LIBS_DIR}/imgui/backends/imgui_impl_glfw.cpp 
   ${GRAVEL_LIBS_DIR}/imgui/backends/imgui_impl_opengl3.cpp 
+  
+  ${GRAVEL_LIBS_DIR}/tinyobjloader/tiny_obj_loader.cc
 )
 
 add_executable(${PROJECT_NAME} ${GRAVEL_SOURCES} ${GRAVEL_LIBS})

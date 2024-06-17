@@ -170,7 +170,7 @@ void render_mesh(const Transform& transform, Mesh* mesh, Material* mat) {
   material_set_model(mat, transform.transform);
 
   glBindVertexArray(mesh->vao);
-  glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
+  glDrawArrays(GL_TRIANGLES, 0, mesh->vertices.size());
 }
 
 void render_cube(const glm::vec3& position, const glm::vec3& scale, const f32& rotation, const glm::vec4& color) {
@@ -192,9 +192,9 @@ void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::v
   render_cube(position, scale, 0.0f, color);
 }
 
-void render_model(Model* model) {
+void render_model(const Transform& transform, Model* model) {
   for(u32 i = 0; i < model->meshes.size(); i++) {
-    render_mesh(model->transform, model->meshes[i], model->materials[i]); 
+    render_mesh(transform, model->meshes[i], model->materials[i]); 
   }
 }
 /////////////////////////////////////////////////////////////////////////////////

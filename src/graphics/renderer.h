@@ -21,5 +21,5 @@ void renderer_present();
 void render_mesh(const Transform& transform, Mesh* mesh, Material* mat);
 void render_cube(const glm::vec3& position, const glm::vec3& scale, const f32& rotation, const glm::vec4& color);
 void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::vec4& color);
-void render_model(Model* model);
+void render_model(const Transform& transform, Model* model);
 /////////////////////////////////////////////////////////////////////////////////
