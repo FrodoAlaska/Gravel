@@ -230,7 +230,7 @@ void render_texture(Texture* texture, const Rect& src, const Rect& dest, const g
   Vertex2D v1; 
   v1.position       = renderer.ortho * model * renderer.quad_vertices[0]; 
   v1.color          = tint;
-  v1.texture_coords = glm::vec2(src.x / src.width, src.y / src.height); 
+  v1.texture_coords = glm::vec2(src.x / src.width, (src.y + src.height) / src.height); 
   v1.texture_index  = renderer.texture_index;
   renderer.vertices.push_back(v1);
  
@@ -238,7 +238,7 @@ void render_texture(Texture* texture, const Rect& src, const Rect& dest, const g
   Vertex2D v2; 
   v2.position       = renderer.ortho * model * renderer.quad_vertices[1]; 
   v2.color          = tint;
-  v2.texture_coords = glm::vec2((src.x + src.width) / src.width, src.y / src.height); 
+  v2.texture_coords = glm::vec2((src.x + src.width) / src.width, (src.y + src.height) / src.height); 
   v2.texture_index  = renderer.texture_index;
   renderer.vertices.push_back(v2);
  
@@ -246,7 +246,7 @@ void render_texture(Texture* texture, const Rect& src, const Rect& dest, const g
   Vertex2D v3; 
   v3.position       = renderer.ortho * model * renderer.quad_vertices[2]; 
   v3.color          = tint;
-  v3.texture_coords = glm::vec2((src.x + src.width) / src.width, (src.y + src.height) / src.height); 
+  v3.texture_coords = glm::vec2((src.x + src.width) / src.width, src.y / src.height); 
   v3.texture_index  = renderer.texture_index;
   renderer.vertices.push_back(v3);
  
@@ -254,26 +254,25 @@ void render_texture(Texture* texture, const Rect& src, const Rect& dest, const g
   Vertex2D v4; 
   v4.position       = renderer.ortho * model * renderer.quad_vertices[3]; 
   v4.color          = tint;
-  v4.texture_coords = glm::vec2(src.x / src.width, (src.y + src.height) / src.height); 
+  v4.texture_coords = glm::vec2(src.x / src.width, src.y / src.height); 
   v4.texture_index  = renderer.texture_index;
   renderer.vertices.push_back(v4);
 
   renderer.indices_count += 6;
  
-  // TODO: This check fucks up the texts when rendering the same letter more than once
   // Check to find if the texture already exists in the array
-  // bool found = false;
-  // for(i32 i = 1; i < renderer.texture_index; i++) {
-  //   if(texture->id == renderer.textures[i]->id) {
-  //     found = true; 
-  //     break;
-  //   }
-  // }
-  //
-  // // Only add unique textures into the array
-  // if(found) {
-  //   return; 
-  // }
+  bool found = false;
+  for(i32 i = 1; i < renderer.texture_index; i++) {
+    if(texture->id == renderer.textures[i]->id) {
+      found = true; 
+      break;
+    }
+  }
+
+  // Only add unique textures into the array
+  if(found) {
+    return; 
+  }
 
   // If the texture is unique, add it to the array and 
   // increament the amount of textures to render next flush
@@ -313,10 +312,59 @@ void render_text(const Font* font, const f32 size, const std::string& text, cons
     }
    
     glm::vec2 offset((off_x + glyph.x_offset) * scale, (off_y + glyph.y_offset) * scale);
-    Rect src = {0.0f, 0.0f, glyph.width * font->glyph_padding, glyph.height * font->glyph_padding};
+    Rect src = {0.0f, 0.0f, -(glyph.width * font->glyph_padding), -(glyph.height * font->glyph_padding)};
     Rect dest = {position.x + offset.x, position.y + offset.y, glyph.width * scale, glyph.height * scale};
 
-    render_texture(glyph.texture, src, dest, color); 
+    // @TODO: This is not at all ideal. This is the exact same functionality as in 
+    // the 'render_texture' function but with the uvs flipped and no check at the end 
+    // for dupliate textures. There's got to be another way
+
+    // Restart the renderer once the max quads is reached 
+    if(renderer.indices_count >= MAX_INDICES || renderer.texture_index > MAX_TEXTURES) {
+      renderer2d_end();
+      renderer2d_begin();
+    }
+
+    glm::mat4 model(1.0f);
+    model = glm::translate(model, glm::vec3(dest.x, dest.y, 0.0f));
+    model = glm::scale(model, glm::vec3(dest.width, dest.height, 0.0f));
+
+    // Top-left 
+    Vertex2D v1; 
+    v1.position       = renderer.ortho * model * renderer.quad_vertices[0]; 
+    v1.color          = color;
+    v1.texture_coords = glm::vec2(src.x / src.width, src.y / src.height); 
+    v1.texture_index  = renderer.texture_index;
+    renderer.vertices.push_back(v1);
+
+    // Top-right
+    Vertex2D v2; 
+    v2.position       = renderer.ortho * model * renderer.quad_vertices[1]; 
+    v2.color          = color;
+    v2.texture_coords = glm::vec2((src.x + src.width) / src.width, src.y / src.height); 
+    v2.texture_index  = renderer.texture_index;
+    renderer.vertices.push_back(v2);
+
+    // Bottom-right
+    Vertex2D v3; 
+    v3.position       = renderer.ortho * model * renderer.quad_vertices[2]; 
+    v3.color          = color;
+    v3.texture_coords = glm::vec2((src.x + src.width) / src.width, (src.y + src.height) / src.height); 
+    v3.texture_index  = renderer.texture_index;
+    renderer.vertices.push_back(v3);
+
+    // Bottom-left
+    Vertex2D v4; 
+    v4.position       = renderer.ortho * model * renderer.quad_vertices[3]; 
+    v4.color          = color;
+    v4.texture_coords = glm::vec2(src.x / src.width, (src.y + src.height) / src.height); 
+    v4.texture_index  = renderer.texture_index;
+    renderer.vertices.push_back(v4);
+
+    renderer.indices_count += 6;
+    
+    renderer.textures[renderer.texture_index] = glyph.texture;
+    renderer.texture_index++;
 
     off_x += glyph.advance_x + glyph.kern;
   }
