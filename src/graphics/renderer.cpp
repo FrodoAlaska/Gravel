@@ -165,12 +165,23 @@ void renderer_present() {
 }
 
 void render_mesh(const Transform& transform, Mesh* mesh, Material* mat) {
-  material_use(mat); 
-  material_set_color(mat, mat->color);
-  material_set_model(mat, transform.transform);
+  if(mat) {
+    material_use(mat); 
+    material_set_color(mat, mat->color);
+    material_set_model(mat, transform.transform);
+  }
 
   glBindVertexArray(mesh->vao);
-  glDrawArrays(GL_TRIANGLES, 0, mesh->vertices.size());
+
+  if(mesh->indices.size() > 0) {
+    glDrawElements(GL_TRIANGLES, mesh->indices.size(), GL_UNSIGNED_INT, 0);
+  }
+  else if(mesh->vertices.size() > 0) {
+    glDrawArrays(GL_TRIANGLES, 0, mesh->vertices.size());
+  }
+  else {
+    // @TODO: Warn logger or assert here???? 
+  }
 }
 
 void render_cube(const glm::vec3& position, const glm::vec3& scale, const f32& rotation, const glm::vec4& color) {
@@ -193,8 +204,23 @@ void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::v
 }
 
 void render_model(const Transform& transform, Model* model) {
+  if(!model) {
+    return;
+    // @TODO: Warn logger or assert here???? 
+  }
+
+  // for(auto& mat : model->materials) {
+  //   material_use(mat);
+  //   material_set_color(mat, mat->color);
+  //   material_set_model(mat, transform.transform);
+  // }
+  
+  // material_use(model->materials[0]);
+  // material_set_color(model->materials[0], model->materials[0]->color);
+  // material_set_model(model->materials[0], transform.transform);
+
   for(u32 i = 0; i < model->meshes.size(); i++) {
-    render_mesh(transform, model->meshes[i], model->materials[i]); 
+    render_mesh(transform, model->meshes[i], model->materials[model->material_ids[i]]); 
   }
 }
 /////////////////////////////////////////////////////////////////////////////////

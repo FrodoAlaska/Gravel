@@ -14,6 +14,7 @@
 #include "core/input.h"
 #include "core/event.h"
 #include "ui/ui_canvas.h"
+#include <cstdio>
 
 const int MAX_DUDES = 1;
 
@@ -27,7 +28,7 @@ struct App {
   UICanvas* canvas;
   UIText title;
 
-  f32 mesh_rotation;
+  f32 mesh_rotation = 0.0f;
   Mesh* meshes[MAX_DUDES][MAX_DUDES];
   Transform transforms[MAX_DUDES][MAX_DUDES];
   Transform model_transform;
@@ -55,10 +56,11 @@ bool app_init(void* user_data) {
   s_app.mat->diffuse_map = s_app.txt;
 
   // s_app.model = model_load("assets/models/cottage_home/cottage_obj.obj");
-  // s_app.model = model_load("assets/models/little_pumpkin.obj", glm::vec3(10.0f, 0.0f, 10.0f));
+  // s_app.model = model_load("assets/models/little_pumpkin.obj");
   s_app.model = model_load("assets/models/SittingBaby/baby.obj");
+  // s_app.model = model_load("assets/models/backpack/backpack.obj");
 
-  transform_create(&s_app.model_transform, glm::vec3(1.0f, 0.0f, 1.0f));
+  transform_create(&s_app.model_transform, glm::vec3(10.0f, 0.0f, 10.0f));
 
   return true;
 }
@@ -77,7 +79,7 @@ void app_update(void* user_data) {
   // @TODO: ui_text_set_string(&s_app.canvas->texts[0], "GRAVEL");
 
   // s_app.mesh_rotation += 2.0f * gclock_delta_time();
-  // transform_rotate(&s_app.model_transform, s_app.mesh_rotation, glm::vec3(1.0f));
+  transform_rotate(&s_app.model_transform, s_app.mesh_rotation, glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
 void app_render(void* user_data) {
