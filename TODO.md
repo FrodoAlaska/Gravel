@@ -4,7 +4,7 @@
 # LATER TODO:
 - The 2D renderer needs a whole rewrite. Perhaps a 'begin_vertex' and 'end_vertex' functions so I don't have to redo the whole thing again??
 - Model animations
-- Minimal logger
+- Minimal logger and asserts
 - Physics
 - Some kind of arena allocater
 
