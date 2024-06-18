@@ -10,7 +10,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 enum EventType {
   /* Game events */ 
-  EVENT_GAME_QUIT = 0,
+  EVENT_GAME_QUIT = 0x7d2,
   
   /* Keyboard events */ 
   EVENT_KEY_PRESSED,

@@ -8,6 +8,6 @@
 - Physics
 - Some kind of arena allocater
 
-# FIX: 
-- Button texts positions are wrong on different font sizes 
+# FIX:
+- TEMP FIX: Button texts positions are wrong on different font sizes 
 - Texts get fucked with long strings for some reason - maybe reaching the texture limit?
