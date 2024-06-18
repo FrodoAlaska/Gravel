@@ -13,7 +13,7 @@ This project uses the CMake build system. I know, not the most ideal. Yet, it is
 
 Gravel does use a couple of dependencies. However, most of them (apart from one), are header only. Meaning, most of the libraries used here are built with the project itself. The only library that Gravel uses that needs to be linked is GLFW. But, as you can see from the project files, there is a folder called _libs_ where GLFW resides.  
 
-Gravel builds all of its libraries as well as its own files. It might take longer to build but it saves me from having to manage the dependencies. Run the commands below to build Gravel. 
+Gravel builds all of its libraries as well as its own files. It might take longer to build but it saves me from having to manage the dependencies. Run the commands below to build Gravel. You can also check the 'main.cpp' file to see how an application is started.
 
 ```
 git clone https://github.com/MohamedAG2002/Gravel.git 
