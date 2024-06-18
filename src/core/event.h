@@ -38,7 +38,7 @@ struct EventDesc {
   // Mouse desc
   i32 button_pressed, button_released;
   bool cursor_shown;
-  glm::vec2 mouse_pos;
+  glm::vec2 mouse_pos, mouse_offset;
 
   // Audio desc 
   SoundType sound_type; 

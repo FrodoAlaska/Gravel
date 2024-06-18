@@ -27,6 +27,7 @@ struct App {
 
   UICanvas* canvas;
   UIText title;
+  UIButton button;
 
   f32 mesh_rotation = 0.0f;
   Mesh* meshes[MAX_DUDES][MAX_DUDES];
@@ -51,9 +52,18 @@ bool app_init(void* user_data) {
 
   renderer2d_set_default_font(s_app.font);
 
-  // s_app.canvas = ui_canvas_create(s_app.font);
+  ui_button_create(&s_app.button, s_app.font, "PLAY", 50.0f, UI_ANCHOR_CENTER, COLOR_WHITE, COLOR_BLACK);
+  
+  s_app.canvas = ui_canvas_create(s_app.font);
   s_app.mat = material_load_default();
   s_app.mat->diffuse_map = s_app.txt;
+
+  ui_canvas_begin(s_app.canvas, glm::vec2(0.0f, 100.0f), UI_ANCHOR_CENTER);
+  // ui_canvas_push_text(s_app.canvas, "SCORE: ", 30.0f, COLOR_WHITE);
+  // ui_canvas_push_button(s_app.canvas, "PLAY", 50.0f, COLOR_WHITE, COLOR_BLACK, nullptr, nullptr);
+  // ui_canvas_push_button(s_app.canvas, "SETTINGS", 50.0f, COLOR_WHITE, COLOR_BLACK, nullptr, nullptr);
+  // ui_canvas_push_button(s_app.canvas, "QUIT", 50.0f, COLOR_WHITE, COLOR_BLACK, nullptr, nullptr);
+  ui_canvas_end(s_app.canvas);
 
   s_app.model = resources_add_model("cottage", "assets/models/cottage_home/cottage_obj.obj");
   // s_app.model = model_load("assets/models/little_pumpkin.obj");
@@ -75,11 +85,9 @@ void app_update(void* user_data) {
 
   camera_update(&s_app.camera);
   camera_move(&s_app.camera);
-  
-  // @TODO: ui_text_set_string(&s_app.canvas->texts[0], "GRAVEL");
-
+ 
   // s_app.mesh_rotation += 2.0f * gclock_delta_time();
-  transform_rotate(&s_app.model_transform, s_app.mesh_rotation, glm::vec3(1.0f, 0.0f, 0.0f));
+  transform_rotate(&s_app.model_transform, -1.5f, glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
 void app_render(void* user_data) {
@@ -89,9 +97,10 @@ void app_render(void* user_data) {
   renderer_begin(&s_app.camera);
   render_model(s_app.model_transform, s_app.model);
   renderer_end();
-
-  // renderer2d_begin();
-  // renderer2d_end();
+  
+  renderer2d_begin();
+  ui_canvas_render(s_app.canvas);
+  renderer2d_end();
  
   // editor_end();
   renderer_present();

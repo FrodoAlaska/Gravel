@@ -52,10 +52,10 @@ void camera_update(Camera* camera) {
                             glm::lookAt(camera->position, camera->position + camera->front, camera->up);
 
   if(camera->can_move) {
-    glm::vec2 mouse_pos = input_mouse_pos();  
+    glm::vec2 mouse_offset = input_mouse_offset();  
 
-    camera->yaw   = mouse_pos.x;
-    camera->pitch = mouse_pos.y;
+    camera->yaw   = mouse_offset.x;
+    camera->pitch = mouse_offset.y;
   }
   else {
     camera->yaw   = 0.0f;

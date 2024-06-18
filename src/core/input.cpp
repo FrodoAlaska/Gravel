@@ -15,7 +15,7 @@ struct InputState {
   bool mouse_prev_state[BUTTONS_MAX];
   bool mouse_curr_state[BUTTONS_MAX];
 
-  glm::vec2 mouse_pos;
+  glm::vec2 mouse_pos, mouse_offset;
 };
 
 static InputState state;
@@ -29,6 +29,7 @@ bool mouse_move_callback(const EventType type, const EventDesc& desc) {
   } 
 
   state.mouse_pos = desc.mouse_pos;
+  state.mouse_offset = desc.mouse_offset;
   return true;
 }
 
@@ -112,6 +113,10 @@ bool input_button_released(const ButtonCode key) {
 
 const glm::vec2& input_mouse_pos() {
   return state.mouse_pos;
+}
+
+const glm::vec2& input_mouse_offset() {
+  return state.mouse_offset;
 }
 
 void input_cursor_show(const bool show) {

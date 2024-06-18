@@ -15,6 +15,7 @@ struct Window {
 
   glm::vec2 size;
   glm::vec2 mouse_pos, last_mouse_pos;
+  glm::vec2 mouse_offset; // How much the mouse moved this frame
 
   bool is_focused;
 }; 
@@ -38,10 +39,11 @@ void mouse_callback(GLFWwindow* win, f64 x_pos, f64 y_pos) {
   window.last_mouse_pos = glm::vec2(x_pos, y_pos);
 
   offset *= SENS; 
-  window.mouse_pos += offset;
+  window.mouse_offset += offset;
 
   EventDesc desc = {
-    .mouse_pos = window.mouse_pos//glm::vec2(x_pos, y_pos), // @TODO: Fix this // window.mouse_pos,
+    .mouse_pos = glm::vec2(x_pos, y_pos),
+    .mouse_offset = window.mouse_offset,
   };
   event_dispatch(EVENT_MOUSE_MOVED, desc);
 }
@@ -166,7 +168,9 @@ const bool window_create(const i32 width, const i32 height, const char* title) {
   window.size = glm::vec2(width, height);
   window.last_mouse_pos = glm::vec2(0.0f);
   window.mouse_pos = window.last_mouse_pos; 
+  window.mouse_offset = glm::vec2(0.0f);
   window.is_focused = false;
+  
   event_listen(EVENT_CURSOR_CHANGED, cursor_mode_change_callback);
   ////////////////////////////////////////// 
 
