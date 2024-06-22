@@ -3,6 +3,7 @@
 #include "defines.h"
 #include "audio/sound_type.h"
 #include "audio/music_type.h"
+#include "physics/collision_data.h"
 
 #include <glm/vec2.hpp>
 
@@ -23,9 +24,13 @@ enum EventType {
   EVENT_CURSOR_CHANGED,
 
   /* Gameplay events */ 
+  // Audio events
   EVENT_SOUND_PLAY, 
   EVENT_MUSIC_PLAY, 
   EVENT_MUSIC_STOP, 
+
+  // Entity events
+  EVENT_ENTITY_COLLISION,
 };
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -43,6 +48,9 @@ struct EventDesc {
   // Audio desc 
   SoundType sound_type; 
   MusicType music_type;
+
+  // Collision 
+  CollisionData coll_data;
 };
 /////////////////////////////////////////////////////////////////////////////////
 

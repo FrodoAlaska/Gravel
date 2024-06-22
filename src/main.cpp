@@ -4,8 +4,8 @@
 
 int main() {
   AppDesc desc = {
-    .window_width = 1280, 
-    .window_height = 720, 
+    .window_width = 800, 
+    .window_height = 600, 
     .window_title = "Gravel", 
     
     .init_func = app_init,

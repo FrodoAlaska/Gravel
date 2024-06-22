@@ -49,6 +49,14 @@ set(GRAVEL_SOURCES
   ${GRAVEL_SRC_DIR}/ui/ui_text.cpp
   ${GRAVEL_SRC_DIR}/ui/ui_button.cpp
   ${GRAVEL_SRC_DIR}/ui/ui_canvas.cpp
+  
+  # Physics
+  ${GRAVEL_SRC_DIR}/physics/collider.cpp
+  ${GRAVEL_SRC_DIR}/physics/physics_body.cpp
+  ${GRAVEL_SRC_DIR}/physics/physics_world.cpp
+ 
+  # Utils
+  ${GRAVEL_SRC_DIR}/utils/utils.cpp
 )
 
 set(GRAVEL_LIBS 
