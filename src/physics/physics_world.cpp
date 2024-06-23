@@ -1,15 +1,12 @@
 #include "physics_world.h"
-#include "core/clock.h"
 #include "core/event.h"
 #include "physics/collider.h"
 #include "physics/collision_data.h"
 #include "physics/physics_body.h"
 
-#include <cstdio>
 #include <glm/vec3.hpp>
 
 #include <vector>
-#include <string>
 
 // PhysicsWorld
 /////////////////////////////////////////////////////////////////////////////////
