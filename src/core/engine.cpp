@@ -11,7 +11,6 @@
 
 #include "audio/audio_system.h"
 
-#include "editor/editor.h"
 #include "resources/resource_manager.h"
 
 #include <cstdio>
@@ -61,9 +60,6 @@ void engine_init(const AppDesc& desc) {
     return;
   }
 
-  // Editor init
-  editor_init();
-
   // Listening to events
   event_listen(EVENT_GAME_QUIT, game_quit);
 
@@ -77,10 +73,6 @@ void engine_init(const AppDesc& desc) {
 void engine_shutdown(AppDesc& desc) {
   desc.shutdown_func(desc.user_data); 
 
-  if(desc.has_editor) {
-    editor_shutdown();
-  }
-  
   audio_system_shutdown();
 
   renderer2d_destroy();

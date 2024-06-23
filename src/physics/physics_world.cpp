@@ -91,7 +91,12 @@ void physics_world_destroy() {
 
 void physics_world_update(f64 timestep) {
   for(auto& body : world->bodies) {
-    body->force = body->is_dynamic ? world->gravity : glm::vec3(0.0f); 
+    // No need to move the body at all if it's static or inactive
+    if(!body->is_dynamic || !body->is_active) {
+      continue;
+    }
+
+    body->force = world->gravity; 
     
     body->velocity += body->force;
     body->position += body->velocity * (f32)timestep;

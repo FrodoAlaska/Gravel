@@ -11,6 +11,7 @@
 #include "resources/material.h"
 #include "resources/mesh.h"
 #include "utils/utils.h"
+#include "editor/editor.h"
 
 #include <glm/glm.hpp>
 
@@ -24,14 +25,9 @@ struct Entity {
   PhysicsBody* body;
 
   static bool callback(const EventType type, const EventDesc& desc) {
-    static i32 num = 0;
-
     if(type != EVENT_ENTITY_COLLISION) {
       return false;
     }
-
-    num++;
-    // printf("COLLISION - %i: %s - %s\n", num, desc.coll_data.coll1->id.c_str(), desc.coll_data.coll2->id.c_str());
 
     return true;
   }
@@ -81,6 +77,8 @@ struct Entity {
 /////////////////////////////////////////////////////////////////////////////////
 struct App {
   Camera camera;
+  Camera* current_cam;
+
   Entity player, enemy;
 };
 
@@ -90,8 +88,14 @@ static App s_app;
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 bool app_init(void* user_data) {
+  // Camera init 
   s_app.camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
-  input_cursor_show(true);
+  
+  // Editor init
+  editor_init(glm::vec3(10.0f, 5.0f, 10.0f), glm::vec3(0.0f, 1.0f, -3.0f), false);
+
+  // This can be switched between the game camera and editor camera
+  s_app.current_cam = &s_app.camera;
 
   physics_world_create(glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -103,6 +107,7 @@ bool app_init(void* user_data) {
 
 void app_shutdown(void* user_data) {
   physics_world_destroy();
+  editor_shutdown();
 }
 
 void app_update(void* user_data) {
@@ -110,8 +115,8 @@ void app_update(void* user_data) {
     event_dispatch(EVENT_GAME_QUIT, EventDesc{});
   }
 
-  camera_update(&s_app.camera);
-  camera_move(&s_app.camera);
+  camera_update(s_app.current_cam);
+  camera_move(s_app.current_cam);
 
   physics_world_update(gclock_delta_time());
 
@@ -120,9 +125,9 @@ void app_update(void* user_data) {
 
 void app_render(void* user_data) {
   renderer_clear(glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
-  // editor_begin();
+  editor_begin();
 
-  renderer_begin(&s_app.camera);
+  renderer_begin(s_app.current_cam);
   s_app.player.render();
   s_app.enemy.render();
   renderer_end();
@@ -130,7 +135,7 @@ void app_render(void* user_data) {
   renderer2d_begin();
   renderer2d_end();
  
-  // editor_end();
+  editor_end();
   renderer_present();
 }
 /////////////////////////////////////////////////////////////////////////////////
