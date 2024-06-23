@@ -50,7 +50,7 @@ static void check_collisions() {
 static void resolve_collisions() {
   for(auto& coll : world->collisions) {
     if(coll.coll1->body->is_dynamic) {
-      coll.coll1->body->position -= (coll.normal * coll.depth); 
+      coll.coll1->body->position += (-coll.normal * coll.depth); 
       coll.coll1->body->velocity = glm::vec3(0.0f); 
 
       if(coll.normal.y == 1.0f) {
@@ -59,7 +59,7 @@ static void resolve_collisions() {
     }
     
     if(coll.coll2->body->is_dynamic) {
-      coll.coll2->body->position -= (coll.normal * coll.depth); 
+      coll.coll2->body->position += (coll.normal * coll.depth); 
       coll.coll2->body->velocity = glm::vec3(0.0f); 
 
       if(coll.normal.y == 1.0f) {
@@ -96,7 +96,6 @@ void physics_world_update(f64 timestep) {
     body->velocity += body->force;
     body->position += body->velocity * (f32)timestep;
 
-    // body->velocity = glm::vec3(0.0f);
     collider_update_points(body->collider, body->position);
   }
 
@@ -105,14 +104,14 @@ void physics_world_update(f64 timestep) {
 }
 
 PhysicsBody* physics_world_add_body(const glm::vec3& pos, const bool dynamic, void* user_data, const bool active) {
-  PhysicsBody* body       = new PhysicsBody{};
-  body->position   = pos;
-  body->velocity   = glm::vec3(0.0f);
-  body->force      = glm::vec3(0.0f);
-  body->collider   = nullptr;
-  body->is_active  = active; 
+  PhysicsBody* body = new PhysicsBody{};
+  body->position = pos;
+  body->velocity = glm::vec3(0.0f);
+  body->force = glm::vec3(0.0f);
+  body->collider = nullptr;
+  body->is_active = active; 
   body->is_dynamic = dynamic;
-  body->user_data  = user_data;
+  body->user_data = user_data;
 
   world->bodies.push_back(body);
   return body;

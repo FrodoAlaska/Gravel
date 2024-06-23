@@ -20,6 +20,7 @@ static const glm::vec2 get_aabb_interval(const Collider* collider, const glm::ve
     if(proj < result.x) {
       result.x = proj;
     }
+
     if(proj > result.y) {
       result.y = proj;
     }
@@ -82,11 +83,13 @@ const bool collider_is_colliding(const Collider* coll1, const Collider* coll2, C
   }
 
   // Getting the direction of the two center points
-  glm::vec3 dir = coll2->body->position - coll1->body->position;
+  glm::vec3 center1 = get_arth_mean(POINTS_MAX, coll1->points);
+  glm::vec3 center2 = get_arth_mean(POINTS_MAX, coll2->points);
+  glm::vec3 dir = center2 - center1;
 
-  // if(glm::dot(dir, data->normal) < 0.0f) {
-  //   data->normal = -data->normal;
-  // }
+  if(glm::dot(dir, data->normal) < 0.0f) {
+    data->normal = -data->normal;
+  }
 
   return true;
 }

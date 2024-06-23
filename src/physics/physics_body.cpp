@@ -9,7 +9,7 @@ void physics_body_add_collider(PhysicsBody* body, const glm::vec3& scale, const 
   body->collider = new Collider{};
   body->collider->scale = scale;
   body->collider->min = glm::vec3(0.0f);
-  body->collider->max = glm::vec3(0.0f);
+  body->collider->max = glm::vec3(1.0f);
   body->collider->id = id;
   body->collider->is_grounded = false;
   body->collider->body = body;
