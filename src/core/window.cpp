@@ -1,6 +1,7 @@
 #include "window.h"
 #include "defines.h"
 #include "core/event.h"
+#include "core/input.h"
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
@@ -18,6 +19,7 @@ struct Window {
   glm::vec2 mouse_offset; // How much the mouse moved this frame
 
   bool is_focused;
+  KeyCode exit_key;
 }; 
 
 static Window window;
@@ -170,7 +172,8 @@ const bool window_create(const i32 width, const i32 height, const char* title) {
   window.mouse_pos = window.last_mouse_pos; 
   window.mouse_offset = glm::vec2(0.0f);
   window.is_focused = false;
-  
+  window.exit_key = KEY_ESCAPE;
+
   event_listen(EVENT_CURSOR_CHANGED, cursor_mode_change_callback);
   ////////////////////////////////////////// 
 
@@ -210,12 +213,20 @@ GLFWwindow* window_get_handle() {
   return window.handle;
 }
 
+const KeyCode window_get_exit_key() {
+  return window.exit_key;
+}
+
 void window_set_current_context() {
   glfwMakeContextCurrent(window.handle);
 }
 
 void window_set_close(const bool close) {
   glfwSetWindowShouldClose(window.handle, close);
+}
+
+void window_set_exit_key(KeyCode key) {
+  window.exit_key = key;
 }
 /////////////////////////////////////////////////////////////////////////////////
 

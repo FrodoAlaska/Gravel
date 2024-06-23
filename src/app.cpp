@@ -2,6 +2,7 @@
 #include "core/clock.h"
 #include "core/input.h"
 #include "core/event.h"
+#include "core/window.h"
 #include "graphics/renderer.h"
 #include "graphics/renderer2d.h"
 #include "graphics/camera.h"
@@ -111,10 +112,6 @@ void app_shutdown(void* user_data) {
 }
 
 void app_update(void* user_data) {
-  if(input_key_pressed(KEY_ESCAPE)) {
-    event_dispatch(EVENT_GAME_QUIT, EventDesc{});
-  }
-
   camera_update(s_app.current_cam);
   camera_move(s_app.current_cam);
 

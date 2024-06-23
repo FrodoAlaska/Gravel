@@ -84,6 +84,10 @@ void engine_shutdown(AppDesc& desc) {
 
 void engine_run(AppDesc& desc) {
   while(!window_should_close()) {
+    if(input_key_pressed(window_get_exit_key())) {
+      event_dispatch(EVENT_GAME_QUIT, EventDesc{});
+    }
+
     gclock_update();
     desc.update_func(desc.user_data);
     input_update();
