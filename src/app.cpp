@@ -31,7 +31,7 @@ struct Entity {
     }
 
     num++;
-    printf("COLLISION - %i: %s - %s\n", num, desc.coll_data.coll1->id.c_str(), desc.coll_data.coll2->id.c_str());
+    // printf("COLLISION - %i: %s - %s\n", num, desc.coll_data.coll1->id.c_str(), desc.coll_data.coll2->id.c_str());
 
     return true;
   }
@@ -68,7 +68,8 @@ struct Entity {
       body->velocity.x = 0.0f;
     }
 
-    transform_translate(&transform, body->velocity * (f32)gclock_delta_time());
+    transform.position = body->position;
+    transform_translate(&transform, glm::vec3(0.0f));
   }
 
   void render() {
