@@ -1,5 +1,6 @@
 # TODO:
 - File utilities functions
+- Test the file handling stuff. Especially the binary stuff. Kinda sus. 
 
 # LATER TODO:
 - The 2D renderer needs a whole rewrite. Perhaps a 'begin_vertex' and 'end_vertex' functions so I don't have to redo the whole thing again??

@@ -11,6 +11,7 @@
 #include "resources/font.h"
 #include "resources/mesh.h"
 #include "editor/editor.h"
+#include "utils/utils_file.h"
 
 #include <glm/glm.hpp>
 

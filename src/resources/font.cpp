@@ -1,6 +1,7 @@
 #include "font.h"
 #include "defines.h"
 #include "resources/texture.h"
+#include "utils/utils_file.h"
 
 #include <glad/gl.h>
 #include <stb_truetype/stb_truetype.h>
@@ -20,12 +21,9 @@ static u8* get_font_data(const std::string& path) {
     return nullptr;
   }
 
-  file.seekg(0, file.end);
-  usizei size = file.tellg();
-  file.seekg(0, file.beg);
-
+  usizei size = file_get_size(file);
   u8* data = new u8[size]; 
-  file.read((char*)data, size);
+  file_read_binary(file, data, size); 
 
   return data; 
 }

@@ -1,10 +1,9 @@
 #include "shader.h"
 #include "defines.h"
+#include "utils/utils_file.h"
 
 #include <cstring>
 #include <string>
-#include <sstream>
-#include <fstream>
 #include <cstdio>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -13,21 +12,6 @@
 
 // Private functions
 /////////////////////////////////////////////////////////////////////////////////
-static const std::string read_file(const std::string& path) {
-  std::ifstream file(path);
-  std::stringstream ss;
-
-  if(!file.is_open()) {
-    printf("[ERROR]: Failed to open a shader at \'%s\'\n", path.c_str());
-    return "";
-  }
-
-  ss << file.rdbuf();
-  file.close();
-
-  return ss.str();
-}
-
 static void read_shader(const std::string& shader_str, Shader* shader) {
   usizei vert_iden_pos = shader_str.find("@type vertex"); 
   usizei frag_iden_pos = shader_str.find("@type fragment");
@@ -124,7 +108,10 @@ Shader* shader_load(const std::string& shader_name, const std::string& shader_co
 }
 
 Shader* shader_load(const std::string& path) {
-  return shader_load(path.substr(path.find_last_of('/') + 1), read_file(path));
+  std::string contents; 
+  file_read_string(path, &contents);
+
+  return shader_load(path.substr(path.find_last_of('/') + 1), contents);
 }
 
 void shader_unload(Shader* shader) {

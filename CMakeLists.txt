@@ -57,6 +57,7 @@ set(GRAVEL_SOURCES
  
   # Utils
   ${GRAVEL_SRC_DIR}/utils/utils.cpp
+  ${GRAVEL_SRC_DIR}/utils/utils_file.cpp
 )
 
 set(GRAVEL_LIBS 
