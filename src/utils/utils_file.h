@@ -18,6 +18,10 @@
 const usizei file_get_size(std::ifstream& file);
 const usizei file_get_size(const std::string& path);
 
+// Returns 'true' if the file is empty and 'false' otherwise.
+const bool file_is_empty(std::ifstream& file);
+const bool file_is_empty(const std::string& path);
+
 // Reads the whole file as a string and writes to 'out_str'
 bool file_read_string(const std::ifstream& file, std::string* out_str);
 bool file_read_string(const std::string& path, std::string* out_str);
@@ -27,7 +31,7 @@ bool file_read_string(const std::string& path, std::string* out_str);
 // NOTE: Also, 'out_buff' is your complete responsability. You will have to allocate and deallocate it.
 // The function will not write to the buffer if it is a 'nullptr'
 bool file_read_binary(std::ifstream& file, void* out_buff, const usizei buff_size);
-bool file_read_binary(std::string& path, void* out_buff, const usizei buff_size);
+bool file_read_binary(const std::string& path, void* out_buff, const usizei buff_size);
 
 // Write the 'contents' string into the file. 
 bool file_write_string(std::ofstream& file, const std::string& contents);
