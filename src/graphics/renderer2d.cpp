@@ -98,15 +98,56 @@ static void setup_buffers() {
 
   glBindVertexArray(0);
 }
-/////////////////////////////////////////////////////////////////////////////////
 
-// Public functions
-/////////////////////////////////////////////////////////////////////////////////
-const bool renderer2d_create() {
-  setup_buffers();
+static void load_shaders() {
+  std::string batch_code = 
+    "@type vertex\n"
+    "#version 460 core\n"
+    "\n"
+    "// Layouts\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec4 aColor;\n"
+    "layout (location = 2) in vec2 aTextureCoords;\n"
+    "layout (location = 3) in float aTextureIndex;\n"
+    "\n"
+    "// Outputs\n"
+    "out VS_OUT {\n"
+    "  vec4 out_color;\n"
+    "  vec2 tex_coords;\n"
+    "  float tex_index;\n"
+    "} vs_out;\n"
+    "\n"
+    "void main() {\n"
+    "  vs_out.out_color  = aColor;\n"
+    "  vs_out.tex_coords = aTextureCoords;\n"
+    "  vs_out.tex_index  = aTextureIndex;\n"
+    "\n"
+    "  gl_Position = vec4(aPos, 1.0f);\n"
+    "}\n"
+    "\n"
+    "@type fragment\n"
+    "#version 460 core\n"
+    "\n"
+    "// Outputs\n"
+    "out vec4 frag_color;\n"
+    "\n"
+    "// Inputs\n"
+    "in VS_OUT {\n"
+    "  vec4 out_color;\n"
+    "  vec2 tex_coords;\n"
+    "  float tex_index;\n"
+    "} fs_in;\n"
+    "\n"
+    "// Uniforms\n"
+    "uniform sampler2D u_textures[32];\n"
+    "\n"
+    "void main() {\n"
+    "  int index = int(fs_in.tex_index);\n"
+    "  frag_color = texture(u_textures[index], fs_in.tex_coords) * fs_in.out_color;\n"
+    "}";
 
   // Shader init
-  renderer.batch_shader = shader_load("assets/shaders/batch.glsl");
+  renderer.batch_shader = shader_load("batch.glsl", batch_code);
 
   // Textures init
   u32 pixels = 0xffffffff;
@@ -117,6 +158,16 @@ const bool renderer2d_create() {
   for(u32 i = 0; i < 32; i++)
     tex_slots[i] = i;
   shader_upload_int_arr(renderer.batch_shader, "u_textures", tex_slots, MAX_TEXTURES);
+}
+/////////////////////////////////////////////////////////////////////////////////
+
+// Public functions
+/////////////////////////////////////////////////////////////////////////////////
+const bool renderer2d_create() {
+  setup_buffers();
+
+  // Load the default batch shader
+  load_shaders();
 
   // Quad vertices init
   renderer.quad_vertices[0] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);

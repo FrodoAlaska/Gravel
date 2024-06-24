@@ -18,8 +18,17 @@ void renderer_begin(const Camera* cam);
 void renderer_end();
 void renderer_present();
 
+// Render a mesh using the given material at the given transform
 void render_mesh(const Transform& transform, Mesh* mesh, Material* mat);
+
+// Render the mesh using the default basic material
+void render_mesh(const Transform& transform, Mesh* mesh);
+
+// Render an instanced cube
 void render_cube(const glm::vec3& position, const glm::vec3& scale, const f32& rotation, const glm::vec4& color);
 void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::vec4& color);
+
+// Render a 3D model
+// NOTE: This function will not render anything if the model is a 'nullptr'
 void render_model(const Transform& transform, Model* model);
 /////////////////////////////////////////////////////////////////////////////////

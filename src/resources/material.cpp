@@ -18,12 +18,12 @@ Material* material_load(Texture* diffuse, Texture* specular, const std::string& 
   return mat;
 }
 
-Material* material_load_default() {
+Material* material_load_default(Shader* default_shader) {
   Material* mat = new Material{};
   
   u32 pixels = 0xffffffff;
   mat->diffuse_map = texture_load(1, 1, TEXTURE_FORMAT_RGBA, &pixels);
-  mat->shader = shader_load("assets/shaders/default.glsl");
+  mat->shader = default_shader;
   mat->color = COLOR_WHITE;
 
   return mat;
@@ -33,7 +33,9 @@ void material_unload(Material* mat) {
   texture_unload(mat->diffuse_map);
   texture_unload(mat->specular_map);
 
-  shader_unload(mat->shader);
+  // Do not unload the shader since the material does not own the pointer. 
+  // It just points to it but does not own it.
+  mat->shader = nullptr;
 
   delete mat;
 }

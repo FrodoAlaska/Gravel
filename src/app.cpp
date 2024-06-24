@@ -2,26 +2,22 @@
 #include "core/clock.h"
 #include "core/input.h"
 #include "core/event.h"
-#include "core/window.h"
 #include "graphics/renderer.h"
 #include "graphics/renderer2d.h"
 #include "graphics/camera.h"
 #include "math/transform.h"
 #include "physics/physics_body.h"
 #include "physics/physics_world.h"
-#include "resources/material.h"
+#include "resources/font.h"
 #include "resources/mesh.h"
-#include "utils/utils.h"
 #include "editor/editor.h"
 
 #include <glm/glm.hpp>
 
-#include <cstdio>
 #include <string>
 
 struct Entity {
   Transform transform; 
-  Material* material;
   Mesh* mesh; 
   PhysicsBody* body;
 
@@ -35,7 +31,6 @@ struct Entity {
 
   void init(const glm::vec3& pos, bool dynamic, const std::string& id) {
     mesh = mesh_create();
-    material = material_load_default();
     transform_create(&transform, pos);
 
     body = physics_world_add_body(pos, dynamic, this);
@@ -70,7 +65,7 @@ struct Entity {
   }
 
   void render() {
-    render_mesh(transform, mesh, material);
+    render_mesh(transform, mesh);
   }
 };
 
@@ -81,6 +76,7 @@ struct App {
   Camera* current_cam;
 
   Entity player, enemy;
+  Font* font;
 };
 
 static App s_app;
@@ -89,6 +85,10 @@ static App s_app;
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 bool app_init(void* user_data) {
+  // Loading the default font
+  s_app.font = font_load("assets/font/bit5x3.ttf", 256.0f);
+  renderer2d_set_default_font(s_app.font);
+
   // Camera init 
   s_app.camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
   
@@ -130,6 +130,7 @@ void app_render(void* user_data) {
   renderer_end();
   
   renderer2d_begin();
+  render_text(30.0f, "SHADERS! YEAH!", glm::vec2(400.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
   renderer2d_end();
  
   editor_end();

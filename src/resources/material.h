@@ -5,7 +5,6 @@
 
 #include <glm/glm.hpp>
 
-#include <vector>
 #include <string>
 
 // MaterialMapType
@@ -30,7 +29,7 @@ struct Material {
 // Public functions 
 /////////////////////////////////////////////////////////////////////////////////
 Material* material_load(Texture* diffuse, Texture* specular, const std::string& shader_path);
-Material* material_load_default();
+Material* material_load_default(Shader* default_shader);
 void material_unload(Material* mat);
 
 // Bind the shader and render textures whithin the maps

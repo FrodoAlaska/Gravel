@@ -22,7 +22,7 @@
 // ShaderType
 /////////////////////////////////////////////////////////////////////////////////
 enum ShaderType {
-  SHADER_CAMERA, 
+  SHADER_DEFAULT, 
   SHADER_INSTANCE,
   SHADERS_MAX = 2,
 };
@@ -32,13 +32,14 @@ enum ShaderType {
 /////////////////////////////////////////////////////////////////////////////////
 struct Renderer {
   Shader* shaders[SHADERS_MAX];
-  Shader* current_shader;
+  Shader* current_shader = nullptr;
 
   u32 ubo; // Uniform buffer
   u32 instance_count = 0;
-  glm::mat4* transforms;
+  glm::mat4* transforms = nullptr;
 
   Mesh* cube_mesh = nullptr;
+  Material* default_material = nullptr;
 };
 
 static Renderer renderer;
@@ -72,6 +73,114 @@ bool gl_init() {
 
   return true;
 }
+
+static void load_shaders() {
+  std::string default_code = 
+    "@type vertex\n" 
+    "\n"
+    "#version 460 core\n"
+    "\n"
+    "// Layouts\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec3 aNormal;\n"
+    "layout (location = 2) in vec2 aTextureCoords;\n"
+    "\n"
+    "// Uniform block\n"
+    "layout(std140, binding = 0) uniform matrices {\n"
+    "  mat4 u_view_projection;\n"
+    "};\n"
+    "\n"
+    "// Outputs\n"
+    "out VS_OUT {\n"
+    "  vec3 normal;\n"
+    "  vec2 texture_coords;\n"
+    "} vs_out;\n"
+    "\n"
+    "uniform mat4 u_model;\n"
+    "\n"
+    "void main() {\n"
+    "  gl_Position = u_view_projection * u_model * vec4(aPos, 1.0f);\n"
+
+    "  vs_out.normal = aNormal;\n"
+    "  vs_out.texture_coords = aTextureCoords;\n"
+    "}\n"
+    "\n"
+    "@type fragment\n"
+    "#version 460 core\n"
+    "\n"
+    "// Inputs\n"
+    "in VS_OUT {\n"
+    "  vec3 normal;\n"
+    "  vec2 texture_coords;\n"
+    "} fs_in;\n"
+    "\n"
+    "// Outputs\n"
+    "out vec4 frag_color;\n"
+    "\n"
+    "// Uniforms\n"
+    "uniform vec4 u_color;\n"
+    "uniform sampler2D u_diffuse, u_specular;\n"
+    "\n"
+    "void main() {\n"
+    "  frag_color = texture(u_diffuse, fs_in.texture_coords) * u_color;\n"
+    "}\n";
+
+  std::string inst_code = 
+    "@type vertex\n"
+    "#version 460 core\n"
+    "\n"
+    "// Layouts\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec3 aNormal;\n"
+    "layout (location = 2) in vec2 aTexCoords;\n"
+    "layout (location = 3) in mat4 aModel;\n"
+    "// layout (location = 4) in vec4 aColor;\n"
+    "\n"
+    "// Uniform block\n"
+    "layout(std140, binding = 0) uniform matrices {\n"
+    "  mat4 u_view_projection;\n"
+    "};\n"
+    "\n"
+    "// Outputs\n"
+    "out VS_OUT {\n"
+    "  vec3 normal;\n"
+    "  vec2 texture_coords;\n"
+    "  vec4 color;\n"
+    "} vs_out;\n"
+    "\n"
+    "void main() {\n"
+    "  gl_Position = u_view_projection * aModel * vec4(aPos, 1.0f);\n"
+    "\n"
+    "  vs_out.normal = aNormal;\n"
+    "  vs_out.texture_coords = aTexCoords;\n"
+    "  // vs_out.color = aColor;\n"
+    "}\n"
+    "\n"
+    "@type fragment\n"
+    "#version 460 core\n"
+    "\n"
+    "// Inputs\n"
+    "in VS_OUT {\n"
+    "  vec3 normal;\n"
+    "  vec2 texture_coords;\n"
+    "  vec4 color;\n"
+    "} fs_in;\n"
+    "\n"
+    "// Outputs\n"
+    "out vec4 frag_color;\n"
+    "\n"
+    "// Uniforms\n"
+    "uniform vec4 u_color;\n"
+    "\n"
+    "void main() {\n"
+    "  frag_color = vec4(1.0f);//fs_in.color;\n"
+    "}";
+
+  // Shaders loading
+  renderer.shaders[SHADER_DEFAULT]  = shader_load("default.glsl", default_code);
+  renderer.shaders[SHADER_INSTANCE] = shader_load("instance.glsl", inst_code);
+  renderer.current_shader           = renderer.shaders[SHADER_INSTANCE];
+}
 /////////////////////////////////////////////////////////////////////////////////
 
 // Public functions
@@ -87,13 +196,14 @@ const bool renderer_create() {
   glBufferData(GL_UNIFORM_BUFFER, sizeof(f32) * 1024, nullptr, GL_DYNAMIC_DRAW);
   glBindBufferBase(GL_UNIFORM_BUFFER, 0, renderer.ubo);
 
-  // Shaders loading
-  renderer.shaders[SHADER_CAMERA]   = shader_load("assets/shaders/camera.glsl");
-  renderer.shaders[SHADER_INSTANCE] = shader_load("assets/shaders/inst.glsl");
-  renderer.current_shader           = renderer.shaders[SHADER_INSTANCE];
+  // Load all the default shaders
+  load_shaders();
 
   // Creating the instance mesh
   renderer.cube_mesh = mesh_create();
+
+  // Load the default material
+  renderer.default_material = material_load_default(renderer.shaders[SHADER_DEFAULT]);
 
   // Allocate the transforms array
   renderer.transforms = new glm::mat4[MAX_MESH_INSTANCES];
@@ -127,6 +237,8 @@ const bool renderer_create() {
 
 void renderer_destroy() {
   delete[] renderer.transforms;
+ 
+  material_unload(renderer.default_material);
   mesh_destroy(renderer.cube_mesh);
 
   for(u32 i = 0; i < SHADERS_MAX; i++) {
@@ -182,6 +294,10 @@ void render_mesh(const Transform& transform, Mesh* mesh, Material* mat) {
   else {
     // @TODO: Warn logger or assert here???? 
   }
+}
+
+void render_mesh(const Transform& transform, Mesh* mesh) {
+  render_mesh(transform, mesh, renderer.default_material);
 }
 
 void render_cube(const glm::vec3& position, const glm::vec3& scale, const f32& rotation, const glm::vec4& color) {

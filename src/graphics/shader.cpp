@@ -13,38 +13,38 @@
 
 // Private functions
 /////////////////////////////////////////////////////////////////////////////////
-static void read_shader(const std::string& path, Shader* shader) {
+static const std::string read_file(const std::string& path) {
   std::ifstream file(path);
   std::stringstream ss;
 
   if(!file.is_open()) {
     printf("[ERROR]: Failed to open a shader at \'%s\'\n", path.c_str());
-    return;
+    return "";
   }
-
-  // Get the name of the shader from the path 
-  shader->name = path.substr(path.find_last_of('/') + 1);
 
   ss << file.rdbuf();
   file.close();
 
-  std::string str = ss.str();
-  usizei vert_iden_pos = str.find("@type vertex"); 
-  usizei frag_iden_pos = str.find("@type fragment");
+  return ss.str();
+}
 
-  if(vert_iden_pos == str.npos) {
-    printf("[ERROR]: No vertex identifier found in shader \'%s\'\n", path.c_str());
+static void read_shader(const std::string& shader_str, Shader* shader) {
+  usizei vert_iden_pos = shader_str.find("@type vertex"); 
+  usizei frag_iden_pos = shader_str.find("@type fragment");
+
+  if(vert_iden_pos == shader_str.npos) {
+    printf("[ERROR]: No vertex identifier found in shader \'%s\'\n", shader->name.c_str());
     shader->vert_src = "";
   }
-  if(frag_iden_pos == str.npos) {
-    printf("[ERROR]: No fragment identifier found in shader \'%s\'\n", path.c_str());
+  if(frag_iden_pos == shader_str.npos) {
+    printf("[ERROR]: No fragment identifier found in shader \'%s\'\n", shader->name.c_str());
     shader->frag_src = "";
   }
 
   usizei vert_iden_size = strlen("@type vertex");
   usizei frag_iden_size = strlen("@type fragment");
-  shader->vert_src = str.substr(vert_iden_pos + vert_iden_size, frag_iden_pos - vert_iden_size);
-  shader->frag_src = str.substr(frag_iden_pos + frag_iden_size);
+  shader->vert_src = shader_str.substr(vert_iden_pos + vert_iden_size, frag_iden_pos - vert_iden_size);
+  shader->frag_src = shader_str.substr(frag_iden_pos + frag_iden_size);
 }
 
 static void check_compile_error(const u32 shader_id) {
@@ -85,10 +85,14 @@ static unsigned int get_uniform_location(const Shader* shader, const std::string
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
-Shader* shader_load(const std::string path) {
+Shader* shader_load(const std::string& shader_name, const std::string& shader_code) {
   Shader* shader = new Shader{};
-  read_shader(path, shader);
- 
+  shader->name = shader_name;
+
+  // Read the whole shader code and turn it into two seperate strings for 
+  // OpenGL to compile and link
+  read_shader(shader_code, shader);
+  
   // Vertex shader
   const char* vert_src = shader->vert_src.c_str(); 
   shader->vert_id = glCreateShader(GL_VERTEX_SHADER);
@@ -119,10 +123,19 @@ Shader* shader_load(const std::string path) {
   return shader;
 }
 
-void shader_unload(Shader* shader) {
-  glDeleteProgram(shader->id);
+Shader* shader_load(const std::string& path) {
+  return shader_load(path.substr(path.find_last_of('/') + 1), read_file(path));
+}
 
+void shader_unload(Shader* shader) {
+  if(!shader) {
+    return;
+  }
+
+  glDeleteProgram(shader->id);
   delete shader;
+
+  shader = nullptr;
 }
 
 void shader_bind(Shader* shader) {

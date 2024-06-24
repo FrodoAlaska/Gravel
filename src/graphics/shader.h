@@ -18,7 +18,8 @@ struct Shader {
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
-Shader* shader_load(const std::string path);
+Shader* shader_load(const std::string& shader_name, const std::string& shader_code);
+Shader* shader_load(const std::string& path);
 void shader_unload(Shader* shader);
 void shader_bind(Shader* shader); 
 
