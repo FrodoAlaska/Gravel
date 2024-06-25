@@ -84,7 +84,7 @@ add_executable(${PROJECT_NAME} ${GRAVEL_SOURCES} ${GRAVEL_LIBS})
 file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${GRAVEL_BUILD_FLAGS})
-target_compile_options(${PROJECT_NAME} PRIVATE -lm)
+target_compile_options(${PROJECT_NAME} PRIVATE -lm -Wno-deprecated)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 target_include_directories(${PROJECT_NAME} PUBLIC BEFORE ${GRAVEL_LIBS_DIR} ${GRAVEL_SRC_DIR})

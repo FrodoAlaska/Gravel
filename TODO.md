@@ -2,6 +2,7 @@
 // Nothing for now!!!!
 
 # LATER TODO:
+- Make the framework into an actual library oooooor make it easier to copy and paste directly into other projects
 - The 2D renderer needs a whole rewrite. Perhaps a 'begin_vertex' and 'end_vertex' functions so I don't have to redo the whole thing again??
 - Model animations
 - Minimal logger and asserts
