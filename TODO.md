@@ -6,6 +6,7 @@
 - Model animations
 - Minimal logger and asserts
 - Some kind of arena allocater
+- Simple scene system?
 
 # FIX:
 - TEMP FIX: Button texts positions are wrong on different font sizes 
