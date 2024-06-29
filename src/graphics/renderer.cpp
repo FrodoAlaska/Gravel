@@ -296,7 +296,9 @@ void render_mesh(const Transform& transform, Mesh* mesh, Material* mat) {
   }
 }
 
-void render_mesh(const Transform& transform, Mesh* mesh) {
+void render_mesh(const Transform& transform, Mesh* mesh, const glm::vec4& color) {
+  renderer.default_material->color = color;
+
   render_mesh(transform, mesh, renderer.default_material);
 }
 

@@ -22,7 +22,7 @@ void renderer_present();
 void render_mesh(const Transform& transform, Mesh* mesh, Material* mat);
 
 // Render the mesh using the default basic material
-void render_mesh(const Transform& transform, Mesh* mesh);
+void render_mesh(const Transform& transform, Mesh* mesh, const glm::vec4& color = glm::vec4(1.0f));
 
 // Render an instanced cube
 void render_cube(const glm::vec3& position, const glm::vec3& scale, const f32& rotation, const glm::vec4& color);

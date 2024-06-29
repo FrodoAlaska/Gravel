@@ -25,7 +25,7 @@ void transform_create(Transform* transform, const glm::vec3& pos, const glm::vec
 }
 
 void transform_translate(Transform* transform, const glm::vec3& pos) {
-  transform->position += pos; 
+  transform->position = pos; 
   update_transform(transform, 0.0f);
 }
 
