@@ -1,10 +1,10 @@
 #include "app.h"
-#include "core/clock.h"
-#include "graphics/renderer.h"
-#include "graphics/renderer2d.h"
-#include "graphics/camera.h"
-#include "physics/physics_world.h"
-#include "resources/font.h"
+#include "engine/core/clock.h"
+#include "engine/graphics/renderer.h"
+#include "engine/graphics/renderer2d.h"
+#include "engine/graphics/camera.h"
+#include "engine/physics/physics_world.h"
+#include "engine/resources/font.h"
 #include "editor/editor.h"
 
 #include <glm/glm.hpp>

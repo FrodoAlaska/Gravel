@@ -1,6 +1,6 @@
-#include "core/app_desc.h"
-#include "core/engine.h"
-#include "app.h"
+#include "engine/core/app_desc.h"
+#include "engine/core/engine.h"
+#include "app/app.h"
 
 int main() {
   AppDesc desc = {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "graphics/camera.h"
+#include "engine/graphics/camera.h"
 
 #include <glm/vec3.hpp>
 

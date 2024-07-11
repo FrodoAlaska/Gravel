@@ -1,6 +1,6 @@
 #include "editor.h"
-#include "core/window.h"
-#include "graphics/camera.h"
+#include "engine/core/window.h"
+#include "engine/graphics/camera.h"
 
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_glfw.h>

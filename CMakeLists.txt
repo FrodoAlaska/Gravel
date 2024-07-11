@@ -7,85 +7,95 @@ add_subdirectory(libs/glm)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_BUILD_TYPE Debug)
 
-set(GRAVEL_SRC_DIR ${CMAKE_SOURCE_DIR}/src/)
-set(GRAVEL_LIBS_DIR ${CMAKE_SOURCE_DIR}/libs/)
-set(GRAVEL_BUILD_FLAGS GLFW_INCLUDE_NONE GRAVEL_DEBUG EDITOR_ACTIVE)
+set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(ENGINE_SRC_DIR ${CMAKE_SOURCE_DIR}/src/engine)
+set(APP_SRC_DIR ${CMAKE_SOURCE_DIR}/src/app)
+set(EDITOR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/editor)
+set(LIBS_DIR ${CMAKE_SOURCE_DIR}/libs/)
 
-set(GRAVEL_SOURCES 
+set(BUILD_FLAGS GLFW_INCLUDE_NONE APP_DEBUG EDITOR_ACTIVE)
+
+set(ENGINE_SOURCES 
   # Core
-  ${GRAVEL_SRC_DIR}/core/window.cpp
-  ${GRAVEL_SRC_DIR}/core/input.cpp
-  ${GRAVEL_SRC_DIR}/core/event.cpp
-  ${GRAVEL_SRC_DIR}/core/clock.cpp
-  ${GRAVEL_SRC_DIR}/core/engine.cpp
-  ${GRAVEL_SRC_DIR}/main.cpp
-  ${GRAVEL_SRC_DIR}/app.cpp
+  ${ENGINE_SRC_DIR}/core/window.cpp
+  ${ENGINE_SRC_DIR}/core/input.cpp
+  ${ENGINE_SRC_DIR}/core/event.cpp
+  ${ENGINE_SRC_DIR}/core/clock.cpp
+  ${ENGINE_SRC_DIR}/core/engine.cpp
   
   # Audio
-  ${GRAVEL_SRC_DIR}/audio/audio_system.cpp
+  ${ENGINE_SRC_DIR}/audio/audio_system.cpp
   
   # Graphics
-  ${GRAVEL_SRC_DIR}/graphics/camera.cpp
-  ${GRAVEL_SRC_DIR}/graphics/renderer.cpp
-  ${GRAVEL_SRC_DIR}/graphics/renderer2d.cpp
-  ${GRAVEL_SRC_DIR}/graphics/shader.cpp
+  ${ENGINE_SRC_DIR}/graphics/camera.cpp
+  ${ENGINE_SRC_DIR}/graphics/renderer.cpp
+  ${ENGINE_SRC_DIR}/graphics/renderer2d.cpp
+  ${ENGINE_SRC_DIR}/graphics/shader.cpp
 
   # Math
-  ${GRAVEL_SRC_DIR}/math/rand.cpp
-  ${GRAVEL_SRC_DIR}/math/transform.cpp
-  
-  # Editor
-  ${GRAVEL_SRC_DIR}/editor/editor.cpp
+  ${ENGINE_SRC_DIR}/math/rand.cpp
+  ${ENGINE_SRC_DIR}/math/transform.cpp
   
   # Resources
-  ${GRAVEL_SRC_DIR}/resources/resource_manager.cpp
-  ${GRAVEL_SRC_DIR}/resources/texture.cpp
-  ${GRAVEL_SRC_DIR}/resources/font.cpp
-  ${GRAVEL_SRC_DIR}/resources/mesh.cpp
-  ${GRAVEL_SRC_DIR}/resources/material.cpp
-  ${GRAVEL_SRC_DIR}/resources/model.cpp
+  ${ENGINE_SRC_DIR}/resources/resource_manager.cpp
+  ${ENGINE_SRC_DIR}/resources/texture.cpp
+  ${ENGINE_SRC_DIR}/resources/font.cpp
+  ${ENGINE_SRC_DIR}/resources/mesh.cpp
+  ${ENGINE_SRC_DIR}/resources/material.cpp
+  ${ENGINE_SRC_DIR}/resources/model.cpp
   
   # UI
-  ${GRAVEL_SRC_DIR}/ui/ui_text.cpp
-  ${GRAVEL_SRC_DIR}/ui/ui_button.cpp
-  ${GRAVEL_SRC_DIR}/ui/ui_canvas.cpp
+  ${ENGINE_SRC_DIR}/ui/ui_text.cpp
+  ${ENGINE_SRC_DIR}/ui/ui_button.cpp
+  ${ENGINE_SRC_DIR}/ui/ui_canvas.cpp
   
   # Physics
-  ${GRAVEL_SRC_DIR}/physics/collider.cpp
-  ${GRAVEL_SRC_DIR}/physics/physics_body.cpp
-  ${GRAVEL_SRC_DIR}/physics/physics_world.cpp
+  ${ENGINE_SRC_DIR}/physics/collider.cpp
+  ${ENGINE_SRC_DIR}/physics/physics_body.cpp
+  ${ENGINE_SRC_DIR}/physics/physics_world.cpp
  
   # Utils
-  ${GRAVEL_SRC_DIR}/utils/utils.cpp
-  ${GRAVEL_SRC_DIR}/utils/utils_file.cpp
+  ${ENGINE_SRC_DIR}/utils/utils.cpp
+  ${ENGINE_SRC_DIR}/utils/utils_file.cpp
 )
 
-set(GRAVEL_LIBS 
-  ${GRAVEL_LIBS_DIR}/miniaudio/miniaudio.cpp
-  ${GRAVEL_LIBS_DIR}/stb_image/stb_image.cpp
-  ${GRAVEL_LIBS_DIR}/stb_truetype/stb_truetype.cpp
-  ${GRAVEL_LIBS_DIR}/glad/gl.c
-
-  ${GRAVEL_LIBS_DIR}/glad/gl.c
-  
-  ${GRAVEL_LIBS_DIR}/imgui/imgui.cpp 
-  ${GRAVEL_LIBS_DIR}/imgui/imgui_demo.cpp 
-  ${GRAVEL_LIBS_DIR}/imgui/imgui_draw.cpp 
-  ${GRAVEL_LIBS_DIR}/imgui/imgui_tables.cpp 
-  ${GRAVEL_LIBS_DIR}/imgui/imgui_widgets.cpp 
-  ${GRAVEL_LIBS_DIR}/imgui/backends/imgui_impl_glfw.cpp 
-  ${GRAVEL_LIBS_DIR}/imgui/backends/imgui_impl_opengl3.cpp 
-  
-  ${GRAVEL_LIBS_DIR}/tinyobjloader/tiny_obj_loader.cc
+set(APP_SOURCES 
+  # App core 
+  ${APP_SRC_DIR}/app.cpp 
+  ${APP_SRC_DIR}/main.cpp 
 )
 
-add_executable(${PROJECT_NAME} ${GRAVEL_SOURCES} ${GRAVEL_LIBS})
+set(EDITOR_SOURCES 
+  # Editor 
+  ${EDITOR_SRC_DIR}/editor.cpp
+)
+
+set(LIBS_SOURCES 
+  ${LIBS_DIR}/miniaudio/miniaudio.cpp
+  ${LIBS_DIR}/stb_image/stb_image.cpp
+  ${LIBS_DIR}/stb_truetype/stb_truetype.cpp
+  ${LIBS_DIR}/glad/gl.c
+
+  ${LIBS_DIR}/glad/gl.c
+  
+  ${LIBS_DIR}/imgui/imgui.cpp 
+  ${LIBS_DIR}/imgui/imgui_demo.cpp 
+  ${LIBS_DIR}/imgui/imgui_draw.cpp 
+  ${LIBS_DIR}/imgui/imgui_tables.cpp 
+  ${LIBS_DIR}/imgui/imgui_widgets.cpp 
+  ${LIBS_DIR}/imgui/backends/imgui_impl_glfw.cpp 
+  ${LIBS_DIR}/imgui/backends/imgui_impl_opengl3.cpp 
+  
+  ${LIBS_DIR}/tinyobjloader/tiny_obj_loader.cc
+)
+
+add_executable(${PROJECT_NAME} ${ENGINE_SOURCES} ${APP_SOURCES} ${EDITOR_SOURCES} ${LIBS_SOURCES})
 
 file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${GRAVEL_BUILD_FLAGS})
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${BUILD_FLAGS})
 target_compile_options(${PROJECT_NAME} PRIVATE -lm -Wno-deprecated)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
-target_include_directories(${PROJECT_NAME} PUBLIC BEFORE ${GRAVEL_LIBS_DIR} ${GRAVEL_SRC_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC BEFORE ${LIBS_DIR} ${SRC_DIR} ${ENGINE_SRC_DIR} ${APP_SRC_DIR} ${EDITOR_SRC_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw)
