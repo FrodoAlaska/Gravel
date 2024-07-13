@@ -7,6 +7,7 @@
 #include "resources/mesh.h"
 #include "resources/model.h"
 #include "math/transform.h"
+#include "resources/texture.h"
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
@@ -203,7 +204,9 @@ const bool renderer_create() {
   renderer.cube_mesh = mesh_create();
 
   // Load the default material
-  renderer.default_material = material_load_default(renderer.shaders[SHADER_DEFAULT]);
+  u32 pixels = 0xffffffff;
+  Texture* diffuse = texture_load(1, 1, TEXTURE_FORMAT_RGBA, &pixels); 
+  renderer.default_material = material_load(diffuse, nullptr, renderer.shaders[SHADER_DEFAULT]);
 
   // Allocate the transforms array
   renderer.transforms = new glm::mat4[MAX_MESH_INSTANCES];
@@ -276,6 +279,14 @@ void renderer_present() {
   window_swap_buffers();
 }
 
+Shader* renderer_get_default_shader() {
+  return renderer.shaders[SHADER_DEFAULT];
+}
+
+Material* renderer_get_default_material() {
+  return renderer.default_material;
+}
+
 void render_mesh(const Transform& transform, Mesh* mesh, Material* mat) {
   if(mat) {
     material_use(mat); 
@@ -298,7 +309,6 @@ void render_mesh(const Transform& transform, Mesh* mesh, Material* mat) {
 
 void render_mesh(const Transform& transform, Mesh* mesh, const glm::vec4& color) {
   renderer.default_material->color = color;
-
   render_mesh(transform, mesh, renderer.default_material);
 }
 

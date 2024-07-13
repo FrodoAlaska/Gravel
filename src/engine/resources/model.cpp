@@ -1,5 +1,6 @@
 #include "model.h"
 #include "defines.h"
+#include "graphics/renderer.h"
 #include "math/vertex.h"
 #include "resources/mesh.h"
 #include "resources/material.h"
@@ -43,7 +44,7 @@ static const std::vector<Material*> load_materials(const std::vector<tinyobj::ma
     }
 
     // New material added!
-    mats.push_back(material_load(diffuse, specular, "assets/shaders/default.glsl"));
+    mats.push_back(material_load(diffuse, specular, renderer_get_default_shader()));
   }
 
   return mats;

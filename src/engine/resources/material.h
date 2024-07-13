@@ -5,8 +5,6 @@
 
 #include <glm/glm.hpp>
 
-#include <string>
-
 // MaterialMapType
 /////////////////////////////////////////////////////////////////////////////////
 enum MaterialMapType {
@@ -28,8 +26,7 @@ struct Material {
 
 // Public functions 
 /////////////////////////////////////////////////////////////////////////////////
-Material* material_load(Texture* diffuse, Texture* specular, const std::string& shader_path);
-Material* material_load_default(Shader* default_shader);
+Material* material_load(Texture* diffuse, Texture* specular, Shader* shader);
 void material_unload(Material* mat);
 
 // Bind the shader and render textures whithin the maps

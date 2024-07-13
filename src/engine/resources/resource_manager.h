@@ -45,10 +45,7 @@ Texture* resources_add_texture(const std::string& id, i32 width, i32 height, Tex
 Font* resources_add_font(const std::string& path, const std::string& id);
 Mesh* resources_add_mesh(const std::string& id);
 Mesh* resources_add_mesh(const std::string& id, const std::vector<Vertex3D>& vertices, const std::vector<u32>& indices);
-Material* resources_add_material(const std::string& id, 
-                                 Texture* diffuse, 
-                                 Texture* specular, 
-                                 const std::string& shader_path);
+Material* resources_add_material(const std::string& id, Texture* diffuse, Texture* specular, Shader* shader);
 Model* resources_add_model(const std::string& id, const std::string& path);
 
 // Returning resources 

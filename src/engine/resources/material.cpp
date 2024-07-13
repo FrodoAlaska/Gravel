@@ -4,26 +4,13 @@
 #include "graphics/shader.h"
 #include "resources/texture.h"
 
-#include <string>
-
 // Public functions 
 /////////////////////////////////////////////////////////////////////////////////
-Material* material_load(Texture* diffuse, Texture* specular, const std::string& shader_path) {
+Material* material_load(Texture* diffuse, Texture* specular, Shader* shader) {
   Material* mat = new Material{};
   mat->diffuse_map = diffuse;
   mat->specular_map = specular;
-  mat->shader = shader_load(shader_path);
-  mat->color = COLOR_WHITE;
-
-  return mat;
-}
-
-Material* material_load_default(Shader* default_shader) {
-  Material* mat = new Material{};
-  
-  u32 pixels = 0xffffffff;
-  mat->diffuse_map = texture_load(1, 1, TEXTURE_FORMAT_RGBA, &pixels);
-  mat->shader = default_shader;
+  mat->shader = shader;
   mat->color = COLOR_WHITE;
 
   return mat;

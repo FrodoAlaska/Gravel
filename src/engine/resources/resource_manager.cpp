@@ -129,8 +129,8 @@ Mesh* resources_add_mesh(const std::string& id, const std::vector<Vertex3D>& ver
 Material* resources_add_material(const std::string& id, 
                                  Texture* diffuse, 
                                  Texture* specular, 
-                                 const std::string& shader_path) {
-  s_res_man.materials[id] = material_load(diffuse, specular, shader_path);
+                                 Shader* shader) {
+  s_res_man.materials[id] = material_load(diffuse, specular, shader);
   return s_res_man.materials[id];
 }
 

@@ -1,5 +1,6 @@
 #include "physics_world.h"
 #include "core/event.h"
+#include "math/transform.h"
 #include "physics/collider.h"
 #include "physics/collision_data.h"
 #include "physics/physics_body.h"
@@ -50,7 +51,7 @@ static void check_collisions() {
 static void resolve_collisions() {
   for(auto& coll : world->collisions) {
     if(coll.coll1->body->is_dynamic) {
-      coll.coll1->body->position += (-coll.normal * coll.depth); 
+      coll.coll1->body->transform.position += (-coll.normal * coll.depth); 
       coll.coll1->body->velocity = glm::vec3(0.0f); 
 
       if(coll.normal.y == 1.0f) {
@@ -59,7 +60,7 @@ static void resolve_collisions() {
     }
     
     if(coll.coll2->body->is_dynamic) {
-      coll.coll2->body->position += (coll.normal * coll.depth); 
+      coll.coll2->body->transform.position += (coll.normal * coll.depth); 
       coll.coll2->body->velocity = glm::vec3(0.0f); 
 
       if(coll.normal.y == 1.0f) {
@@ -96,12 +97,12 @@ void physics_world_update(f64 timestep) {
       continue;
     }
 
-    body->force = world->gravity; 
+    body->acceleration = world->gravity; 
     
-    body->velocity += body->force;
-    body->position += body->velocity * (f32)timestep;
+    body->velocity += body->acceleration;
+    body->transform.position += body->velocity * (f32)timestep;
 
-    collider_update_points(body->collider, body->position);
+    collider_update_points(body->collider, body->transform.position);
   }
 
   check_collisions();
@@ -110,11 +111,15 @@ void physics_world_update(f64 timestep) {
 
 PhysicsBody* physics_world_add_body(const glm::vec3& pos, const bool dynamic, void* user_data, const bool active) {
   PhysicsBody* body = new PhysicsBody{};
-  body->position = pos;
+  transform_create(&body->transform, pos);
+  
   body->velocity = glm::vec3(0.0f);
+  body->acceleration = glm::vec3(0.0f);
   body->force = glm::vec3(0.0f);
+  
   body->collider = nullptr;
-  body->is_active = active; 
+  
+  // body->is_active = active; 
   body->is_dynamic = dynamic;
   body->user_data = user_data;
 

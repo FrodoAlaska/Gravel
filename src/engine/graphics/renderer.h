@@ -13,10 +13,14 @@
 /////////////////////////////////////////////////////////////////////////////////
 const bool renderer_create();
 void renderer_destroy();
+
 void renderer_clear(const glm::vec4& color);
 void renderer_begin(const Camera* cam);
 void renderer_end();
 void renderer_present();
+
+Shader* renderer_get_default_shader();
+Material* renderer_get_default_material();
 
 // Render a mesh using the given material at the given transform
 void render_mesh(const Transform& transform, Mesh* mesh, Material* mat);

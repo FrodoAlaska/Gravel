@@ -1,16 +1,19 @@
 #pragma once
 
 #include "physics/collider.h"
+#include "math/transform.h"
 
 #include <glm/glm.hpp>
 
 // PhysicsBody
 /////////////////////////////////////////////////////////////////////////////////
 struct PhysicsBody {
-  glm::vec3 position, velocity, force;
+  Transform transform;
+  glm::vec3 velocity, acceleration, force;
+  
   Collider* collider;
+  
   bool is_active, is_dynamic;
-
   void* user_data;
 };
 /////////////////////////////////////////////////////////////////////////////////

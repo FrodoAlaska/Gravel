@@ -14,6 +14,6 @@ void physics_body_add_collider(PhysicsBody* body, const glm::vec3& scale, const 
   body->collider->is_grounded = false;
   body->collider->body = body;
 
-  collider_update_points(body->collider, body->position);
+  collider_update_points(body->collider, body->transform.position);
 }
 /////////////////////////////////////////////////////////////////////////////////

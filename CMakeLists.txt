@@ -1,20 +1,57 @@
 cmake_minimum_required(VERSION 3.27)
 project(Gravel)
 
+# Adding these libraries to the project
+##########################################################
 add_subdirectory(libs/GLFW)
 add_subdirectory(libs/glm)
+##########################################################
 
+# CMake-specific variables
+##########################################################
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_BUILD_TYPE Debug)
+##########################################################
 
+# Platform-specific variables
+##########################################################
+set(WINDOWS_COMPILER_PATH /usr/bin)
+set(LINUX_COMPILER_PATH /usr/bin)
+set(WEB_COMPILER_PATH) # Put the path/to/the/em++/compiler
+set(BUILD_PLATFORM) # Set the platform you want to build for when initially building this cmake file
+##########################################################
+
+# Directory-specific variables
+##########################################################
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(ENGINE_SRC_DIR ${CMAKE_SOURCE_DIR}/src/engine)
 set(APP_SRC_DIR ${CMAKE_SOURCE_DIR}/src/app)
 set(EDITOR_SRC_DIR ${CMAKE_SOURCE_DIR}/src/editor)
 set(LIBS_DIR ${CMAKE_SOURCE_DIR}/libs/)
+##########################################################
 
+# Build flags. This will be added on later 
+##########################################################
 set(BUILD_FLAGS GLFW_INCLUDE_NONE APP_DEBUG EDITOR_ACTIVE)
+##########################################################
 
+# Defining states depending on the platform 
+if(BUILD_PLATFORM STREQUAL "PLAT_WINDOWS")
+  set(CMAKE_CXX_COMPILER ${WINDOWS_COMPILER_PATH}/x86_64-w64-mingw32-g++)
+  set(CMAKE_C_COMPILER ${WINDOWS_COMPILER_PATH}/x86_64-w64-mingw32-gcc)
+  list(APPEND BUILD_FLAGS PLAT_WINDOWS)
+elseif(BUILD_PLATFORM STREQUAL "PLAT_LINUX")
+  set(CMAKE_CXX_COMPILER ${LINUX_COMPILER_PATH}/c++)
+  set(CMAKE_C_COMPILER ${LINUX_COMPILER_PATH}/c)
+  list(APPEND BUILD_FLAGS PLAT_LINUX)
+elseif(BUILD_PLATFORM STREQUAL "PLAT_WEB")
+  set(CMAKE_CXX_COMPILER ${WEB_COMPILER_PATH}/em++)
+  set(CMAKE_C_COMPILER ${WEB_COMPILER_PATH}/emcc)
+  list(APPEND BUILD_FLAGS PLAT_WEB)
+endif()
+
+# Sources 
+##########################################################
 set(ENGINE_SOURCES 
   # Core
   ${ENGINE_SRC_DIR}/core/window.cpp
@@ -88,7 +125,10 @@ set(LIBS_SOURCES
   
   ${LIBS_DIR}/tinyobjloader/tiny_obj_loader.cc
 )
+##########################################################
 
+# Linking and all tha jazz
+##########################################################
 add_executable(${PROJECT_NAME} ${ENGINE_SOURCES} ${APP_SOURCES} ${EDITOR_SOURCES} ${LIBS_SOURCES})
 
 file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -99,3 +139,4 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 target_include_directories(${PROJECT_NAME} PUBLIC BEFORE ${LIBS_DIR} ${SRC_DIR} ${ENGINE_SRC_DIR} ${APP_SRC_DIR} ${EDITOR_SRC_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw)
+##########################################################
