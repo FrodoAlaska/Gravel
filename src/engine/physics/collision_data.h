@@ -1,18 +1,18 @@
 #pragma once
 
 #include "defines.h"
+#include "physics/physics_body.h"
 
 #include <glm/vec3.hpp>
-
-struct Collider; // Forward declaration because why not
 
 // CollisionData
 /////////////////////////////////////////////////////////////////////////////////
 struct CollisionData {
-  Collider* coll1;
-  Collider* coll2;
+  PhysicsBody* body_a; 
+  PhysicsBody* body_b;
 
-  glm::vec3 normal; 
+  glm::vec3 normal;
   f32 depth;
+  bool has_collided;
 };
 /////////////////////////////////////////////////////////////////////////////////

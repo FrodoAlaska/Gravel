@@ -1,9 +1,7 @@
 #include "physics_world.h"
-#include "core/event.h"
 #include "math/transform.h"
-#include "physics/collider.h"
-#include "physics/collision_data.h"
 #include "physics/physics_body.h"
+#include "defines.h"
 
 #include <glm/vec3.hpp>
 
@@ -13,117 +11,84 @@
 /////////////////////////////////////////////////////////////////////////////////
 struct PhysicsWorld {
   std::vector<PhysicsBody*> bodies;
-  std::vector<CollisionData> collisions;
-
   glm::vec3 gravity;
 };
 
-static PhysicsWorld* world;
+static PhysicsWorld* s_world;
 /////////////////////////////////////////////////////////////////////////////////
 
 // Private functions
 /////////////////////////////////////////////////////////////////////////////////
 static void check_collisions() {
-  for(auto& body1 : world->bodies) {
-    if(!body1->is_active) {
-      continue;
-    }
-
-    for(auto& body2 : world->bodies) {
-      if(!body2->is_active) {
-        continue;
-      }
-
-      // Make sure to not check collisions with the same body
-      if(body1->collider->id == body2->collider->id) {
-        continue;
-      }      
-
-      CollisionData data;
-      if(collider_is_colliding(body1->collider, body2->collider, &data)) {
-        world->collisions.push_back(data);
-        event_dispatch(EVENT_ENTITY_COLLISION, EventDesc{.coll_data = data});
-      }
-    }
-  }
+  // TODO
 }
 
 static void resolve_collisions() {
-  for(auto& coll : world->collisions) {
-    if(coll.coll1->body->is_dynamic) {
-      coll.coll1->body->transform.position += (-coll.normal * coll.depth); 
-      coll.coll1->body->velocity = glm::vec3(0.0f); 
-
-      if(coll.normal.y == 1.0f) {
-        coll.coll1->is_grounded = true;
-      }
-    }
-    
-    if(coll.coll2->body->is_dynamic) {
-      coll.coll2->body->transform.position += (coll.normal * coll.depth); 
-      coll.coll2->body->velocity = glm::vec3(0.0f); 
-
-      if(coll.normal.y == 1.0f) {
-        coll.coll2->is_grounded = true;
-      }
-    }
-  }
-
-  if(!world->collisions.empty()) {
-    world->collisions.clear();
-  }
+  // TODO
 }
 /////////////////////////////////////////////////////////////////////////////////
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 void physics_world_create(const glm::vec3& gravity) {
-  world          = new PhysicsWorld{};
-  world->gravity = gravity;
+  s_world = new PhysicsWorld{}; 
+  s_world->gravity = gravity;
 }
 
 void physics_world_destroy() {
-  for(auto& body : world->bodies) {
-    delete body;
+  for(auto& body : s_world->bodies) {
+    physics_body_destroy(body);
   }
+  s_world->bodies.clear();
 
-  delete world;
+  delete s_world;
 }
 
-void physics_world_update(f64 timestep) {
-  for(auto& body : world->bodies) {
-    // No need to move the body at all if it's static or inactive
-    if(!body->is_dynamic || !body->is_active) {
+void physics_world_set_gravity(const glm::vec3& gravity) {
+  s_world->gravity = gravity;
+}
+
+void physics_world_update(f32 dt) {
+  /*
+   * NOTE:
+   * This physics system uses the Semi-Implicit Euler integration system. 
+   * It is perhaps not the best/accurate integration out there. However, 
+   * it does satisfy the needs of a real-time game physics simulation. 
+   * It's fast, easy to use, and accurate enough for game simulations. 
+   *
+   * Here's a link for info: 
+   * https://en.wikipedia.org/wiki/Semi-implicit_Euler_method
+   */
+
+  for(auto& body : s_world->bodies) {
+    // Inactive and static bodies do not need to be updated 
+    if(!body->is_active || body->type == PHYSICS_BODY_STATIC) {
       continue;
     }
 
-    body->acceleration = world->gravity; 
-    
-    body->velocity += body->acceleration;
-    body->transform.position += body->velocity * (f32)timestep;
+    // Add the most important force to the body 
+    body->force += s_world->gravity;
 
-    collider_update_points(body->collider, body->transform.position);
-  }
+    // Semi-Implicit Euler in effect
+    body->acceleration = body->force * body->inverse_mass;
+    body->linear_velocity += body->acceleration * dt;
+    body->transform.position += body->linear_velocity * dt;
+
+    // Moving the body by the new position/displacment
+    transform_translate(&body->transform, body->transform.position); 
+
+    // Clear all forces accumulated this frame
+    body->force = glm::vec3(); 
+  } 
 
   check_collisions();
   resolve_collisions();
 }
 
-PhysicsBody* physics_world_add_body(const glm::vec3& pos, const bool dynamic, void* user_data, const bool active) {
-  PhysicsBody* body = new PhysicsBody{};
-  transform_create(&body->transform, pos);
+PhysicsBody* physics_world_add_body(const PhysicsBodyDesc& desc) {
+  PhysicsBody* body = physics_body_create(desc);
+  s_world->bodies.push_back(body);
   
-  body->velocity = glm::vec3(0.0f);
-  body->acceleration = glm::vec3(0.0f);
-  body->force = glm::vec3(0.0f);
-  
-  body->collider = nullptr;
-  
-  // body->is_active = active; 
-  body->is_dynamic = dynamic;
-  body->user_data = user_data;
-
-  world->bodies.push_back(body);
   return body;
 }
 /////////////////////////////////////////////////////////////////////////////////

@@ -1,19 +1,38 @@
 #include "physics_body.h"
+#include "defines.h"
+#include "math/transform.h"
 #include "physics/collider.h"
 
-#include <glm/glm.hpp>
+#include <glm/vec3.hpp>
 
-// Public functions
+// Public functions 
 /////////////////////////////////////////////////////////////////////////////////
-void physics_body_add_collider(PhysicsBody* body, const glm::vec3& scale, const std::string& id) {
-  body->collider = new Collider{};
-  body->collider->scale = scale;
-  body->collider->min = glm::vec3(0.0f);
-  body->collider->max = glm::vec3(1.0f);
-  body->collider->id = id;
-  body->collider->is_grounded = false;
-  body->collider->body = body;
+PhysicsBody* physics_body_create(const PhysicsBodyDesc& desc) {
+  PhysicsBody* body = new PhysicsBody{};
+  
+  transform_create(&body->transform, desc.position);
+  body->type = desc.type;
+  body->force = glm::vec3(0.0f);
+  body->acceleration = glm::vec3(0.0f);
+  body->linear_velocity = glm::vec3(0.0f);
+  body->angular_velocity = glm::vec3(0.0f);
+  body->mass = desc.mass; 
+  body->inverse_mass = -desc.mass;
+  body->is_active = desc.is_active;
 
-  collider_update_points(body->collider, body->transform.position);
+  return body;
+}
+
+void physics_body_destroy(PhysicsBody* body) {
+  delete body;
+}
+
+void physics_body_add_collider(PhysicsBody* body, ColliderType type, void* collider) {
+  body->collider.type = type;
+  body->collider.data = collider;
+}
+
+void physics_body_apply_force(PhysicsBody* body, const glm::vec3& force) {
+  body->force += force;
 }
 /////////////////////////////////////////////////////////////////////////////////

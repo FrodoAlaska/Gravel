@@ -1,24 +1,51 @@
-#pragma once
+#pragma once 
 
-#include "physics/collider.h"
+#include "defines.h"
 #include "math/transform.h"
+#include "physics/collider.h"
 
-#include <glm/glm.hpp>
+#include <glm/vec3.hpp>
+
+// PhysicsBodyType
+/////////////////////////////////////////////////////////////////////////////////
+enum PhysicsBodyType {
+  PHYSICS_BODY_DYNAMIC, 
+  PHYSICS_BODY_KINEMATIC, 
+  PHYSICS_BODY_STATIC, 
+};
+/////////////////////////////////////////////////////////////////////////////////
+
+// PhysicsBodyDesc
+/////////////////////////////////////////////////////////////////////////////////
+struct PhysicsBodyDesc {
+  glm::vec3 position;
+  PhysicsBodyType type;
+
+  // Defaulted values. Can be changed if needed
+  f32 mass = 1.0f;
+  bool is_active = true;
+};
+/////////////////////////////////////////////////////////////////////////////////
 
 // PhysicsBody
 /////////////////////////////////////////////////////////////////////////////////
 struct PhysicsBody {
   Transform transform;
-  glm::vec3 velocity, acceleration, force;
-  
-  Collider* collider;
-  
-  bool is_active, is_dynamic;
-  void* user_data;
+  PhysicsBodyType type;
+  Collider collider;
+
+  glm::vec3 force, acceleration; 
+  glm::vec3 linear_velocity, angular_velocity;
+
+  f32 mass, inverse_mass;
+  bool is_active;
 };
 /////////////////////////////////////////////////////////////////////////////////
 
-// Public functions
+// Public functions 
 /////////////////////////////////////////////////////////////////////////////////
-void physics_body_add_collider(PhysicsBody* body, const glm::vec3& scale, const std::string& id);
+PhysicsBody* physics_body_create(const PhysicsBodyDesc& desc);
+void physics_body_destroy(PhysicsBody* body);
+void physics_body_add_collider(PhysicsBody* body, ColliderType type, void* collider);
+void physics_body_apply_force(PhysicsBody* body, const glm::vec3& force);
 /////////////////////////////////////////////////////////////////////////////////
