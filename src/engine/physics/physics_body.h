@@ -22,6 +22,7 @@ struct PhysicsBodyDesc {
   PhysicsBodyType type;
 
   // Defaulted values. Can be changed if needed
+  void* user_data; 
   f32 mass = 1.0f;
   bool is_active = true;
 };
@@ -39,6 +40,8 @@ struct PhysicsBody {
 
   f32 mass, inverse_mass;
   bool is_active;
+
+  void* user_data;
 };
 /////////////////////////////////////////////////////////////////////////////////
 

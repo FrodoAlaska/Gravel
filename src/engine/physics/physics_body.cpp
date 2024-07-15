@@ -12,24 +12,45 @@ PhysicsBody* physics_body_create(const PhysicsBodyDesc& desc) {
   
   transform_create(&body->transform, desc.position);
   body->type = desc.type;
+  
   body->force = glm::vec3(0.0f);
   body->acceleration = glm::vec3(0.0f);
   body->linear_velocity = glm::vec3(0.0f);
   body->angular_velocity = glm::vec3(0.0f);
+  
   body->mass = desc.mass; 
   body->inverse_mass = -desc.mass;
+  
   body->is_active = desc.is_active;
+  body->user_data = desc.user_data;
 
   return body;
 }
 
 void physics_body_destroy(PhysicsBody* body) {
+  if(!body) {
+    return;
+  } 
+
   delete body;
 }
 
 void physics_body_add_collider(PhysicsBody* body, ColliderType type, void* collider) {
   body->collider.type = type;
   body->collider.data = collider;
+
+  // Determining the size of the size of the collider 
+  switch(type) {
+    case COLLIDER_BOX: {
+      BoxCollider* coll = (BoxCollider*)collider;
+      transform_scale(&body->transform, coll->half_size * 2.0f);
+    }
+      break;
+    case COLLIDER_SPHERE:
+      SphereCollider* coll = (SphereCollider*)collider;
+      transform_scale(&body->transform, glm::vec3(coll->radius)); // TODO: What?? Does this even work??
+      break;
+  }
 }
 
 void physics_body_apply_force(PhysicsBody* body, const glm::vec3& force) {
