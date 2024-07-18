@@ -25,6 +25,6 @@ struct CollisionData {
   PhysicsBody* body_a; 
   PhysicsBody* body_b;
   
-  CollisionPoint collision_point;
+  CollisionPoint point;
 };
 /////////////////////////////////////////////////////////////////////////////////

@@ -5,7 +5,9 @@
 #include "physics/collision_data.h"
 #include "physics/physics_body.h"
 #include "defines.h"
+#include "utils/utils.h"
 
+#include <cstdio>
 #include <glm/vec3.hpp>
 
 #include <vector>
@@ -47,7 +49,7 @@ static void check_collisions() {
       
       // When a collision happens, an even gets dispatched to whoever cares to listen. 
       // The collision data also gets added to a vector to be resolved later.
-      if(data.collision_point.has_collided) {
+      if(data.point.has_collided) {
         event_dispatch(EVENT_ENTITY_COLLISION, EventDesc{.coll_data = data});
         s_world->collisions.push_back(data);
       }
@@ -56,9 +58,47 @@ static void check_collisions() {
 }
 
 static void resolve_collisions() {
-  // for(auto& collision : s_world->collisions) {
-  //   
-  // }
+  for(auto& collision : s_world->collisions) {
+    PhysicsBody* body_a = collision.body_a;
+    PhysicsBody* body_b = collision.body_b;
+ 
+    f32 sum_mass = body_a->inverse_mass + body_b->inverse_mass;
+
+    // Move the bodies away from each other.
+    // We're basically pushing the two bodies away from each other taking into account the normal, depth, and masses.
+    // Heavier bodies (those with more mass) will be pushed away less than lighter bodies. 
+    if(body_a->type != PHYSICS_BODY_STATIC) {
+      glm::vec3 new_pos_a = body_a->transform.position - ((collision.point.normal * collision.point.depth) * (body_a->inverse_mass / sum_mass));
+      transform_translate(&body_a->transform, new_pos_a); 
+    }
+
+    if(body_b->type != PHYSICS_BODY_STATIC) {
+      glm::vec3 new_pos_b = body_a->transform.position + ((collision.point.normal * collision.point.depth) * (body_b->inverse_mass / sum_mass));
+      transform_translate(&body_b->transform, new_pos_b); 
+    }
+
+    // Integrate the Impulse Method for collision response
+    // Relative positions of the points and the bodies 
+    glm::vec3 rel_pos_a = collision.point.collision_point_a - body_a->transform.position; 
+    glm::vec3 rel_pos_b = collision.point.collision_point_b - body_b->transform.position; 
+  
+    // The relative velocity between the two bodies 
+    glm::vec3 rel_vel = body_b->linear_velocity - body_a->linear_velocity;
+
+    f32 restitution = body_a->restitution * body_b->restitution;
+
+    f32 impulse_force = glm::dot(rel_vel, collision.point.normal);
+    f32 impulse = ((-(1.0f + restitution) * impulse_force) / sum_mass);
+
+    // Giving impulse to the two bodies based on the mass
+    physics_body_apply_linear_impulse(body_a, -collision.point.normal * impulse); 
+    physics_body_apply_linear_impulse(body_b, collision.point.normal * impulse); 
+  }
+
+  // Empty out the collisions after resolving all of them
+  if(!s_world->collisions.empty()) {
+    s_world->collisions.clear();
+  }
 }
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -110,7 +150,7 @@ void physics_world_update(f32 dt) {
 
     // Moving the body by the new position/displacment
     transform_translate(&body->transform, body->transform.position); 
-
+    
     // Clear all forces accumulated this frame
     body->force = glm::vec3(); 
   } 

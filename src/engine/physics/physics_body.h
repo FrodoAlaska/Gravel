@@ -24,6 +24,7 @@ struct PhysicsBodyDesc {
   // Defaulted values. Can be changed if needed
   void* user_data; 
   f32 mass = 1.0f;
+  f32 restitution = 0.5f;
   bool is_active = true;
 };
 /////////////////////////////////////////////////////////////////////////////////
@@ -35,10 +36,10 @@ struct PhysicsBody {
   PhysicsBodyType type;
   Collider collider;
 
-  glm::vec3 force, acceleration; 
+  glm::vec3 force, acceleration, torque; 
   glm::vec3 linear_velocity, angular_velocity;
 
-  f32 mass, inverse_mass;
+  f32 mass, inverse_mass, restitution;
   bool is_active;
 
   void* user_data;
@@ -50,5 +51,10 @@ struct PhysicsBody {
 PhysicsBody* physics_body_create(const PhysicsBodyDesc& desc);
 void physics_body_destroy(PhysicsBody* body);
 void physics_body_add_collider(PhysicsBody* body, ColliderType type, void* collider);
-void physics_body_apply_force(PhysicsBody* body, const glm::vec3& force);
+
+void physics_body_apply_linear_force(PhysicsBody* body, const glm::vec3& force);
+void physics_body_apply_angular_force(PhysicsBody* body, const glm::vec3& force);
+
+void physics_body_apply_linear_impulse(PhysicsBody* body, const glm::vec3& force);
+void physics_body_apply_angular_impulse(PhysicsBody* body, const glm::vec3& force);
 /////////////////////////////////////////////////////////////////////////////////

@@ -27,8 +27,10 @@ struct Entity {
   void init(const glm::vec3& pos, const glm::vec3& scale, const PhysicsBodyType type) {
     PhysicsBodyDesc body_desc {
       .position = pos,
-      .type = type, 
+      .type = type,
+      .user_data = (void*)"HEEEEY",
       .mass = 1.0f, 
+      .restitution = 1.0f,
       .is_active = true
     };
 
@@ -61,16 +63,6 @@ struct App {
 static App s_app;
 /////////////////////////////////////////////////////////////////////////////////
 
-static bool collision_callback(const EventType type, const EventDesc& desc) {
-  if(type != EVENT_ENTITY_COLLISION) {
-    return false;
-  } 
-
-  printf("COLLIDED\n");
-
-  return true;
-}
-
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 bool app_init(void* user_data) {
@@ -79,7 +71,7 @@ bool app_init(void* user_data) {
   renderer2d_set_default_font(s_app.font);
 
   // Disable the cursor
-  input_cursor_show(true);
+  input_cursor_show(false);
   
   // Camera init 
   s_app.camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
@@ -96,8 +88,6 @@ bool app_init(void* user_data) {
   s_app.player.init(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(1.0f), PHYSICS_BODY_DYNAMIC);
   s_app.platform.init(glm::vec3(10.0f, -10.0f, 10.0f), glm::vec3(50.0f, 0.1f, 50.0f), PHYSICS_BODY_STATIC); 
 
-  event_listen(EVENT_ENTITY_COLLISION, collision_callback);
-
   return true;
 }
 
@@ -112,6 +102,10 @@ void app_update(void* user_data) {
 
   if(input_key_pressed(KEY_G)) {
     physics_world_set_gravity(glm::vec3(0.0f, 9.81f, 0.0f));
+  }
+
+  if(input_key_pressed(KEY_SPACE)) {
+    physics_body_apply_linear_impulse(s_app.player.body, -s_app.current_cam->direction * 10.0f);
   }
 
   physics_world_update(gclock_delta_time());

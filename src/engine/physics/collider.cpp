@@ -18,7 +18,7 @@ CollisionData collider_colliding(Collider* coll_a, const Transform* trans_a, Col
 
   // No colliders 
   if(!coll_a->data || !coll_b->data) {
-    data.collision_point.has_collided = false;
+    data.point.has_collided = false;
     return data;
   }
 
@@ -43,7 +43,7 @@ CollisionData collider_colliding(Collider* coll_a, const Transform* trans_a, Col
   // Just make sure the bodies exist
   data.body_a = coll_a->body;
   data.body_b = coll_b->body;
-  data.collision_point = point; 
+  data.point = point; 
 
   return data;
 }

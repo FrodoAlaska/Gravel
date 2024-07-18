@@ -1,5 +1,4 @@
 # TODO:
-- Collision resolution
 - Do something interesting with it
 - Cubemaps
 

@@ -15,6 +15,8 @@ PhysicsBody* physics_body_create(const PhysicsBodyDesc& desc) {
   
   body->force = glm::vec3(0.0f);
   body->acceleration = glm::vec3(0.0f);
+  body->torque = glm::vec3(0.0f);
+
   body->linear_velocity = glm::vec3(0.0f);
   body->angular_velocity = glm::vec3(0.0f);
   
@@ -54,7 +56,35 @@ void physics_body_add_collider(PhysicsBody* body, ColliderType type, void* colli
   }
 }
 
-void physics_body_apply_force(PhysicsBody* body, const glm::vec3& force) {
-  body->force += force;
+void physics_body_apply_linear_force(PhysicsBody* body, const glm::vec3& force) {
+  if(body->type == PHYSICS_BODY_STATIC) {
+    return;
+  }
+
+  body->linear_velocity += force;
+}
+
+void physics_body_apply_angular_force(PhysicsBody* body, const glm::vec3& force) {
+  if(body->type == PHYSICS_BODY_STATIC) {
+    return;
+  }
+
+  // @TODO
+}
+
+void physics_body_apply_linear_impulse(PhysicsBody* body, const glm::vec3& force) {
+  if(body->type == PHYSICS_BODY_STATIC) {
+    return;
+  }
+
+  body->linear_velocity += force * body->inverse_mass;
+}
+
+void physics_body_apply_angular_impulse(PhysicsBody* body, const glm::vec3& force) {
+  if(body->type == PHYSICS_BODY_STATIC) {
+    return;
+  }
+
+  // @TODO
 }
 /////////////////////////////////////////////////////////////////////////////////
