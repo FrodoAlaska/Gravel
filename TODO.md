@@ -1,9 +1,12 @@
 # TODO:
-- screen_to_world/world_to_screen
+- Collision resolution
+- Do something interesting with it
 - Cubemaps
 
 # LATER TODO:
 - Rework the physics engine -> rays, physics bodies, different collider shapes, particles, better collision detection and resolution, etc
+- Sphere and plane rendering
+- Documentation cause fun and procrastinate
 - The 2D renderer needs a whole rewrite. Perhaps a 'begin_vertex' and 'end_vertex' functions so I don't have to redo the whole thing again??
 - Model animations
 - Minimal logger and asserts

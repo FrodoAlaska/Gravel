@@ -1,5 +1,8 @@
 #include "physics_world.h"
+#include "core/event.h"
 #include "math/transform.h"
+#include "physics/collider.h"
+#include "physics/collision_data.h"
 #include "physics/physics_body.h"
 #include "defines.h"
 
@@ -10,8 +13,10 @@
 // PhysicsWorld
 /////////////////////////////////////////////////////////////////////////////////
 struct PhysicsWorld {
-  std::vector<PhysicsBody*> bodies;
   glm::vec3 gravity;
+  
+  std::vector<PhysicsBody*> bodies;
+  std::vector<CollisionData> collisions;
 };
 
 static PhysicsWorld* s_world;
@@ -20,11 +25,40 @@ static PhysicsWorld* s_world;
 // Private functions
 /////////////////////////////////////////////////////////////////////////////////
 static void check_collisions() {
-  // TODO
+  for(u32 i = 0; i < s_world->bodies.size(); i++) {
+    // Skip inactive bodies
+    PhysicsBody* body_a = s_world->bodies[i];
+    if(!body_a->is_active) {
+      continue;
+    }
+
+    for(u32 j = i + 1; j < s_world->bodies.size(); j++) {
+      // Don't check for the same bodies 
+      if(i == j) {
+        continue;
+      }
+
+      PhysicsBody* body_b = s_world->bodies[j];
+      if(!body_b->is_active) {
+        continue;
+      }
+
+      CollisionData data = collider_colliding(&body_a->collider, &body_a->transform, &body_b->collider, &body_b->transform);
+      
+      // When a collision happens, an even gets dispatched to whoever cares to listen. 
+      // The collision data also gets added to a vector to be resolved later.
+      if(data.collision_point.has_collided) {
+        event_dispatch(EVENT_ENTITY_COLLISION, EventDesc{.coll_data = data});
+        s_world->collisions.push_back(data);
+      }
+    }
+  }
 }
 
 static void resolve_collisions() {
-  // TODO
+  // for(auto& collision : s_world->collisions) {
+  //   
+  // }
 }
 /////////////////////////////////////////////////////////////////////////////////
 

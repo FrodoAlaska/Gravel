@@ -1,4 +1,5 @@
 #include "app.h"
+#include "core/event.h"
 #include "core/input.h"
 #include "engine/core/clock.h"
 #include "engine/graphics/renderer.h"
@@ -13,9 +14,9 @@
 #include "resources/mesh.h"
 #include "utils/utils.h"
 
-#include <cstdio>
 #include <glm/glm.hpp>
 
+#include <cstdio>
 #include <string>
 
 struct Entity {
@@ -60,6 +61,16 @@ struct App {
 static App s_app;
 /////////////////////////////////////////////////////////////////////////////////
 
+static bool collision_callback(const EventType type, const EventDesc& desc) {
+  if(type != EVENT_ENTITY_COLLISION) {
+    return false;
+  } 
+
+  printf("COLLIDED\n");
+
+  return true;
+}
+
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 bool app_init(void* user_data) {
@@ -67,6 +78,9 @@ bool app_init(void* user_data) {
   s_app.font = font_load("assets/font/bit5x3.ttf", 256.0f);
   renderer2d_set_default_font(s_app.font);
 
+  // Disable the cursor
+  input_cursor_show(true);
+  
   // Camera init 
   s_app.camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
   
@@ -81,6 +95,8 @@ bool app_init(void* user_data) {
  
   s_app.player.init(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(1.0f), PHYSICS_BODY_DYNAMIC);
   s_app.platform.init(glm::vec3(10.0f, -10.0f, 10.0f), glm::vec3(50.0f, 0.1f, 50.0f), PHYSICS_BODY_STATIC); 
+
+  event_listen(EVENT_ENTITY_COLLISION, collision_callback);
 
   return true;
 }

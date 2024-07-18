@@ -19,7 +19,7 @@ PhysicsBody* physics_body_create(const PhysicsBodyDesc& desc) {
   body->angular_velocity = glm::vec3(0.0f);
   
   body->mass = desc.mass; 
-  body->inverse_mass = -desc.mass;
+  body->inverse_mass = desc.mass * -1;
   
   body->is_active = desc.is_active;
   body->user_data = desc.user_data;
@@ -38,6 +38,7 @@ void physics_body_destroy(PhysicsBody* body) {
 void physics_body_add_collider(PhysicsBody* body, ColliderType type, void* collider) {
   body->collider.type = type;
   body->collider.data = collider;
+  body->collider.body = body;
 
   // Determining the size of the size of the collider 
   switch(type) {
