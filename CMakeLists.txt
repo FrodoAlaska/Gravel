@@ -87,6 +87,7 @@ set(ENGINE_SOURCES
   ${ENGINE_SRC_DIR}/ui/ui_canvas.cpp
   
   # Physics
+  ${ENGINE_SRC_DIR}/physics/ray.cpp
   ${ENGINE_SRC_DIR}/physics/collider.cpp
   ${ENGINE_SRC_DIR}/physics/physics_body.cpp
   ${ENGINE_SRC_DIR}/physics/physics_world.cpp
