@@ -1,4 +1,5 @@
 #include "resource_manager.h"
+#include "graphics/shader.h"
 #include "resources/material.h"
 #include "resources/mesh.h"
 #include "resources/model.h"
@@ -16,6 +17,7 @@
 struct ResourceManager {
   std::string res_path; 
 
+  std::unordered_map<std::string, Shader*> shaders;
   std::unordered_map<std::string, Texture*> textures;
   std::unordered_map<std::string, Font*> fonts;
   std::unordered_map<std::string, Mesh*> meshes;
@@ -28,7 +30,15 @@ static ResourceManager s_res_man;
 
 // Private functions
 /////////////////////////////////////////////////////////////////////////////////
-Texture* find_texture(const std::string& id) {
+static Shader* find_shader(const std::string& id) {
+  if(s_res_man.shaders.find(id) != s_res_man.shaders.end()) {
+    return s_res_man.shaders[id];
+  }
+
+  return nullptr;
+}
+
+static Texture* find_texture(const std::string& id) {
   if(s_res_man.textures.find(id) != s_res_man.textures.end()) {
     return s_res_man.textures[id];
   }
@@ -36,7 +46,7 @@ Texture* find_texture(const std::string& id) {
   return nullptr;
 }
 
-Font* find_font(const std::string& id) {
+static Font* find_font(const std::string& id) {
   if(s_res_man.fonts.find(id) != s_res_man.fonts.end()) {
     return s_res_man.fonts[id];
   }
@@ -44,7 +54,7 @@ Font* find_font(const std::string& id) {
   return nullptr;
 }
 
-Mesh* find_mesh(const std::string& id) {
+static Mesh* find_mesh(const std::string& id) {
   if(s_res_man.meshes.find(id) != s_res_man.meshes.end()) {
     return s_res_man.meshes[id];
   }
@@ -52,7 +62,7 @@ Mesh* find_mesh(const std::string& id) {
   return nullptr;
 }
 
-Material* find_material(const std::string& id) {
+static Material* find_material(const std::string& id) {
   if(s_res_man.materials.find(id) != s_res_man.materials.end()) {
     return s_res_man.materials[id];
   }
@@ -60,7 +70,7 @@ Material* find_material(const std::string& id) {
   return nullptr;
 }
 
-Model* find_model(const std::string& id) {
+static Model* find_model(const std::string& id) {
   if(s_res_man.models.find(id) != s_res_man.models.end()) {
     return s_res_man.models[id];
   }
@@ -76,15 +86,20 @@ void resources_init(const std::string res_path) {
 }
 
 void resources_shutdown() {
-  for(auto& [key, value] : s_res_man.fonts) {
-    font_unload(value);
+  for(auto& [key, value] : s_res_man.shaders) {
+    shader_unload(value);
   }
-  s_res_man.fonts.clear();
-  
+  s_res_man.shaders.clear();
+
   for(auto& [key, value] : s_res_man.textures) {
     texture_unload(value);
   }
   s_res_man.textures.clear();
+  
+  for(auto& [key, value] : s_res_man.fonts) {
+    font_unload(value);
+  }
+  s_res_man.fonts.clear();
   
   for(auto& [key, value] : s_res_man.meshes) {
     mesh_destroy(value);
@@ -95,6 +110,18 @@ void resources_shutdown() {
     material_unload(value);
   }
   s_res_man.materials.clear();
+}
+
+Shader* resources_add_shader(const std::string& id, const std::string& path) {
+  std::string full_path = s_res_man.res_path + path; 
+  
+  s_res_man.shaders[id] = shader_load(full_path);
+  return s_res_man.shaders[id];
+}
+
+Shader* resources_add_shader(const std::string& id, const std::string& shader_name, const std::string& shader_code) {
+  s_res_man.shaders[id] = shader_load(shader_name, shader_code);
+  return s_res_man.shaders[id];
 }
 
 Texture* resources_add_texture(const std::string& id, const std::string& path) {
@@ -141,6 +168,10 @@ Model* resources_add_model(const std::string& id, const std::string& path) {
   return s_res_man.models[id];
 }
 
+Shader* resources_get_shader(const std::string& id) {
+  return find_shader(id);
+}
+
 Texture* resources_get_texture(const std::string& id) {
   return find_texture(id);
 }
@@ -161,10 +192,22 @@ Model* resources_get_model(const std::string& id) {
   return find_model(id);
 }
 
+bool resources_remove_shader(const std::string& id) {
+  Shader* shader = find_shader(id);
+  if(shader) {
+    // Make sure to unload the resource before removing it
+    shader_unload(shader);
+    s_res_man.shaders.erase(id);
+
+    return true;
+  }
+
+  return false;
+}
+
 bool resources_remove_texture(const std::string& id) {
   Texture* texture = find_texture(id);
   if(texture) {
-    // Make sure to unload the texture before removing it
     texture_unload(texture);
     s_res_man.textures.erase(id);
     

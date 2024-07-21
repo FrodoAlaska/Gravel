@@ -10,10 +10,24 @@
 #include "physics/collider.h"
 #include "physics/physics_body.h"
 #include "resources/mesh.h"
+#include "resources/model.h"
 
 #include <glm/glm.hpp>
 
 #include <string>
+
+/*
+ * An example Gravel application. 
+ * The 'engine.cpp' file uses the function pointer of this application to 
+ * initialize, update, render, and shutdown the application. 
+ * The function pointers are implemented here. 
+ *
+ * In this example, the application is a static variable where all of the functions can 
+ * access freely. This is done just for simplicity sake. However, it would be better to make the 
+ * application the engine's responsibility to declare and keep around. You can pass around the application 
+ * in the 'user_data' parametar of each function pointer. You will have to convert the 'void*' to your 
+ * desired application structure. 
+ */
 
 struct Entity {
   PhysicsBody* body;
@@ -26,7 +40,7 @@ struct Entity {
       .type = type, 
       .user_data = this, 
       .mass = mass, 
-      .restitution = 1.0f, 
+      .restitution = 0.66f, 
       .is_active = true,
     };
 
@@ -35,6 +49,22 @@ struct Entity {
     physics_body_add_collider(body, COLLIDER_BOX, &collider);
 
     mesh = mesh_create();
+  }
+
+  void update() {
+    if(input_key_down(KEY_W)) {
+      physics_body_apply_linear_force(body, glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+    else if(input_key_down(KEY_S)) {
+      physics_body_apply_linear_force(body, glm::vec3(-1.0f, 0.0f, 0.0f));
+    }
+    
+    if(input_key_down(KEY_A)) {
+      physics_body_apply_linear_force(body, glm::vec3(0.0f, 0.0f, -1.0f));
+    }
+    else if(input_key_down(KEY_D)) {
+      physics_body_apply_linear_force(body, glm::vec3(.0f, 0.0f, 1.0f));
+    }
   }
 
   void render(glm::vec4 color) {
@@ -68,7 +98,7 @@ bool app_init(void* user_data) {
   input_cursor_show(false);
   
   // Camera init 
-  s_app.camera = camera_create(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+  s_app.camera = camera_create(glm::vec3(1.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, -3.0f));
   
   // Editor init
   editor_init(glm::vec3(10.0f, 5.0f, 10.0f), glm::vec3(0.0f, 1.0f, -3.0f), false);
@@ -80,7 +110,7 @@ bool app_init(void* user_data) {
 
   s_app.entities[0].init(glm::vec3(10.0f, 0.0f, 10.0f), glm::vec3(1.0f), PHYSICS_BODY_DYNAMIC, 1.0f);
   s_app.entities[1].init(glm::vec3(10.0f, -5.0f, 10.0f), glm::vec3(50.0f, 0.1f, 50.0f), PHYSICS_BODY_STATIC, 0.0f);
-
+  
   return true;
 }
 
@@ -92,15 +122,13 @@ void app_update(void* user_data) {
   camera_update(s_app.current_cam);
   camera_move(s_app.current_cam);
 
-  s_app.current_cam->position = s_app.entities[0].body->transform.position;
+  // s_app.current_cam->position = s_app.entities[0].body->transform.position;
 
   if(input_key_pressed(KEY_G)) {
     physics_world_set_gravity(glm::vec3(0.0f, 9.81f, 0.0f));
   }
 
-  if(input_key_pressed(KEY_SPACE)) {
-    physics_body_apply_linear_force(s_app.entities[0].body, glm::vec3(0.0f, 10.0f, 0.0f));
-  }
+  s_app.entities[0].update();
 }
 
 void app_render(void* user_data) {
@@ -108,7 +136,7 @@ void app_render(void* user_data) {
   editor_begin();
 
   renderer_begin(s_app.current_cam);
-  // s_app.entities[0].render(glm::vec4(1.0f));
+  s_app.entities[0].render(glm::vec4(1.0f));
   s_app.entities[1].render(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
   renderer_end();
   

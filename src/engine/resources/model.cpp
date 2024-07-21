@@ -4,6 +4,7 @@
 #include "math/vertex.h"
 #include "resources/mesh.h"
 #include "resources/material.h"
+#include "resources/resource_manager.h"
 #include "resources/texture.h"
 
 #include <tinyobjloader/tiny_obj_loader.h>
@@ -44,7 +45,7 @@ static const std::vector<Material*> load_materials(const std::vector<tinyobj::ma
     }
 
     // New material added!
-    mats.push_back(material_load(diffuse, specular, renderer_get_default_shader()));
+    mats.push_back(material_load(diffuse, specular, resources_get_shader("default_shader-3d")));
   }
 
   return mats;

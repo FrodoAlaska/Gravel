@@ -7,6 +7,7 @@
 #include "resources/mesh.h"
 #include "resources/model.h"
 #include "math/transform.h"
+#include "resources/resource_manager.h"
 #include "resources/texture.h"
 
 #include <glad/gl.h>
@@ -178,8 +179,8 @@ static void load_shaders() {
     "}";
 
   // Shaders loading
-  renderer.shaders[SHADER_DEFAULT]  = shader_load("default.glsl", default_code);
-  renderer.shaders[SHADER_INSTANCE] = shader_load("instance.glsl", inst_code);
+  renderer.shaders[SHADER_DEFAULT]  = resources_add_shader("default_shader-3d", "default.glsl", default_code);
+  renderer.shaders[SHADER_INSTANCE] = resources_add_shader("instance_shader-3d", "instance.glsl", inst_code);
   renderer.current_shader           = renderer.shaders[SHADER_INSTANCE];
 }
 /////////////////////////////////////////////////////////////////////////////////
@@ -206,7 +207,7 @@ const bool renderer_create() {
   // Load the default material
   u32 pixels = 0xffffffff;
   Texture* diffuse = texture_load(1, 1, TEXTURE_FORMAT_RGBA, &pixels); 
-  renderer.default_material = material_load(diffuse, nullptr, renderer.shaders[SHADER_DEFAULT]);
+  renderer.default_material = resources_add_material("default_material", diffuse, nullptr, renderer.shaders[SHADER_DEFAULT]);
 
   // Allocate the transforms array
   renderer.transforms = new glm::mat4[MAX_MESH_INSTANCES];
@@ -241,12 +242,7 @@ const bool renderer_create() {
 void renderer_destroy() {
   delete[] renderer.transforms;
  
-  material_unload(renderer.default_material);
   mesh_destroy(renderer.cube_mesh);
-
-  for(u32 i = 0; i < SHADERS_MAX; i++) {
-    shader_unload(renderer.shaders[i]);
-  }
 }
 
 void renderer_clear(const glm::vec4& color) {
@@ -279,14 +275,6 @@ void renderer_present() {
   window_swap_buffers();
 }
 
-Shader* renderer_get_default_shader() {
-  return renderer.shaders[SHADER_DEFAULT];
-}
-
-Material* renderer_get_default_material() {
-  return renderer.default_material;
-}
-
 void render_mesh(const Transform& transform, Mesh* mesh, Material* mat) {
   if(mat) {
     material_use(mat); 
@@ -303,7 +291,7 @@ void render_mesh(const Transform& transform, Mesh* mesh, Material* mat) {
     glDrawArrays(GL_TRIANGLES, 0, mesh->vertices.size());
   }
   else {
-    // @TODO: Warn logger or assert here???? 
+    fprintf(stderr, "[WARNING]: Cannot render mesh. Can't find vertices or indices");
   }
 }
 
