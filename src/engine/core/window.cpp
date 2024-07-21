@@ -221,6 +221,10 @@ void window_set_current_context() {
   glfwMakeContextCurrent(window.handle);
 }
 
+void window_set_vsync(const bool vsync) {
+  glfwSwapInterval(vsync);
+}
+
 void window_set_close(const bool close) {
   glfwSetWindowShouldClose(window.handle, close);
 }

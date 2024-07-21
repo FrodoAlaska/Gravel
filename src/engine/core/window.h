@@ -22,6 +22,7 @@ GLFWwindow* window_get_handle();
 const KeyCode window_get_exit_key();
 
 void window_set_current_context();
+void window_set_vsync(const bool vsync);
 void window_set_close(const bool close);
 void window_set_exit_key(KeyCode key);
 /////////////////////////////////////////////////////////////////////////////////

@@ -56,6 +56,17 @@ void physics_body_add_collider(PhysicsBody* body, ColliderType type, void* colli
   }
 }
 
+void physics_body_apply_force_at(PhysicsBody* body, const glm::vec3& force, const glm::vec3& pos) {
+  if(body->type == PHYSICS_BODY_STATIC) {
+    return;
+  }
+
+  glm::vec3 local_pos = pos - body->transform.position;
+
+  body->force += force; 
+  body->torque += glm::cross(local_pos, force); 
+}
+
 void physics_body_apply_linear_force(PhysicsBody* body, const glm::vec3& force) {
   if(body->type == PHYSICS_BODY_STATIC) {
     return;

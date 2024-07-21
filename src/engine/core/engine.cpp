@@ -12,6 +12,7 @@
 #include "audio/audio_system.h"
 
 #include "resources/resource_manager.h"
+#include "physics/physics_world.h"
 
 #include <cstdio>
 
@@ -60,6 +61,9 @@ void engine_init(const AppDesc& desc) {
     return;
   }
 
+  // Physic world init 
+  physics_world_create(glm::vec3(0.0f, 9.81f, 0.0f));
+
   // Listening to events
   event_listen(EVENT_GAME_QUIT, game_quit);
 
@@ -72,6 +76,8 @@ void engine_init(const AppDesc& desc) {
 
 void engine_shutdown(AppDesc& desc) {
   desc.shutdown_func(desc.user_data); 
+
+  physics_world_destroy();
 
   audio_system_shutdown();
 
@@ -89,7 +95,10 @@ void engine_run(AppDesc& desc) {
     }
 
     gclock_update();
+    physics_world_update(gclock_delta_time());
+
     desc.update_func(desc.user_data);
+    
     input_update();
    
     desc.render_func(desc.user_data);

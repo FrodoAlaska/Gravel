@@ -152,7 +152,7 @@ void physics_world_update(f32 dt) {
     transform_translate(&body->transform, body->transform.position); 
     
     // Clear all forces accumulated this frame
-    body->force = glm::vec3(); 
+    body->force = glm::vec3(0.0f); 
   } 
 
   check_collisions();

@@ -52,6 +52,8 @@ PhysicsBody* physics_body_create(const PhysicsBodyDesc& desc);
 void physics_body_destroy(PhysicsBody* body);
 void physics_body_add_collider(PhysicsBody* body, ColliderType type, void* collider);
 
+void physics_body_apply_force_at(PhysicsBody* body, const glm::vec3& force, const glm::vec3& pos);
+
 void physics_body_apply_linear_force(PhysicsBody* body, const glm::vec3& force);
 void physics_body_apply_angular_force(PhysicsBody* body, const glm::vec3& force);
 
