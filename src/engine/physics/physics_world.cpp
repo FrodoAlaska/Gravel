@@ -73,7 +73,7 @@ static void resolve_collisions() {
     }
 
     if(body_b->type != PHYSICS_BODY_STATIC) {
-      glm::vec3 new_pos_b = body_a->transform.position + ((collision.point.normal * collision.point.depth) * (body_b->inverse_mass / sum_mass));
+      glm::vec3 new_pos_b = body_b->transform.position + ((collision.point.normal * collision.point.depth) * (body_b->inverse_mass / sum_mass));
       transform_translate(&body_b->transform, new_pos_b); 
     }
 
