@@ -1,9 +1,10 @@
 #pragma once
 
-#include "math/transform.h"
 #include "physics/physics_body.h"
 #include "physics/collider.h"
 #include "resources/mesh.h"
+
+#include <glm/vec3.hpp>
 
 // Object
 /////////////////////////////////////////////////////////////////////////////////
@@ -28,7 +29,7 @@ struct Object {
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
-Object* object_create(const Transform* trans, const PhysicsBodyDesc desc, const bool active = true);
+Object* object_create(const glm::vec3& scale, const PhysicsBodyDesc desc, const bool active = true);
 void object_destroy(Object* obj);
 void object_render(Object* obj);
 /////////////////////////////////////////////////////////////////////////////////

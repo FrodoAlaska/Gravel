@@ -8,10 +8,12 @@
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
-Object* object_create(const Transform* trans, const PhysicsBodyDesc desc, const bool active) {
+Object* object_create(const glm::vec3& scale, const PhysicsBodyDesc desc, const bool active) {
   Object* obj = new Object{};
   obj->body = physics_world_add_body(desc);
-  obj->collider = BoxCollider{.half_size = trans->scale / 2.0f};
+  obj->collider = BoxCollider{.half_size = scale / 2.0f};
+  physics_body_add_collider(obj->body, COLLIDER_BOX, &obj->collider);
+
   obj->mesh = mesh_create();
   obj->is_active = active;
 

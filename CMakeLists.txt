@@ -97,8 +97,6 @@ set(ENGINE_SOURCES
   ${ENGINE_SRC_DIR}/utils/utils_file.cpp
   
   # Scenes
-  ${ENGINE_SRC_DIR}/scenes/scene.cpp
-  ${ENGINE_SRC_DIR}/scenes/scene_manager.cpp
   ${ENGINE_SRC_DIR}/scenes/object.cpp
   ${ENGINE_SRC_DIR}/scenes/player.cpp
 )

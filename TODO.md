@@ -1,4 +1,5 @@
 # TODO:
+- Test scenes
 - Cubemaps
 
 # LATER TODO:
@@ -8,7 +9,6 @@
 - Model animations
 - Minimal logger and asserts
 - Some kind of arena allocater
-- Simple scene system?
 - An easy way to package up the game and build for multiple platforms. Supported platforms: Linux, Windows, and Android??
 
 # FIX:
