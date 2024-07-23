@@ -95,6 +95,12 @@ set(ENGINE_SOURCES
   # Utils
   ${ENGINE_SRC_DIR}/utils/utils.cpp
   ${ENGINE_SRC_DIR}/utils/utils_file.cpp
+  
+  # Scenes
+  ${ENGINE_SRC_DIR}/scenes/scene.cpp
+  ${ENGINE_SRC_DIR}/scenes/scene_manager.cpp
+  ${ENGINE_SRC_DIR}/scenes/object.cpp
+  ${ENGINE_SRC_DIR}/scenes/player.cpp
 )
 
 set(APP_SOURCES 

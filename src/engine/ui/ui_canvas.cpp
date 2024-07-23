@@ -117,6 +117,10 @@ UIButton& ui_canvas_push_button(UICanvas* canvas,
 }
 
 void ui_canvas_render(UICanvas* canvas) {
+  if(!canvas->is_active) {
+    return;
+  }
+
   for(auto& button : canvas->buttons) {
     ui_button_render(&button);
   }
