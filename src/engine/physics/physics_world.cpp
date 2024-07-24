@@ -130,9 +130,12 @@ void physics_world_update(f32 dt) {
    * it does satisfy the needs of a real-time game physics simulation. 
    * It's fast, easy to use, and accurate enough for game simulations. 
    *
-   * Here's a link for info: 
+   * Here's a link for more information: 
    * https://en.wikipedia.org/wiki/Semi-implicit_Euler_method
    */
+
+  f32 damp_factor = 1.0f - 0.95f;
+  f32 frame_damp = glm::pow(damp_factor, dt);
 
   for(auto& body : s_world->bodies) {
     // Inactive and static bodies do not need to be updated 
@@ -140,17 +143,35 @@ void physics_world_update(f32 dt) {
       continue;
     }
 
-    // Add the most important force to the body 
-    body->force += s_world->gravity;
+    // Apply the acceleration
+    glm::vec3 acceleration = body->force * body->inverse_mass;
+
+    // Don't apply gravity to infinitely heavy bodies
+    if(body->inverse_mass > 0) {  
+      acceleration += s_world->gravity; 
+    }
 
     // Semi-Implicit Euler in effect
-    body->acceleration = body->force * body->inverse_mass;
-    body->linear_velocity += body->acceleration * dt;
+    body->linear_velocity += acceleration * dt;
+    body->linear_velocity *= frame_damp; // Applying some linear damping
     body->transform.position += body->linear_velocity * dt;
-
-    // Moving the body by the new position/displacment
-    transform_translate(&body->transform, body->transform.position); 
     
+    // Adding angular velocity 
+    glm::vec3 angular_accel = body->torque * body->inertia_tensor;
+    body->angular_velocity += angular_accel * dt;
+
+    // Adding the rotation to the body 
+    glm::quat orientation = body->transform.rotation;
+    orientation += (glm::quat(0.0f, body->angular_velocity * dt * 0.5f) * orientation);
+    orientation = glm::normalize(orientation);
+
+    // Moving the body by the new position/displacment and rotating it as weel
+    transform_translate(&body->transform, body->transform.position); 
+    transform_rotate(&body->transform, orientation);
+
+    // Apply some damping to the angular velocity as well 
+    body->angular_velocity *= frame_damp;
+
     // Clear all forces accumulated this frame
     body->force = glm::vec3(0.0f); 
   } 

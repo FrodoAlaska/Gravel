@@ -6,7 +6,12 @@
 #include "engine/physics/physics_world.h"
 #include "engine/resources/font.h"
 #include "editor/editor.h"
+#include "physics/physics_body.h"
+#include "physics/ray.h"
+#include "scenes/player.h"
+#include "utils/utils.h"
 
+#include <cstdio>
 #include <glm/glm.hpp>
 
 #include <string>
@@ -31,6 +36,8 @@ struct App {
   Camera* current_cam;
 
   Font* font;
+
+  Player* player;
 };
 
 static App s_app;
@@ -58,6 +65,8 @@ bool app_init(void* user_data) {
   // Setting the gravity of the world
   physics_world_set_gravity(glm::vec3(0.0f));
 
+  s_app.player = player_create(glm::vec3(5.0f, 0.0f, 10.0f));
+
   return true;
 }
 
@@ -65,9 +74,33 @@ void app_shutdown(void* user_data) {
   editor_shutdown();
 }
 
+static f32 force = 0.0f, rot = 0.0f;
+
 void app_update(void* user_data) {
   camera_update(s_app.current_cam);
   camera_move(s_app.current_cam);
+
+  player_update(s_app.player);
+
+  if(input_key_down(KEY_SPACE)) {
+    force += 10.0f;
+  }
+  
+  if(input_key_down(KEY_Q)) {
+    rot += 1.0f;
+  }
+    
+  if(input_key_released(KEY_SPACE)) {
+    Ray ray {
+      .position = s_app.current_cam->position, 
+      .direction = s_app.current_cam->direction
+    };
+
+    RayIntersection intersect = ray_intersect(&ray, &s_app.player->body->transform, &s_app.player->collider);
+    if(intersect.has_intersected) {
+      physics_body_apply_force_at(s_app.player->body, s_app.current_cam->direction * force, intersect.intersection_point);
+    }
+  }
 }
 
 void app_render(void* user_data) {
@@ -75,6 +108,7 @@ void app_render(void* user_data) {
   editor_begin();
 
   renderer_begin(s_app.current_cam);
+  player_render(s_app.player);
   renderer_end();
   
   renderer2d_begin();

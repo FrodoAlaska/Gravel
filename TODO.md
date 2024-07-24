@@ -1,15 +1,15 @@
 # TODO:
-- Test scenes
+- Quaternions 
+- Angular velocity 
+- Make README better
 - Cubemaps
 
 # LATER TODO:
 - Sphere and plane rendering
 - Documentation cause fun and procrastinate
-- The 2D renderer needs a whole rewrite. Perhaps a 'begin_vertex' and 'end_vertex' functions so I don't have to redo the whole thing again??
 - Model animations
 - Minimal logger and asserts
 - Some kind of arena allocater
-- An easy way to package up the game and build for multiple platforms. Supported platforms: Linux, Windows, and Android??
 
 # FIX:
 - TEMP FIX: Button texts positions are wrong on different font sizes 

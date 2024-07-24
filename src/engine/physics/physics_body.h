@@ -5,6 +5,7 @@
 #include "physics/collider.h"
 
 #include <glm/vec3.hpp>
+#include <glm/mat3x3.hpp>
 
 // PhysicsBodyType
 /////////////////////////////////////////////////////////////////////////////////
@@ -36,8 +37,10 @@ struct PhysicsBody {
   PhysicsBodyType type;
   Collider collider;
 
-  glm::vec3 force, acceleration, torque; 
+  glm::vec3 force, torque; 
   glm::vec3 linear_velocity, angular_velocity;
+
+  glm::mat3 inertia_tensor, inverse_inertia_tensor;
 
   f32 mass, inverse_mass, restitution;
   bool is_active;
