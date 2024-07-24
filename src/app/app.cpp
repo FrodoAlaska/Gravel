@@ -65,8 +65,6 @@ void app_shutdown(void* user_data) {
   editor_shutdown();
 }
 
-static f32 force = 0.0f;
-
 void app_update(void* user_data) {
   camera_update(s_app.current_cam);
   camera_move(s_app.current_cam);
