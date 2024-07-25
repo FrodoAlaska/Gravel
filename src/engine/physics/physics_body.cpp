@@ -9,14 +9,14 @@
 // Private functions 
 /////////////////////////////////////////////////////////////////////////////////
 static void build_cube_tensor(PhysicsBody* body, const glm::vec3& scale) {
-  f32 x = 1.0f / 12.0f * body->mass * ((scale.z * scale.z) + (scale.y * scale.y));
-  f32 y = 1.0f / 12.0f * body->mass * ((scale.x * scale.x) + (scale.z * scale.z));
-  f32 z = 1.0f / 12.0f * body->mass * ((scale.x * scale.x) + (scale.y * scale.y));
+  f32 x = (1.0f / 12.0f) * body->mass * ((scale.z * scale.z) + (scale.y * scale.y));
+  f32 y = (1.0f / 12.0f) * body->mass * ((scale.x * scale.x) + (scale.z * scale.z));
+  f32 z = (1.0f / 12.0f) * body->mass * ((scale.x * scale.x) + (scale.y * scale.y));
 
   body->inertia_tensor = glm::mat3(x,    0.0f, 0.0f, 
                                    0.0f, y,    0.0f, 
                                    0.0f, 0.0f, z);
-  body->inverse_inertia_tensor = 1.0f / body->inertia_tensor;
+  body->inverse_inertia_tensor = glm::inverse(body->inertia_tensor);
 }
 
 static void build_sphere_tensor(PhysicsBody* body, const f32 radius) {
@@ -25,7 +25,7 @@ static void build_sphere_tensor(PhysicsBody* body, const f32 radius) {
   body->inertia_tensor = glm::mat3(i,    0.0f, 0.0f, 
                                    0.0f, i,    0.0f, 
                                    0.0f, 0.0f, i);
-  body->inverse_inertia_tensor = 1.0f / body->inertia_tensor;
+  body->inverse_inertia_tensor = glm::inverse(body->inertia_tensor);
 }
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -109,7 +109,7 @@ void physics_body_apply_angular_force(PhysicsBody* body, const glm::vec3& force)
     return;
   }
 
-  // @TODO
+  body->torque += force;
 }
 
 void physics_body_apply_linear_impulse(PhysicsBody* body, const glm::vec3& force) {
@@ -117,7 +117,7 @@ void physics_body_apply_linear_impulse(PhysicsBody* body, const glm::vec3& force
     return;
   }
 
-  body->force += force * body->inverse_mass;
+  body->linear_velocity += force * body->inverse_mass;
 }
 
 void physics_body_apply_angular_impulse(PhysicsBody* body, const glm::vec3& force) {
@@ -125,6 +125,6 @@ void physics_body_apply_angular_impulse(PhysicsBody* body, const glm::vec3& forc
     return;
   }
 
-  // @TODO
+  body->angular_velocity += body->inverse_inertia_tensor * force;
 }
 /////////////////////////////////////////////////////////////////////////////////

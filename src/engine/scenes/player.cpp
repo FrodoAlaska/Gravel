@@ -18,7 +18,7 @@ Player* player_create(const glm::vec3& start_pos) {
     .type = PHYSICS_BODY_DYNAMIC, 
     .user_data = nullptr, 
     .mass = 1.0f, 
-    .restitution = 0.66f, 
+    .restitution = 1.0f, 
     .is_active = true
   });
   physics_body_add_collider(player->body, COLLIDER_BOX, &player->collider); 

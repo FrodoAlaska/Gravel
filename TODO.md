@@ -1,6 +1,5 @@
 # TODO:
-- Quaternions 
-- Angular velocity 
+- Complete collision response
 - Make README better
 - Cubemaps
 

@@ -153,7 +153,8 @@ CollisionPoint aabb_colliding_ex(BoxCollider* box_a, const Transform* trans_a, B
   } 
 
   return CollisionPoint{
-    .collision_point_a = glm::vec3(0.0f), // For now...
+    // @TODO: Get the exact collision point of the aabb collisions
+    .collision_point_a = glm::vec3(0.0f),
     .collision_point_b = glm::vec3(0.0f), 
 
     .normal = normal, 

@@ -78,21 +78,38 @@ static void resolve_collisions() {
     }
 
     // Integrate the Impulse Method for collision response
-    // Relative positions of the points and the bodies 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     glm::vec3 rel_pos_a = collision.point.collision_point_a - body_a->transform.position; 
     glm::vec3 rel_pos_b = collision.point.collision_point_b - body_b->transform.position; 
-  
-    // The relative velocity between the two bodies 
-    glm::vec3 rel_vel = body_b->linear_velocity - body_a->linear_velocity;
+
+    glm::vec3 ang_vel_a = glm::cross(body_a->angular_velocity, rel_pos_a);
+    glm::vec3 ang_vel_b = glm::cross(body_b->angular_velocity, rel_pos_b);
+
+    glm::vec3 full_vel_a = body_a->linear_velocity + ang_vel_a;
+    glm::vec3 full_vel_b = body_b->linear_velocity + ang_vel_b;
+
+    glm::vec3 contact_vel = full_vel_b - full_vel_a;
+
+    glm::vec3 inertia_a = glm::cross(body_a->inertia_tensor * glm::cross(rel_pos_a, collision.point.normal), rel_pos_a);
+    glm::vec3 inertia_b = glm::cross(body_b->inertia_tensor * glm::cross(rel_pos_b, collision.point.normal), rel_pos_b);
+    f32 angular_effect = glm::dot(inertia_a + inertia_b, collision.point.normal); 
 
     f32 restitution = body_a->restitution * body_b->restitution;
 
-    f32 impulse_force = glm::dot(rel_vel, collision.point.normal);
-    f32 impulse = ((-(1.0f + restitution) * impulse_force) / sum_mass);
+    f32 impulse_force = glm::dot(contact_vel, collision.point.normal);
+    f32 impulse = (-(1.0f + restitution) * impulse_force) / sum_mass;// + angular_effect);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // The resulting impulse
+    glm::vec3 full_impulse = impulse * collision.point.normal;
 
     // Giving impulse to the two bodies based on the mass
-    physics_body_apply_linear_impulse(body_a, -collision.point.normal * impulse); 
-    physics_body_apply_linear_impulse(body_b, collision.point.normal * impulse); 
+    physics_body_apply_linear_impulse(body_a, -full_impulse); 
+    physics_body_apply_linear_impulse(body_b, full_impulse); 
+
+    // @TODO: Have to get the exact collision point in order for this to work
+    // physics_body_apply_angular_impulse(body_a, glm::cross(rel_pos_a, -full_impulse));
+    // physics_body_apply_angular_impulse(body_b, glm::cross(rel_pos_b, full_impulse));
   }
 
   // Empty out the collisions after resolving all of them
@@ -147,18 +164,19 @@ void physics_world_update(f32 dt) {
     glm::vec3 acceleration = body->force * body->inverse_mass;
 
     // Don't apply gravity to infinitely heavy bodies
-    if(body->inverse_mass > 0) {  
+    if(body->inverse_mass < 0) {  
       acceleration += s_world->gravity; 
     }
 
     // Semi-Implicit Euler in effect
     body->linear_velocity += acceleration * dt;
-    body->linear_velocity *= frame_damp; // Applying some linear damping
+    // body->linear_velocity *= frame_damp; // Applying some linear damping
     body->transform.position += body->linear_velocity * dt;
     
     // Adding angular velocity 
     glm::vec3 angular_accel = body->torque * body->inertia_tensor;
     body->angular_velocity += angular_accel * dt;
+    body->angular_velocity *= frame_damp; // Apply some damping to the angular velocity as well 
 
     // Adding the rotation to the body 
     glm::quat orientation = body->transform.rotation;
@@ -168,9 +186,6 @@ void physics_world_update(f32 dt) {
     // Moving the body by the new position/displacment and rotating it as weel
     transform_translate(&body->transform, body->transform.position); 
     transform_rotate(&body->transform, orientation);
-
-    // Apply some damping to the angular velocity as well 
-    body->angular_velocity *= frame_damp;
 
     // Clear all forces accumulated this frame
     body->force = glm::vec3(0.0f); 
