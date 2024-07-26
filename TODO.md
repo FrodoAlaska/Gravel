@@ -1,6 +1,4 @@
 # TODO:
-- Complete collision response
-- Make README better
 - Cubemaps
 
 # LATER TODO:

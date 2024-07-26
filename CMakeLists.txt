@@ -95,16 +95,16 @@ set(ENGINE_SOURCES
   # Utils
   ${ENGINE_SRC_DIR}/utils/utils.cpp
   ${ENGINE_SRC_DIR}/utils/utils_file.cpp
-  
-  # Scenes
-  ${ENGINE_SRC_DIR}/scenes/object.cpp
-  ${ENGINE_SRC_DIR}/scenes/player.cpp
 )
 
 set(APP_SOURCES 
   # App core 
   ${APP_SRC_DIR}/app.cpp 
   ${APP_SRC_DIR}/main.cpp 
+
+  # Entities 
+  ${APP_SRC_DIR}/entities/player.cpp 
+  ${APP_SRC_DIR}/entities/object.cpp 
 )
 
 set(EDITOR_SOURCES 
