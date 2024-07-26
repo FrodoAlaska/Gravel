@@ -3,12 +3,9 @@
 #include "engine/graphics/renderer.h"
 #include "engine/graphics/renderer2d.h"
 #include "engine/graphics/camera.h"
-#include "engine/resources/font.h"
 #include "editor/editor.h"
 
 #include <glm/glm.hpp>
-
-#include <string>
 
 /*
  * An example Gravel application. 
@@ -28,8 +25,6 @@
 struct App {
   Camera camera;
   Camera* current_cam;
-
-  Font* font;
 };
 
 static App s_app;
@@ -38,10 +33,6 @@ static App s_app;
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
 bool app_init(void* user_data) {
-  // Loading the default font
-  s_app.font = font_load("assets/font/bit5x3.ttf", 256.0f);
-  renderer2d_set_default_font(s_app.font);
-
   // Disable the cursor
   input_cursor_show(false);
 
