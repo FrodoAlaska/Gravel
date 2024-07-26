@@ -35,6 +35,8 @@ project(Gravel)
 
 All you have to do is change _Gravel_ into whatever you want the project's name to be. Once that is done, you can start the build process and get a resulting executable from that. Again, this is not "ordinary" as far as libraries go. However, as I said, Gravel is designed to be added to and customized.
 
+You also will have to make a folder called "assets". As Gravel will look for it and try to copy it to the executable path. This folder is where all your assets (obviously) will live.
+
 Once that is done, you can start hooking an application to Gravel. There are mainly two files that we will start with. "main.cpp" and "app.cpp". They should be in the "app" folder when you clone Gravel. 
 
 The _main_ function has the following code: 
