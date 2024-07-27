@@ -4,6 +4,7 @@
 #include "engine/graphics/renderer2d.h"
 #include "engine/graphics/camera.h"
 #include "editor/editor.h"
+#include "resources/cubemap.h"
 
 #include <glm/glm.hpp>
 
@@ -25,6 +26,8 @@
 struct App {
   Camera camera;
   Camera* current_cam;
+
+  CubeMap* cubemap;
 };
 
 static App s_app;
@@ -45,10 +48,14 @@ bool app_init(void* user_data) {
   // This can be switched between the game camera and editor camera
   s_app.current_cam = &s_app.camera;
 
+  s_app.cubemap = cubemap_load("assets/cubemaps/desert_cubemap/");
+
   return true;
 }
 
 void app_shutdown(void* user_data) {
+  cubemap_unload(s_app.cubemap);
+
   editor_shutdown();
 }
 
@@ -62,6 +69,7 @@ void app_render(void* user_data) {
   editor_begin();
 
   renderer_begin(s_app.current_cam);
+  render_cubemap(s_app.cubemap, s_app.current_cam);
   renderer_end();
   
   renderer2d_begin();

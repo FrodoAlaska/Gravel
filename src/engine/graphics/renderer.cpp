@@ -3,6 +3,8 @@
 #include "defines.h"
 #include "graphics/camera.h"
 #include "graphics/shader.h"
+#include "math/vertex.h"
+#include "resources/cubemap.h"
 #include "resources/material.h"
 #include "resources/mesh.h"
 #include "resources/model.h"
@@ -26,7 +28,8 @@
 enum ShaderType {
   SHADER_DEFAULT, 
   SHADER_INSTANCE,
-  SHADERS_MAX = 2,
+  SHADER_CUBEMAP,
+  SHADERS_MAX = 3,
 };
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +44,7 @@ struct Renderer {
   glm::mat4* transforms = nullptr;
 
   Mesh* cube_mesh = nullptr;
+  Mesh* skybox_mesh = nullptr;
   Material* default_material = nullptr;
 };
 
@@ -178,10 +182,94 @@ static void load_shaders() {
     "  frag_color = vec4(1.0f);//fs_in.color;\n"
     "}";
 
+  std::string cubemap_shader_code = 
+    "@type vertex\n"
+    "#version 460 core\n"
+    "\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "\n"
+    "// Outputs\n"
+    "out VS_OUT {\n"
+    "  vec3 texture_coords;\n"
+    "} vs_out;\n"
+    "// Uniforms\n"
+    "uniform mat4 u_view, u_projection;"
+    "\n"
+    "void main() {\n"
+    " vs_out.texture_coords = aPos; // The local position of the cubemap is actually its texture coords\n"
+    " vec4 pos = u_projection * u_view * vec4(aPos, 1.0f);\n"
+    " gl_Position = pos.xyww;\n"
+    "}\n"
+    "\n"
+    "@type fragment\n"
+    "#version 460 core\n"
+    "\n"
+    "out vec4 frag_color;\n" 
+    "\n"
+    "// Inputs\n"
+    "in VS_OUT {\n"
+    "  vec3 texture_coords;\n"
+    "} fs_in;\n"
+    "\n"
+    "// Uniforms\n"
+    "uniform samplerCube u_cubemap;\n"
+    "\n"
+    "void main() {\n"
+    "  frag_color = texture(u_cubemap, fs_in.texture_coords);\n"
+    "}";
+
   // Shaders loading
   renderer.shaders[SHADER_DEFAULT]  = resources_add_shader("default_shader-3d", "default.glsl", default_code);
   renderer.shaders[SHADER_INSTANCE] = resources_add_shader("instance_shader-3d", "instance.glsl", inst_code);
+  renderer.shaders[SHADER_CUBEMAP] = resources_add_shader("cubemap_shader", "cubemap.glsl", cubemap_shader_code);
   renderer.current_shader           = renderer.shaders[SHADER_INSTANCE];
+}
+
+static void build_skybox_mesh() {
+  std::vector<Vertex3D> vertices;
+  vertices.push_back({glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  
+  vertices.push_back({glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  
+  vertices.push_back({glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  
+  vertices.push_back({glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  
+  vertices.push_back({glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f,  1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f,  1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f,  1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f,  1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  
+  vertices.push_back({glm::vec3(-1.0f, -1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f, -1.0f, -1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3(-1.0f, -1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+  vertices.push_back({glm::vec3( 1.0f, -1.0f,  1.0f), glm::vec3(0.0f), glm::vec3(0.0f)});
+
+  renderer.skybox_mesh = mesh_create(vertices, std::vector<u32>());
 }
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -200,6 +288,9 @@ const bool renderer_create() {
 
   // Load all the default shaders
   load_shaders();
+
+  // Setting up the skybox mesh
+  build_skybox_mesh();
 
   // Creating the instance mesh
   renderer.cube_mesh = mesh_create();
@@ -328,5 +419,23 @@ void render_model(const Transform& transform, Model* model) {
   for(u32 i = 0; i < model->meshes.size(); i++) {
     render_mesh(transform, model->meshes[i], model->materials[model->material_ids[i]]); 
   }
+}
+
+void render_cubemap(CubeMap* cm, const Camera* cam) {
+  if(!cm) {
+    return;
+  }
+
+  glDepthMask(GL_FALSE);
+
+  shader_bind(renderer.shaders[SHADER_CUBEMAP]);
+  shader_upload_mat4(renderer.shaders[SHADER_CUBEMAP], "u_view", glm::mat4(glm::mat3(cam->view)));
+  shader_upload_mat4(renderer.shaders[SHADER_CUBEMAP], "u_projection", cam->projection);
+
+  glBindVertexArray(renderer.skybox_mesh->vao); 
+  cubemap_use(cm);
+  glDrawArrays(GL_TRIANGLES, 0, renderer.skybox_mesh->vertices.size());
+
+  glDepthMask(GL_TRUE);
 }
 /////////////////////////////////////////////////////////////////////////////////

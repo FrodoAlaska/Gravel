@@ -80,6 +80,7 @@ set(ENGINE_SOURCES
   ${ENGINE_SRC_DIR}/resources/mesh.cpp
   ${ENGINE_SRC_DIR}/resources/material.cpp
   ${ENGINE_SRC_DIR}/resources/model.cpp
+  ${ENGINE_SRC_DIR}/resources/cubemap.cpp
   
   # UI
   ${ENGINE_SRC_DIR}/ui/ui_text.cpp

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "graphics/camera.h"
+#include "resources/cubemap.h"
 #include "resources/material.h"
 #include "resources/mesh.h"
 #include "math/transform.h"
@@ -32,4 +33,7 @@ void render_cube(const glm::vec3& position, const glm::vec3& scale, const glm::v
 // Render a 3D model
 // NOTE: This function will not render anything if the model is a 'nullptr'
 void render_model(const Transform& transform, Model* model);
+
+// Render the given cubemap
+void render_cubemap(CubeMap* cm, const Camera* cam);
 /////////////////////////////////////////////////////////////////////////////////
