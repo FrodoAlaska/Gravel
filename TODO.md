@@ -1,5 +1,4 @@
 # TODO:
-- Cubemaps
 
 # LATER TODO:
 - Sphere and plane rendering

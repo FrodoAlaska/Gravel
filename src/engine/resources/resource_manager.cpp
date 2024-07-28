@@ -1,5 +1,6 @@
 #include "resource_manager.h"
 #include "graphics/shader.h"
+#include "resources/cubemap.h"
 #include "resources/material.h"
 #include "resources/mesh.h"
 #include "resources/model.h"
@@ -23,6 +24,7 @@ struct ResourceManager {
   std::unordered_map<std::string, Mesh*> meshes;
   std::unordered_map<std::string, Material*> materials;
   std::unordered_map<std::string, Model*> models;
+  std::unordered_map<std::string, CubeMap*> cubemaps;
 };
 
 static ResourceManager s_res_man;
@@ -73,6 +75,14 @@ static Material* find_material(const std::string& id) {
 static Model* find_model(const std::string& id) {
   if(s_res_man.models.find(id) != s_res_man.models.end()) {
     return s_res_man.models[id];
+  }
+
+  return nullptr;
+}
+
+static CubeMap* find_cubemap(const std::string& id) {
+  if(s_res_man.cubemaps.find(id) != s_res_man.cubemaps.end()) {
+    return s_res_man.cubemaps[id];
   }
 
   return nullptr;
@@ -168,6 +178,13 @@ Model* resources_add_model(const std::string& id, const std::string& path) {
   return s_res_man.models[id];
 }
 
+CubeMap* resources_add_cubemap(const std::string& id, const std::string& path) {
+  std::string full_path = s_res_man.res_path + path; 
+
+  s_res_man.cubemaps[id] = cubemap_load(path);
+  return s_res_man.cubemaps[id];
+}
+
 Shader* resources_get_shader(const std::string& id) {
   return find_shader(id);
 }
@@ -190,6 +207,10 @@ Material* resources_get_material(const std::string& id) {
 
 Model* resources_get_model(const std::string& id) {
   return find_model(id);
+}
+
+CubeMap* resources_get_cubemap(const std::string& id) {
+  return find_cubemap(id);
 }
 
 bool resources_remove_shader(const std::string& id) {
@@ -258,6 +279,18 @@ bool resources_remove_model(const std::string& id) {
   if(model) {
     model_unload(model);
     s_res_man.models.erase(id);
+    
+    return true;
+  }
+
+  return false;
+}
+
+bool resources_remove_cubemap(const std::string& id) {
+  CubeMap* cm = find_cubemap(id);
+  if(cm) {
+    cubemap_unload(cm);
+    s_res_man.cubemaps.erase(id);
     
     return true;
   }

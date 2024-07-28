@@ -1,5 +1,6 @@
 #pragma once
 
+#include "resources/cubemap.h"
 #include "resources/material.h"
 #include "resources/mesh.h"
 #include "resources/model.h"
@@ -10,17 +11,6 @@
 
 #include <string>
 #include <vector>
-
-// ResourceType
-/////////////////////////////////////////////////////////////////////////////////
-enum ResourceType {
-  RESOURCE_TEXTURE,
-  RESOURCE_FONT,
-  RESOURCE_MESH,
-  RESOURCE_MATERIAL,
-  RESOURCE_MODEL,
-};
-/////////////////////////////////////////////////////////////////////////////////
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
@@ -49,6 +39,7 @@ Mesh* resources_add_mesh(const std::string& id);
 Mesh* resources_add_mesh(const std::string& id, const std::vector<Vertex3D>& vertices, const std::vector<u32>& indices);
 Material* resources_add_material(const std::string& id, Texture* diffuse, Texture* specular, Shader* shader);
 Model* resources_add_model(const std::string& id, const std::string& path);
+CubeMap* resources_add_cubemap(const std::string& id, const std::string& path);
 
 // Returning resources 
 // These functions will return the resource that is specified by the 'id'. 
@@ -59,6 +50,7 @@ Font* resources_get_font(const std::string& id);
 Mesh* resources_get_mesh(const std::string& id);
 Material* resources_get_material(const std::string& id);
 Model* resources_get_model(const std::string& id);
+CubeMap* resources_get_cubemap(const std::string& id);
 
 // Removing resources
 // Removes the specified resource from the resource manager's map. 
@@ -72,4 +64,5 @@ bool resources_remove_font(const std::string& id);
 bool resources_remove_mesh(const std::string& id);
 bool resources_remove_material(const std::string& id);
 bool resources_remove_model(const std::string& id);
+bool resources_remove_cubemap(const std::string& id);
 /////////////////////////////////////////////////////////////////////////////////
