@@ -32,7 +32,7 @@ bool game_quit(const EventType type, const EventDesc& desc) {
 /////////////////////////////////////////////////////////////////////////////////
 void engine_init(const AppDesc& desc) {
   // Window init 
-  if(!window_create(1280, 720, desc.window_title.c_str())) {
+  if(!window_create(desc.window_width, desc.window_height, desc.window_title.c_str())) {
     printf("[ERROR]: Window failed to be created\n");
     return;
   }
