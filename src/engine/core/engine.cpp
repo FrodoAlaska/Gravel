@@ -62,7 +62,7 @@ void engine_init(const AppDesc& desc) {
   }
 
   // Physic world init 
-  physics_world_create(glm::vec3(0.0f, 9.81f, 0.0f));
+  physics_world_create(glm::vec3(0.0f, -9.81f, 0.0f));
 
   // Listening to events
   event_listen(EVENT_GAME_QUIT, game_quit);
