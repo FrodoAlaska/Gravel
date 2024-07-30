@@ -11,8 +11,18 @@ static std::default_random_engine engine(rand_device());
 
 // Public functions
 /////////////////////////////////////////////////////////////////////////////////
-u32 random_u32() {
+const u32 random_u32() {
   std::uniform_int_distribution<u32> uni_dist;
+  return uni_dist(engine);
+}
+
+const u32 random_u32(const u32 min, const u32 max) {
+  std::uniform_int_distribution<u32> uni_dist(min, max);
+  return uni_dist(engine);
+}
+
+const f32 random_f32() {
+  std::uniform_real_distribution<f32> uni_dist;
   return uni_dist(engine);
 }
 
