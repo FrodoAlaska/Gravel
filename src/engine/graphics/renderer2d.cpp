@@ -268,7 +268,7 @@ void render_quad(const glm::vec2& position, const glm::vec2& size, const glm::ve
 
 void render_texture(Texture* texture, const Rect& src, const Rect& dest, const glm::vec4& tint, const bool flip) {
   // Restart the renderer once the max quads is reached 
-  if(renderer.indices_count >= MAX_INDICES || renderer.texture_index > MAX_TEXTURES) {
+  if(renderer.indices_count >= MAX_INDICES || renderer.texture_index >= MAX_TEXTURES) {
     renderer2d_end();
     renderer2d_begin();
   }
